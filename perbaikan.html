@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Dalam Perbaikan - SPPG KOTA SERANG SERANG SERANG 2</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sky-theme-light': '#E0F7FA',
+                        'sky-theme-mid': '#B3E5FC',
+                        'sky-theme-deep': '#0288D1',
+                        'sky-theme-glow': '#03A9F4',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(179, 229, 252, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(2, 136, 209, 0.12);
+        }
+        @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+            .glass-card {
+                background: rgba(255, 255, 255, 0.90);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(3, 169, 244, 0.25);
+        }
+        @keyframes pulseSlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .animate-pulse-slow {
+            animation: pulseSlow 3s ease-in-out infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#E0F7FA] via-[#E1F5FE] to-[#B3E5FC] min-h-screen text-slate-800 font-sans flex flex-col justify-between items-center p-4 selection:bg-[#0288D1] selection:text-white">
+
+    <!-- Top Spacer / Header Kecil -->
+    <header class="w-full max-w-4xl py-4 flex justify-center">
+        <div class="flex items-center space-x-3 bg-white/80 backdrop-blur px-4 py-2 rounded-2xl shadow-sm border border-sky-200">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+            <span class="text-xs font-extrabold uppercase tracking-widest text-[#0288D1]">SPPG KOTA SERANG SERANG SERANG 2</span>
+        </div>
+    </header>
+
+    <!-- Main Content Card -->
+    <main class="w-full max-w-lg my-auto">
+        <div class="glass-card rounded-3xl p-8 sm:p-10 text-center shadow-2xl border-2 border-[#0288D1]/30 animate-fade relative overflow-hidden">
+            <!-- Aksen Garis Gradien di Atas Kartu -->
+            <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#01579B] via-[#0288D1] to-[#03A9F4]"></div>
+
+            <!-- Logo PNG Lokal dengan Efek Glow -->
+            <div class="w-24 h-24 mx-auto mb-6 rounded-3xl bg-white flex items-center justify-center p-3 shadow-lg glow-effect border border-sky-200 animate-pulse-slow">
+                <img src="logo.png" alt="Logo SPPG" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=SPPG';">
+            </div>
+
+            <!-- Badge Status -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-extrabold uppercase tracking-wider mb-4 shadow-sm">
+                <i class="fa-solid fa-screwdriver-wrench animate-spin"></i>
+                <span>Maintenance Mode</span>
+            </div>
+
+            <!-- Judul Utama -->
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">
+                Mohon Maaf, Sistem Dalam Perbaikan
+            </h1>
+
+            <!-- Pesan Penjelasan -->
+            <p class="text-sm sm:text-base text-slate-600 font-medium leading-relaxed mb-8">
+                Saat ini tim pengembang sedang melakukan pemeliharaan dan pembaruan sistem demi meningkatkan kualitas layanan operasional dapur sehat. Silakan kunjungi kembali beberapa saat lagi.
+            </p>
+
+            <!-- Informasi Kontak / Status Bantuan -->
+            <div class="bg-sky-50/70 border border-sky-100 rounded-2xl p-4 text-left space-y-2 mb-6">
+                <div class="flex items-center gap-3 text-xs text-slate-700 font-semibold">
+                    <div class="w-7 h-7 rounded-xl bg-[#0288D1] text-white flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <span>Estimasi Pemeliharaan: Segera Selesai</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-slate-700 font-semibold">
+                    <div class="w-7 h-7 rounded-xl bg-[#0288D1] text-white flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <span>Pusat Kendali & Operasional SPPG Kota Serang Serang Serang 2</span>
+                </div>
+            </div>
+
+            <!-- Tombol Refresh / Coba Lagi -->
+            <button onclick="window.location.reload();" class="w-full py-3.5 px-6 bg-gradient-to-r from-[#01579B] via-[#0288D1] to-[#03A9F4] hover:opacity-95 text-white font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 group">
+                <i class="fa-solid fa-rotate-right group-hover:rotate-180 transition-transform duration-500"></i>
+                <span>Muat Ulang Halaman</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-4xl py-4 text-center text-xs text-slate-600 font-medium">
+        <p>&copy; 2026 SPPG KOTA SERANG SERANG SERANG 2. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

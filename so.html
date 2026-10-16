@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem Input Bahan Baku Dapur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #06b6d4);
+            --success-gradient: linear-gradient(135deg, #10b981, #059669);
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .login-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: none;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 380px;
+            padding: 2rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            margin: auto;
+            touch-action: auto;
+        }
+
+        @media screen and (max-width: 768px) {
+            .login-wrapper {
+                padding: 1.25rem 0.75rem;
+                align-items: center;
+            }
+            .login-card {
+                width: 92% !important;
+                max-width: 350px !important;
+                padding: 1.5rem 1.125rem !important;
+                border-radius: 20px !important;
+            }
+            .login-logo {
+                width: 65px !important;
+                height: 65px !important;
+                margin-bottom: 0.75rem !important;
+            }
+            .login-header h2 {
+                font-size: 1.15rem !important;
+            }
+            .login-header p {
+                font-size: 0.75rem !important;
+                margin-bottom: 1rem !important;
+            }
+            .login-form .form-group {
+                margin-bottom: 0.85rem !important;
+            }
+            .login-form .form-control {
+                padding: 0.75rem 0.85rem !important;
+                font-size: 16px !important;
+            }
+            .login-form .btn {
+                padding: 0.75rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem auto;
+            border-radius: 50%;
+            background: #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            border: 3px solid #ffffff;
+        }
+
+        .login-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-logo i {
+            font-size: 2.2rem;
+            color: #4f46e5;
+        }
+
+        .login-header h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.2rem;
+        }
+
+        .login-header p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .error-alert {
+            background: #fee2e2;
+            color: var(--danger-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.825rem;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            width: 980px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: var(--card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .app-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: rgba(79, 70, 229, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .app-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .app-logo i {
+            font-size: 1.75rem;
+            color: #4f46e5;
+        }
+
+        .header-title h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .header-title p {
+            font-size: 0.775rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .live-clock {
+            background: rgba(79, 70, 229, 0.08);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #4f46e5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+        }
+
+        .net-speed {
+            background: rgba(16, 185, 129, 0.08);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .date-filter-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(6, 182, 212, 0.08);
+            padding: 0.4rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .date-filter-box label {
+            font-size: 0.875rem;
+            color: #0891b2;
+            font-weight: 600;
+        }
+
+        .date-filter-box input[type="date"] {
+            border: none;
+            outline: none;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-main);
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .location-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .loc-valid { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+        .loc-invalid { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+        .invoice-print-header {
+            display: none;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-print-meta {
+            display: none;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .invoice-print-footer {
+            display: none;
+            margin-top: 3rem;
+            justify-content: space-between;
+            align-items: flex-end;
+            text-align: center;
+        }
+
+        .signature-box {
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .signature-space {
+            min-height: 2.5rem;
+        }
+
+        .signature-line {
+            margin-top: 4rem;
+            border-bottom: 1px solid var(--text-main);
+            padding-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .notice-banner {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            padding: 0.875rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.2fr 1.2fr auto;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            background: #ffffff;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        }
+
+        .search-container {
+            padding: 1rem 2rem;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.65rem 1rem 0.65rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn {
+            padding: 0.85rem 1.75rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-edit-soft {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 0.5rem 0.875rem;
+            font-size: 0.875rem;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+        }
+
+        .btn-danger-soft {
+            background: #fee2e2;
+            color: var(--danger-color);
+            padding: 0.5rem 0.875rem;
+            font-size: 0.875rem;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-logout {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .expired-badge {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.725rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-header-bar {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-header-bar h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1.125rem 1.5rem;
+            font-size: 0.925rem;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #4f46e5;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        td {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .img-preview-thumb {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .img-preview-thumb:hover {
+            transform: scale(1.08);
+        }
+
+        .no-photo-badge {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        .floating-edit-bar {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: white;
+            padding: 0.875rem 1.75rem;
+            border-radius: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: none;
+            align-items: center;
+            gap: 1.25rem;
+            z-index: 9999;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1.25rem auto;
+        }
+
+        .modal-icon.icon-danger { background: #fee2e2; color: var(--danger-color); }
+        .modal-icon.icon-warning { background: #fef3c7; color: var(--warning-color); }
+        .modal-icon.icon-success { background: #d1fae5; color: #10b981; }
+        .modal-icon.icon-info { background: #e0e7ff; color: #4f46e5; }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancel-modal {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-confirm-delete {
+            background: var(--danger-color);
+            border: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Layar Login -->
+<div class="login-wrapper" id="loginScreen">
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="logo.png" alt="Logo" onerror="this.onerror=null; this.remove(); document.querySelector('.login-logo').innerHTML='<i class=\'fa-solid fa-utensils\'></i>';">
+        </div>
+        <div class="login-header">
+            <h2>INPUT DATA</h2>
+            <h2>STOCK BAHAN BAKU</h2>
+            <p>SPPG KOTA SERANG SERANG SERANG 2</p>
+        </div>
+        <div class="error-alert" id="loginError">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Nama Pengguna atau Sandi salah!</span>
+        </div>
+        <form class="login-form" id="loginForm" autocomplete="off">
+            <div class="form-group">
+                <label for="username">Nama Pengguna</label>
+                <input type="text" id="username" class="form-control" placeholder="Masukkan Username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Kata Sandi</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan Kata Sandi" required>
+                    <i class="fa-regular fa-eye toggle-password" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                <i class="fa-solid fa-right-to-bracket"></i> Masuk
+            </button>
+            
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <button type="button" class="btn btn-warning" style="width: 100%; font-size: 0.85rem;" onclick="enterPublicGuestMode()">
+                    <i class="fa-solid fa-eye"></i> Lihat Stok
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Floating Bar Simpan Edit Invoice -->
+<div class="floating-edit-bar" id="floatingEditBar">
+    <span><i class="fa-solid fa-pen-to-square"></i> Mode Edit Invoice Aktif: Klik teks mana saja untuk mengubahnya!</span>
+    <button type="button" class="btn btn-success" onclick="saveEditedInvoiceConfig()" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+        <i class="fa-solid fa-floppy-disk"></i> Simpan & Terapkan
+    </button>
+</div>
+
+<!-- Aplikasi Utama -->
+<div class="container" id="captureArea" style="display: none; background: #ffffff; padding: 2rem; border-radius: 16px;">
+
+    <!-- Header Aplikasi Standar -->
+    <div class="header" id="webHeader">
+        <div class="header-brand">
+            <div class="app-logo">
+                <img src="logo.png" alt="Logo Header" onerror="this.onerror=null; this.remove(); document.querySelector('.app-logo').innerHTML='<i class=\'fa-solid fa-utensils\'></i>';" crossorigin="anonymous">
+            </div>
+            <div class="header-title">
+                <h1>SPPG KOTA SERANG SERANG SERANG 2</h1>
+                <p>Jl. Kolonel Tubagus Suwandi Kav. BRI 2 No.19, Serang, Kec. Serang, Kota Serang, Banten 42116</p>
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="location-badge loc-invalid" id="locStatusBadge">
+                <i class="fa-solid fa-location-crosshairs"></i> <span id="locStatusText">Mengecek Lokasi...</span>
+            </div>
+            <div class="live-clock" id="liveClock">
+                <i class="fa-regular fa-clock"></i> <span id="clockText">00:00:00</span>
+            </div>
+            <div class="net-speed" id="netSpeedIndicator">
+                <i class="fa-solid fa-wifi"></i> <span id="netSpeedText">Menguji Jaringan...</span>
+            </div>
+            <div class="date-filter-box" id="dailyDateFilterBox">
+                <label for="selectedDate"><i class="fa-solid fa-calendar-days"></i> Pilih Tanggal:</label>
+                <input type="date" id="selectedDate" onchange="onDateChange()">
+            </div>
+            <button class="btn btn-logout" onclick="logout()" title="Keluar dari sistem" id="logoutBtn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- PANEL KHUSUS ADMIN -->
+    <div class="card" id="adminControlPanel" style="display: none; background: #f8fafc; border: 2px dashed #4f46e5;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: #4f46e5;"><i class="fa-solid fa-bullhorn"></i> Panel Admin: Kirim Informasi / Broadcast & Kelola User</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <div class="form-group" style="flex: 1; min-width: 250px;">
+                <label for="adminBroadcastMsg">Pesan / Info Profesional</label>
+                <textarea id="adminBroadcastMsg" class="form-control" rows="2" placeholder="Tuliskan informasi atau instruksi untuk user..."></textarea>
+            </div>
+            <div class="form-group" style="width: 220px;">
+                <label for="adminAttachFile">Lampiran (Foto/Video/Audio/File)</label>
+                <input type="file" id="adminAttachFile" class="form-control" accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+            </div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" onclick="sendAdminBroadcast()"><i class="fa-solid fa-paper-plane"></i> Kirim Info ke User</button>
+            <div id="adminUserStatusInfo" style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted);">Status User: Memuat...</div>
+        </div>
+        <div style="margin-top: 1.25rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--text-main);"><i class="fa-solid fa-comments"></i> Balasan Masuk dari User:</h4>
+            <div id="adminUserReplyBox" style="background: #ffffff; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-muted); min-height: 50px;">
+                Belum ada balasan dari user.
+            </div>
+        </div>
+    </div>
+
+    <div class="notice-banner" id="pastDateNotice">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="pastDateNoticeText">Anda sedang melihat data arsip masa lalu. Input data baru hanya aktif untuk hari ini.</span>
+    </div>
+
+    <div class="notice-banner" id="locationBlockedNotice" style="background:#fee2e2; border-color:#ef4444; color:#991b1b;">
+        <i class="fa-solid fa-lock"></i>
+        <span><strong>AKSES INPUT DIKUNCI!</strong> Anda tidak berada di area lokasi SPPG KOTA SERANG SERANG SERANG 2. Silakan berada di lokasi resmi untuk dapat menginput data stock.</span>
+    </div>
+
+    <!-- Form Input Data -->
+    <div class="card" id="formCard">
+        <form id="itemForm" autocomplete="off">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="namaBarang">Nama Barang/Bahan Baku</label>
+                    <input type="text" id="namaBarang" class="form-control" list="listNamaBarang" placeholder="Contoh: Beras, Telur" oninput="onNamaBarangInput()" required>
+                    <datalist id="listNamaBarang"></datalist>
+                </div>
+                <div class="form-group">
+                    <label for="satuan">Satuan</label>
+                    <input type="text" id="satuan" class="form-control" list="listSatuan" placeholder="Pcs, Kg, Gram" required>
+                    <datalist id="listSatuan"></datalist>
+                </div>
+                <div class="form-group">
+                    <label for="jumlah">Jumlah Hari Ini</label>
+                    <input type="text" id="jumlah" class="form-control" placeholder="0 atau 1.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="expiredDate"><i class="fa-solid fa-calendar-xmark"></i> Expired</label>
+                    <input type="date" id="expiredDate" class="form-control" title="Pilih tanggal kadaluarsa (opsional)">
+                </div>
+                <div class="form-group">
+                    <label for="fotoBahan"><i class="fa-solid fa-camera"></i> Foto <span id="labelFotoReq" style="color:var(--danger-color)">*</span></label>
+                    <input type="file" id="fotoBahan" class="form-control" accept="image/*" capture="environment" required>
+                </div>
+                <button type="submit" id="submitBtn" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- WRAPPER EXPORT -->
+    <div id="exportContainer" style="background: #ffffff; padding: 10px; border-radius: 12px;">
+        <div class="invoice-print-header" id="invoiceHeader" style="display: block;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 70px; height: 70px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border-color);">
+                        <img src="logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';" crossorigin="anonymous">
+                    </div>
+                    <div>
+                        <h2 id="invTitleHeader" style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">SPPG KOTA SERANG SERANG SERANG 2</h2>
+                        <p id="invSubHeader" style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">Jl. Kolonel Tubagus Suwandi Kav. BRI 2 No.19, Serang, Kec. Serang, Kota Serang, Banten</p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background: #e0e7ff; color: #4f46e5; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px;" id="badgeReportType">LAPORAN HARIAN</span>
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px;" id="printTimestamp">Dicetak: -</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="invoice-print-meta" id="invoiceMeta" style="display: flex;">
+            <div><strong>Tanggal Laporan:</strong> <span id="invoiceDateText">-</span></div>
+            <div><strong>Status Dokumen:</strong> Verified & Validated</div>
+        </div>
+
+        <!-- Tabel Data Stock -->
+        <div class="table-container">
+            <div class="table-header-bar">
+                <h2 id="tableTitle">Daftar Stock Bahan Baku</h2>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" class="action-col">
+                    <button type="button" class="btn btn-info" id="previewBtn" onclick="openCodeModal()">
+                        <i class="fa-solid fa-eye"></i> Admin
+                    </button>
+                    <button type="button" class="btn btn-success" id="exportBtn" onclick="openExportModal()">
+                        <i class="fa-solid fa-file-image"></i> Export Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-container" id="searchBarContainer">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Cari nama barang atau satuan..." oninput="filterTableItemsDebounced()">
+                </div>
+                <!-- Tombol Cari Data dengan Animasi Proses -->
+                <button type="button" class="btn btn-primary" id="btnSearchAction" onclick="executeSearchWithAnimation()" style="padding: 0.65rem 1.25rem; font-size: 0.9rem;">
+                    <i class="fa-solid fa-magnifying-glass" id="searchBtnIcon"></i> <span id="searchBtnText">Cari Data</span>
+                </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="mainTable">
+                    <thead>
+                        <tr id="tableHeadRow">
+                            <th style="width: 5%;">No</th>
+                            <th id="thNamaCol">Nama Barang/Bahan Baku</th>
+                            <th style="width: 12%;">Satuan</th>
+                            <th style="width: 12%;" id="thJumlahCol">Jumlah</th>
+                            <th style="width: 15%;">Expired</th>
+                            <th style="width: 18%;">Foto</th>
+                            <th style="width: 14%;" class="text-center action-col" id="thAksiCol">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer Tanda Tangan -->
+        <div class="invoice-print-footer" id="invoiceFooter" style="display: flex;">
+            <div class="signature-box">
+                <div>
+                    <p id="lblPetugasText">Petugas SO</p>
+                    <div class="signature-space"></div>
+                </div>
+                <div class="signature-line" id="valPetugasText">( Riyan )</div>
+            </div>
+            <div class="signature-box">
+                <div>
+                    <p id="lblMengetahuiText">Mengetahui</p>
+                    <p id="lblJabatanText">Kepala SPPG Kota Serang 2</p>
+                </div>
+                <div class="signature-line" id="valMengetahuiName">( Mohamad Fakhrurozi )</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Alert Custom -->
+<div class="modal-overlay" id="customAlertModal">
+    <div class="modal-box">
+        <div class="modal-icon icon-info" id="alertModalIcon"><i class="fa-solid fa-circle-info"></i></div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;" id="alertModalTitle">Notifikasi</h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;" id="alertModalMessage">Pesan informasi</p>
+        <button type="button" class="btn btn-primary" onclick="closeCustomAlert()" style="width: 100%;">OK</button>
+    </div>
+</div>
+
+<!-- Modal Popup Admin Broadcast -->
+<div class="modal-overlay" id="adminBroadcastPopupModal" style="background: rgba(15, 23, 42, 0.85);">
+    <div class="modal-box" style="max-width: 480px; text-align: left;">
+        <div class="modal-icon icon-warning" style="margin: 0 auto 1rem auto;"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; text-align: center; color: var(--warning-color);">Pemberitahuan Profesional dari Admin</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; text-align: center;">Input barang dikunci sementara sampai Anda membalas pesan ini.</p>
+        
+        <div id="broadcastContentDisplay" style="background: #f8fafc; padding: 1rem; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-main);"></div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="userReplyInput">Balasan Anda (Wajib diisi untuk melanjutkan)</label>
+            <textarea id="userReplyInput" class="form-control" rows="3" placeholder="Ketik balasan Anda di sini..."></textarea>
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="submitUserReply()" style="width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Balasan & Buka Kunci Input
+        </button>
+    </div>
+</div>
+
+<!-- Modal Export PNG / PDF -->
+<div class="modal-overlay" id="exportModal">
+    <div class="modal-box" style="text-align: left;">
+        <div class="modal-icon icon-info" style="margin: 0 auto 1rem auto;"><i class="fa-solid fa-file-export"></i></div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; text-align: center;">Export Laporan</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; text-align: center;">Konfirmasi nama Petugas SO & Format sebelum mengunduh.</p>
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="exportPetugasInput">Nama Petugas SO</label>
+            <input type="text" id="exportPetugasInput" class="form-control" placeholder="Masukkan nama petugas">
+        </div>
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label for="exportFormatSelect">Pilih Format Unduhan</label>
+            <select id="exportFormatSelect" class="form-control">
+                <option value="png">Gambar (PNG)</option>
+                <option value="pdf">Dokumen (PDF)</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel-modal" onclick="closeExportModal()">Batal</button>
+            <button type="button" class="btn btn-success" id="exportProcessBtn" onclick="processExportReport()"><i class="fa-solid fa-download"></i> Unduh File</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Admin -->
+<div class="modal-overlay" id="codeModal">
+    <div class="modal-box">
+        <div class="modal-icon icon-info"><i class="fa-solid fa-lock"></i></div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Akses Admin</h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Masukkan kode rahasia untuk mengedit laporan.</p>
+        <div class="error-alert" id="codeError" style="margin-bottom: 0.75rem;">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Kode akses salah!</span>
+        </div>
+        <input type="password" id="secretCodeInput" class="form-control" placeholder="Masukkan Kode" style="text-align: center; letter-spacing: 2px; font-weight: 700;" autocomplete="off">
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel-modal" onclick="closeCodeModal()">Batal</button>
+            <button type="button" class="btn btn-primary" onclick="verifySecretCode()">Masuk</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Preview Foto -->
+<div class="modal-overlay" id="imageModal">
+    <div class="modal-box" style="max-width: 500px; padding: 1rem;">
+        <img id="modalImagePreview" src="" alt="Foto" style="width: 100%; height: auto; border-radius: 12px; max-height: 70vh; object-fit: contain;" crossorigin="anonymous">
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-info" onclick="downloadImageFromModal()" style="flex: 1;"><i class="fa-solid fa-download"></i> Download Foto</button>
+            <button type="button" class="btn btn-primary" onclick="closeImageModal()" style="flex: 1;">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Barang -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box" style="max-width: 400px; text-align: left;">
+        <div class="modal-icon icon-warning" style="margin: 0 auto 1rem auto;"><i class="fa-solid fa-pen-to-square"></i></div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 1rem; text-align: center;">Edit Data Barang</h3>
+        <input type="hidden" id="editItemKey">
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="editNamaBarang">Nama Barang/Bahan Baku</label>
+            <input type="text" id="editNamaBarang" class="form-control" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="editSatuan">Satuan</label>
+            <input type="text" id="editSatuan" class="form-control" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="editJumlah">Jumlah</label>
+            <input type="text" id="editJumlah" class="form-control" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="editExpiredDate">Tanggal Expired</label>
+            <input type="date" id="editExpiredDate" class="form-control">
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel-modal" onclick="closeEditModal()">Batal</button>
+            <button type="button" class="btn btn-warning" onclick="submitEditData()" style="color: white;">Simpan Perubahan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Hapus -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <div class="modal-icon icon-danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Hapus Data Barang?</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Apakah Anda yakin? Foto di Sistem juga akan ikut terhapus.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel-modal" onclick="closeDeleteModal()">Batal</button>
+            <button type="button" class="btn-confirm-delete" id="confirmDeleteBtn">Ya, Hapus</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+    function setViewportForLogin(isLoginScreen) {
+        const vp = document.getElementById('viewportMeta');
+        if (isLoginScreen) {
+            vp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            document.body.style.minWidth = "auto";
+        } else {
+            vp.setAttribute('content', 'width=1024, initial-scale=0.35, minimum-scale=0.1, maximum-scale=3.0, user-scalable=yes');
+            document.body.style.minWidth = "1024px";
+        }
+    }
+
+    document.addEventListener('touchmove', function (event) {
+        if (document.getElementById('loginScreen').style.display !== 'none' && event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('gesturestart', function (event) {
+        if (document.getElementById('loginScreen').style.display !== 'none') {
+            event.preventDefault();
+        }
+    });
+
+    const container = document.getElementById('captureArea');
+
+    const TARGET_LAT = -6.1265918;
+    const TARGET_LNG = 106.1490035;
+    const MAX_ALLOWED_DISTANCE_METERS = 200;
+
+    let userCurrentLat = null;
+    let userCurrentLng = null;
+    let isLocationValid = false;
+
+    // URL WEB APP GOOGLE APPS SCRIPT ANDA
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCl3u1eGmnEUi95V7im1W1ZIUm2l2h_4--8b0QbPDNjLNfqz6RUaxNEsWvFgi6fbZBCA/exec";
+
+    const USERS_DATABASE = {
+        "serang": { pass: "Mandiri02srg", role: "admin", name: "Serang" },
+        "adminso": { pass: "Admin123", role: "user", name: "AdminSo" }
+    };
+
+    let rawDailyData = null;
+
+    const WA_PHONE = "6283111399112";
+    const WA_TOKEN = "N1L5tFSqGg2BJQVD42SC";
+
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+        const R = 6371e3;
+        const φ1 = lat1 * Math.PI / 180;
+        const φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                  Math.cos(φ1) * Math.cos(φ2) *
+                  Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c;
+    }
+
+    function initGeolocationChecking() {
+        const badge = document.getElementById('locStatusBadge');
+        const badgeText = document.getElementById('locStatusText');
+        const submitBtn = document.getElementById('submitBtn');
+        const blockedNotice = document.getElementById('locationBlockedNotice');
+        const loggedUser = sessionStorage.getItem('userName');
+
+        if (loggedUser === "Serang") {
+            isLocationValid = true;
+            badge.className = "location-badge loc-valid";
+            badgeText.innerHTML = `<i class="fa-solid fa-user-shield"></i>Admin`;
+            if (blockedNotice) blockedNotice.style.display = 'none';
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+        }
+
+        if (!navigator.geolocation) {
+            badge.className = "location-badge loc-invalid";
+            badgeText.innerText = "GPS Tidak Didukung";
+            isLocationValid = false;
+            if (submitBtn) submitBtn.disabled = true;
+            if (blockedNotice) blockedNotice.style.display = 'flex';
+            return;
+        }
+
+        navigator.geolocation.watchPosition((pos) => {
+            userCurrentLat = pos.coords.latitude;
+            userCurrentLng = pos.coords.longitude;
+            const dist = calculateDistanceMeters(userCurrentLat, userCurrentLng, TARGET_LAT, TARGET_LNG);
+
+            if (dist <= MAX_ALLOWED_DISTANCE_METERS) {
+                isLocationValid = true;
+                badge.className = "location-badge loc-valid";
+                badgeText.innerHTML = `<i class="fa-solid fa-location-dot"></i> Di Lokasi SPPG (${Math.round(dist)}m)`;
+                if (blockedNotice) blockedNotice.style.display = 'none';
+                
+                const role = sessionStorage.getItem('userRole');
+                if (submitBtn && (getCurrentSelectedDate() === getFormattedDate() || role === 'admin')) {
+                    submitBtn.disabled = false;
+                }
+            } else {
+                isLocationValid = false;
+                badge.className = "location-badge loc-invalid";
+                badgeText.innerHTML = `<i class="fa-solid fa-location-pin-lock"></i> Di Luar Lokasi (${Math.round(dist)}m)`;
+                if (blockedNotice) blockedNotice.style.display = 'flex';
+                if (submitBtn) submitBtn.disabled = true;
+            }
+        }, (err) => {
+            console.warn("GPS Error:", err.message);
+            isLocationValid = false;
+            badge.className = "location-badge loc-invalid";
+            badgeText.innerText = "GPS Wajib Aktif";
+            if (blockedNotice) blockedNotice.style.display = 'flex';
+            if (submitBtn) submitBtn.disabled = true;
+        }, {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 10000
+        });
+    }
+
+    function showCustomAlert(title, message, type = 'info') {
+        const modal = document.getElementById('customAlertModal');
+        const iconContainer = document.getElementById('alertModalIcon');
+        document.getElementById('alertModalTitle').innerText = title;
+        document.getElementById('alertModalMessage').innerText = message;
+
+        iconContainer.className = 'modal-icon';
+        if (type === 'danger') {
+            iconContainer.classList.add('icon-danger');
+            iconContainer.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+        } else if (type === 'warning') {
+            iconContainer.classList.add('icon-warning');
+            iconContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+        } else if (type === 'success') {
+            iconContainer.classList.add('icon-success');
+            iconContainer.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+        } else {
+            iconContainer.classList.add('icon-info');
+            iconContainer.innerHTML = `<i class="fa-solid fa-circle-info"></i>`;
+        }
+        modal.classList.add('active');
+    }
+
+    function closeCustomAlert() {
+        document.getElementById('customAlertModal').classList.remove('active');
+    }
+
+    function sendWhatsAppNotification(message) {
+        const data = new URLSearchParams();
+        data.append('target', WA_PHONE);
+        data.append('message', message);
+        data.append('token', WA_TOKEN);
+
+        fetch('https://api.fonnte.com/send', {
+            method: 'POST',
+            headers: { 'Authorization': WA_TOKEN },
+            body: data
+        })
+        .then(response => response.json())
+        .then(result => console.log('WA Notif Response:', result))
+        .catch(error => console.error('Gagal kirim WA:', error));
+    }
+
+    let logoutTimer = null;
+
+    function resetLogoutTimer() {
+        if (logoutTimer) clearTimeout(logoutTimer);
+        logoutTimer = setTimeout(() => { logout(true); }, 10800000);
+    }
+
+    window.enterPublicGuestMode = function() {
+        sessionStorage.clear();
+        sessionStorage.setItem('isGuest', 'true');
+        sessionStorage.setItem('userRole', 'guest');
+
+        setViewportForLogin(false);
+        document.getElementById('loginScreen').style.display = 'none';
+        container.style.display = 'block';
+
+        document.getElementById('formCard').style.display = 'none';
+        document.getElementById('previewBtn').style.display = 'none';
+        document.getElementById('exportBtn').style.display = 'none';
+        document.getElementById('locStatusBadge').style.display = 'none';
+        document.getElementById('pastDateNotice').style.display = 'none';
+        document.getElementById('locationBlockedNotice').style.display = 'none';
+        document.getElementById('adminControlPanel').style.display = 'none';
+        
+        const logoutBtn = document.getElementById('logoutBtn');
+        logoutBtn.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Kembali ke Login`;
+        
+        initDatePicker();
+        renderUIState();
+        listenToDailyData();
+    };
+
+    function checkAuth() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const isGuest = sessionStorage.getItem('isGuest');
+        const userRole = sessionStorage.getItem('userRole');
+        const userName = sessionStorage.getItem('userName');
+
+        if (isGuest === 'true') {
+            enterPublicGuestMode();
+            return;
+        }
+
+        if (isLoggedIn === 'true') {
+            setViewportForLogin(false);
+            document.getElementById('loginScreen').style.display = 'none';
+            container.style.display = 'block';
+            
+            if (userName === "Serang") {
+                document.getElementById('adminControlPanel').style.display = 'block';
+                document.getElementById('previewBtn').style.display = 'inline-flex';
+                const fotoInput = document.getElementById('fotoBahan');
+                if (fotoInput) fotoInput.removeAttribute('required');
+                const reqLabel = document.getElementById('labelFotoReq');
+                if (reqLabel) reqLabel.style.display = 'none';
+                listenToAdminFeatures();
+            } else if (userRole === 'user') {
+                if (document.getElementById('previewBtn')) document.getElementById('previewBtn').style.display = 'none';
+                listenToUserBroadcastState();
+            } else {
+                if (document.getElementById('previewBtn')) document.getElementById('previewBtn').style.display = 'inline-flex';
+            }
+
+            resetLogoutTimer();
+            initApp();
+            checkAndRecordAttendance();
+        } else {
+            setViewportForLogin(true);
+            document.getElementById('loginScreen').style.display = 'flex';
+            container.style.display = 'none';
+            if (logoutTimer) clearTimeout(logoutTimer);
+        }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const userInput = document.getElementById('username').value.trim();
+        const passInput = document.getElementById('password').value;
+        const key = userInput.toLowerCase();
+
+        if (USERS_DATABASE[key] && USERS_DATABASE[key].pass === passInput) {
+            const userData = USERS_DATABASE[key];
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('userName', userData.name);
+            sessionStorage.setItem('userRole', userData.role);
+
+            document.getElementById('loginError').style.display = 'none';
+            sendWhatsAppNotification(`📱 *PEMBERITAHUAN SISTEM SO BAHAN BAKU*\n\nPengguna *${userData.name}* (${userData.role.toUpperCase()}) berhasil *LOGIN* ke Sistem Input Stock Bahan Baku SPPG Kota Serang 2.`);
+            checkAuth();
+        } else {
+            document.getElementById('loginError').style.display = 'flex';
+        }
+    });
+
+    function togglePasswordVisibility() {
+        const p = document.getElementById('password');
+        p.type = p.type === 'password' ? 'text' : 'password';
+    }
+
+    function logout(isAuto = false) {
+        const userName = sessionStorage.getItem('userName') || 'Pengguna';
+        const isGuest = sessionStorage.getItem('isGuest');
+        
+        sessionStorage.clear();
+        if (logoutTimer) clearTimeout(logoutTimer);
+        
+        if (!isGuest) {
+            if (isAuto) {
+                sendWhatsAppNotification(`⏰ *PEMBERITAHUAN SISTEM SO BAHAN BAKU*\n\nSistem telah melakukan *LOGOUT OTOMATIS* untuk pengguna *${userName}* karena sesi telah melewati batas waktu.`);
+            } else {
+                sendWhatsAppNotification(`🚪 *PEMBERITAHUAN SISTEM SO BAHAN BAKU*\n\nPengguna *${userName}* telah melakukan *LOGOUT* dari sistem.`);
+            }
+        }
+        
+        location.reload();
+    }
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDhlkDv6EgnKv_XCc0PBYgFoDk1riAO5Vg",
+        authDomain: "so-bahan-baku.firebaseapp.com",
+        databaseURL: "https://so-bahan-baku-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "so-bahan-baku",
+        storageBucket: "so-bahan-baku.firebasestorage.app",
+        messagingSenderId: "1072738824834",
+        appId: "1:1072738824834:web:95eedc782711a0f9e73a9b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let itemToSatuanMap = {};
+    let itemKeyToDelete = null;
+
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('clockText').innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+    }, 1000);
+
+    async function checkInternetSpeed() {
+        const speedText = document.getElementById('netSpeedText');
+        if (!navigator.onLine) {
+            speedText.innerText = "Offline";
+            document.getElementById('netSpeedIndicator').style.borderColor = "#ef4444";
+            document.getElementById('netSpeedIndicator').style.color = "#ef4444";
+            return;
+        }
+
+        try {
+            const startTime = new Date().getTime();
+            await fetch('https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png?t=' + startTime, { mode: 'no-cors', cache: 'no-store' });
+            const endTime = new Date().getTime();
+            const duration = (endTime - startTime) / 1000;
+            
+            if (duration < 0.3) {
+                speedText.innerText = "Cepat (4G/WiFi)";
+            } else if (duration < 1.0) {
+                speedText.innerText = "Sedang";
+            } else {
+                speedText.innerText = "Lambat";
+            }
+            document.getElementById('netSpeedIndicator').style.borderColor = "rgba(16, 185, 129, 0.2)";
+            document.getElementById('netSpeedIndicator').style.color = "#059669";
+        } catch (e) {
+            speedText.innerText = "Stabil";
+        }
+    }
+    setInterval(checkInternetSpeed, 15000);
+
+    function getFormattedDate(date = new Date()) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function getCurrentSelectedDate() {
+        return document.getElementById('selectedDate').value || getFormattedDate();
+    }
+
+    function initDatePicker() {
+        const todayStr = getFormattedDate();
+        document.getElementById('selectedDate').value = todayStr;
+    }
+
+    function initApp() {
+        initDatePicker();
+        renderUIState();
+        listenToDailyData();
+        loadMasterDataList();
+        loadGlobalSignatureConfig();
+        initGeolocationChecking();
+        checkInternetSpeed();
+    }
+
+    function onDateChange() {
+        document.getElementById('searchInput').value = '';
+        renderUIState();
+        listenToDailyData();
+    }
+
+    function renderUIState() {
+        const selectedDate = getCurrentSelectedDate();
+        const today = getFormattedDate();
+        const dateObj = new Date(selectedDate + 'T00:00:00');
+        const formattedName = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const userRole = sessionStorage.getItem('userRole');
+
+        document.getElementById('tableTitle').innerText = `Daftar Stock Barang (${formattedName})`;
+        
+        if (userRole === 'guest') {
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('pastDateNotice').style.display = 'none';
+            return;
+        }
+
+        if (selectedDate !== today) {
+            if (userRole === 'admin' || sessionStorage.getItem('userName') === 'Serang') {
+                document.getElementById('formCard').style.display = 'block';
+                document.getElementById('pastDateNotice').style.display = 'flex';
+                document.getElementById('pastDateNoticeText').innerHTML = `<strong>Mode Admin:</strong> Anda sedang mengelola data arsip tanggal <strong>${formattedName}</strong>. Akses full edit & tambah data aktif.`;
+            } else {
+                document.getElementById('formCard').style.display = 'none';
+                document.getElementById('pastDateNotice').style.display = 'flex';
+                document.getElementById('pastDateNoticeText').innerText = `Anda sedang melihat data arsip masa lalu. Input data baru hanya aktif untuk hari ini.`;
+            }
+        } else {
+            document.getElementById('formCard').style.display = 'block';
+            document.getElementById('pastDateNotice').style.display = 'none';
+        }
+    }
+
+    let currentRef = null;
+    function listenToDailyData() {
+        const selectedDate = getCurrentSelectedDate();
+        if (currentRef) currentRef.off();
+        
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>Memuat data stok...</td></tr>`;
+
+        currentRef = db.ref('stock_barang/' + selectedDate);
+        currentRef.on('value', (snapshot) => {
+            rawDailyData = snapshot.val();
+            filterTableItems();
+        });
+    }
+
+    let searchDebounceTimer = null;
+    function filterTableItemsDebounced() {
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+            filterTableItems();
+        }, 0);
+    }
+
+    function filterTableItems() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+        if (!rawDailyData) {
+            renderTableDaily(null);
+            return;
+        }
+
+        if (!query) {
+            renderTableDaily(rawDailyData);
+            return;
+        }
+
+        const filteredDaily = {};
+        Object.keys(rawDailyData).forEach(key => {
+            const item = rawDailyData[key];
+            if (item && item.nama) {
+                const nama = item.nama.toLowerCase();
+                const satuan = (item.satuan || '').toLowerCase();
+                if (nama.includes(query) || satuan.includes(query)) {
+                    filteredDaily[key] = item;
+                }
+            }
+        });
+
+        renderTableDaily(filteredDaily);
+    }
+
+    function executeSearchWithAnimation() {
+        const btn = document.getElementById('btnSearchAction');
+        const icon = document.getElementById('searchBtnIcon');
+        const text = document.getElementById('searchBtnText');
+
+        btn.disabled = true;
+        icon.className = "fa-solid fa-spinner fa-spin";
+        text.innerText = "Mencari...";
+
+        setTimeout(() => {
+            filterTableItems();
+            icon.className = "fa-solid fa-magnifying-glass";
+            text.innerText = "Cari Data";
+            btn.disabled = false;
+        }, 50);
+    }
+
+    function loadMasterDataList() {
+        db.ref('stock_barang').on('value', (snapshot) => {
+            const allDatesData = snapshot.val();
+            const uniqueBarangSet = new Set();
+            const uniqueSatuanSet = new Set();
+            itemToSatuanMap = {};
+
+            if (allDatesData) {
+                Object.keys(allDatesData).forEach(dateKey => {
+                    const itemsOnDate = allDatesData[dateKey];
+                    if (itemsOnDate && typeof itemsOnDate === 'object') {
+                        Object.keys(itemsOnDate).forEach(itemKey => {
+                            const item = itemsOnDate[itemKey];
+                            if (item && item.nama) {
+                                uniqueBarangSet.add(item.nama.trim());
+                                if (item.satuan) {
+                                    uniqueSatuanSet.add(item.satuan.trim());
+                                    itemToSatuanMap[item.nama.trim()] = item.satuan.trim();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            const listNama = document.getElementById('listNamaBarang');
+            listNama.innerHTML = '';
+            Array.from(uniqueBarangSet).sort().forEach(n => {
+                const opt = document.createElement('option');
+                opt.value = n;
+                listNama.appendChild(opt);
+            });
+
+            const listSatuan = document.getElementById('listSatuan');
+            listSatuan.innerHTML = '';
+            Array.from(uniqueSatuanSet).sort().forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                listSatuan.appendChild(opt);
+            });
+        });
+    }
+
+    function loadGlobalSignatureConfig() {
+        db.ref('settings/signature').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const currentUserName = sessionStorage.getItem('userName') || "Riyan";
+            const def = {
+                headerTitle: "SPPG KOTA SERANG SERANG SERANG 2",
+                headerSub: "Jl. Kolonel Tubagus Suwandi Kav. BRI 2 No.19, Serang, Kec. Serang, Kota Serang, Banten",
+                petugasLabel: "Petugas SO",
+                petugasName: currentUserName,
+                mengetahuiLabel: "Mengetahui",
+                jabatanLabel: "Kepala SPPG Kota Serang 2",
+                mengetahuiName: "Mohamad Fakhrurozi"
+            };
+            const cfg = data || def;
+
+            document.getElementById('invTitleHeader').innerText = cfg.headerTitle;
+            document.getElementById('invSubHeader').innerText = cfg.headerSub;
+            document.getElementById('lblPetugasText').innerText = cfg.petugasLabel;
+            document.getElementById('valPetugasText').innerText = `( ${cfg.petugasName || currentUserName} )`;
+            document.getElementById('lblMengetahuiText').innerText = cfg.mengetahuiLabel;
+            document.getElementById('lblJabatanText').innerText = cfg.jabatanLabel;
+            document.getElementById('valMengetahuiName').innerText = `( ${cfg.mengetahuiName} )`;
+        });
+    }
+
+    window.saveEditedInvoiceConfig = function() {
+        const cfg = {
+            headerTitle: document.getElementById('invTitleHeader').innerText.trim(),
+            headerSub: document.getElementById('invSubHeader').innerText.trim(),
+            petugasLabel: document.getElementById('lblPetugasText').innerText.trim(),
+            petugasName: document.getElementById('valPetugasText').innerText.replace(/[()]/g, '').trim(),
+            mengetahuiLabel: document.getElementById('lblMengetahuiText').innerText.trim(),
+            jabatanLabel: document.getElementById('lblJabatanText').innerText.trim(),
+            mengetahuiName: document.getElementById('valMengetahuiName').innerText.replace(/[()]/g, '').trim()
+        };
+
+        db.ref('settings/signature').set(cfg).then(() => {
+            showCustomAlert('Berhasil', 'Konfigurasi header & tanda tangan berhasil disimpan.', 'success');
+        }).catch(err => {
+            console.error('Gagal menyimpan:', err);
+            showCustomAlert('Gagal', 'Terjadi kesalahan saat menyimpan pengaturan.', 'danger');
+        });
+    };
+
+    function onNamaBarangInput() {
+        const val = document.getElementById('namaBarang').value.trim();
+        if (itemToSatuanMap[val]) {
+            document.getElementById('satuan').value = itemToSatuanMap[val];
+        }
+    }
+
+    function parseJumlahInput(valStr) {
+        if (!valStr) return 0;
+        let normalized = String(valStr).trim().replace(',', '.');
+        let num = parseFloat(normalized);
+        return isNaN(num) ? 0 : num;
+    }
+
+    function convertFileToBase64WithWatermark(file, lat, lng) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 900;
+                    const MAX_HEIGHT = 900;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const selectedDate = getCurrentSelectedDate();
+                    const dateObj = new Date(selectedDate + 'T00:00:00');
+                    const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    const timeStr = new Date().toLocaleTimeString('id-ID');
+                    const locStr = (lat && lng) ? `GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)} (SPPG KOTA SERANG 2)` : "GPS: -";
+
+                    const fontSize = Math.max(12, Math.floor(width / 40));
+                    const padding = 10;
+                    const bannerHeight = (fontSize * 2.5) + (padding * 2);
+
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+                    ctx.fillRect(0, height - bannerHeight, width, bannerHeight);
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+                    ctx.fillText(`📅 ${dateStr} - ${timeStr}`, padding, height - bannerHeight + padding + fontSize);
+
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.font = `${fontSize * 0.9}px Inter, sans-serif`;
+                    ctx.fillText(`📍 ${locStr}`, padding, height - padding - 4);
+
+                    resolve(canvas.toDataURL('image/jpeg', 0.75));
+                };
+                img.onerror = error => reject(error);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    async function uploadPhotoToGoogleDrive(base64Data, fileName, namaBarang, tanggalInput) {
+        try {
+            const formData = new URLSearchParams();
+            formData.append('base64', base64Data);
+            formData.append('filename', fileName);
+            formData.append('namaBarang', namaBarang);
+            formData.append('tanggalInput', tanggalInput);
+
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            return {
+                fileId: result.fileId || '',
+                url: result.url || '',
+                directUrl: result.directUrl || base64Data
+            };
+        } catch (e) {
+            console.warn("Gagal unggah ke Sistem, menggunakan backup lokal:", e);
+            return { fileId: '', url: '', directUrl: base64Data };
+        }
+    }
+
+    async function deletePhotoFromGoogleDrive(fileId) {
+        if (!fileId) return;
+        try {
+            const formData = new URLSearchParams();
+            formData.append('action', 'delete');
+            formData.append('fileId', fileId);
+
+            await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                body: formData
+            });
+        } catch (e) {
+            console.error("Gagal menghapus foto di Sistem:", e);
+        }
+    }
+
+    function renderTableDaily(dataObj) {
+        const userRole = sessionStorage.getItem('userRole');
+        const isGuest = (userRole === 'guest');
+
+        const thAksiCol = document.getElementById('thAksiCol');
+        if (isGuest) {
+            if (thAksiCol) thAksiCol.style.display = 'none';
+        } else {
+            if (thAksiCol) thAksiCol.style.display = '';
+        }
+
+        const tbody = document.getElementById('tableBody');
+        const isToday = (getCurrentSelectedDate() === getFormattedDate());
+        const isEditable = !isGuest && (isToday || (userRole === 'admin') || (sessionStorage.getItem('userName') === 'Serang'));
+
+        tbody.innerHTML = '';
+
+        if (!dataObj || typeof dataObj !== 'object') {
+            tbody.innerHTML = `<tr><td colspan="${isGuest ? 6 : 7}" class="empty-state"><i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>Tidak ada data stock untuk tanggal ini.</td></tr>`;
+            return;
+        }
+
+        let index = 0;
+        const todayStr = getFormattedDate();
+        const fragment = document.createDocumentFragment();
+
+        Object.keys(dataObj).forEach(key => {
+            const item = dataObj[key];
+            if (item && typeof item === 'object') {
+                const jumlahNum = parseJumlahInput(item.jumlah);
+                
+                if (jumlahNum === 0) {
+                    return;
+                }
+
+                index++;
+                const actionButton = isEditable ? `
+                    <div style="display: flex; gap: 0.4rem; justify-content: center;">
+                        <button class="btn btn-edit-soft" onclick="openEditModal('${key}', '${encodeURIComponent(item.nama || '')}', '${encodeURIComponent(item.satuan || '')}', '${item.jumlah || 0}', '${item.expiredDate || ''}')" title="Edit Barang"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-danger-soft" onclick="promptDelete('${key}')" title="Hapus Barang"><i class="fa-solid fa-trash"></i></button>
+                    </div>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">Arsip Lock</span>`;
+                
+                let photoDisplay = `<span class="no-photo-badge">Tanpa foto</span>`;
+                const imgSrc = item.fotoDriveDirect || item.fotoBase64;
+
+                if (imgSrc) {
+                    photoDisplay = `<img src="${imgSrc}" class="img-preview-thumb" crossorigin="anonymous" onclick="openImageModal('${imgSrc}')" title="Klik untuk lihat foto" loading="lazy">`;
+                }
+
+                let expiredDisplay = `<span style="color: var(--text-muted); font-size: 0.85rem;">-</span>`;
+                if (item.expiredDate) {
+                    const expObj = new Date(item.expiredDate + 'T00:00:00');
+                    const expFormatted = expObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    
+                    if (item.expiredDate < todayStr) {
+                        expiredDisplay = `<div><strong>${expFormatted}</strong></div><span class="expired-badge"><i class="fa-solid fa-triangle-exclamation"></i> EXPIRED</span>`;
+                    } else {
+                        expiredDisplay = `<span>${expFormatted}</span>`;
+                    }
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index}</td>
+                    <td><strong class="editable-item-text" data-key="${key}" data-field="nama">${escapeHtml(item.nama || '')}</strong></td>
+                    <td><span class="editable-item-text" data-key="${key}" data-field="satuan">${escapeHtml(item.satuan || '')}</span></td>
+                    <td><strong class="editable-item-text" data-key="${key}" data-field="jumlah">${item.jumlah !== undefined ? item.jumlah : 0}</strong></td>
+                    <td>${expiredDisplay}</td>
+                    <td>${photoDisplay}</td>
+                    ${!isGuest ? `<td class="text-center action-col">${actionButton}</td>` : ''}
+                `;
+                fragment.appendChild(tr);
+            }
+        });
+
+        if (index === 0) {
+            tbody.innerHTML = `<tr><td colspan="${isGuest ? 6 : 7}" class="empty-state"><i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>Tidak ada data stock untuk tanggal ini.</td></tr>`;
+        } else {
+            tbody.appendChild(fragment);
+        }
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    window.openImageModal = function(src) {
+        document.getElementById('modalImagePreview').src = src;
+        document.getElementById('imageModal').classList.add('active');
+    };
+
+    window.downloadImageFromModal = async function() {
+        const src = document.getElementById('modalImagePreview').src;
+        if (!src) return;
+
+        try {
+            const fileName = `Foto_${Date.now()}.jpg`;
+            const link = document.createElement('a');
+
+            if (src.startsWith('data:image')) {
+                link.href = src;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                const response = await fetch(src, { mode: 'cors' });
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                link.href = blobUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            }
+        } catch (err) {
+            console.error("Gagal mendownload gambar:", err);
+            window.open(src, '_blank');
+        }
+    };
+
+    window.closeImageModal = function() {
+        document.getElementById('imageModal').classList.remove('active');
+    };
+
+    function sendAdminBroadcast() {
+        const msg = document.getElementById('adminBroadcastMsg').value.trim();
+        const fileInput = document.getElementById('adminAttachFile');
+
+        if (!msg && (!fileInput.files || fileInput.files.length === 0)) {
+            showCustomAlert('Validasi', 'Masukkan pesan info atau lampiran file terlebih dahulu.', 'warning');
+            return;
+        }
+
+        const processBroadcast = (fileData = null, fileName = '') => {
+            const payload = {
+                message: msg,
+                fileData: fileData,
+                fileName: fileName,
+                timestamp: Date.now(),
+                active: true
+            };
+
+            db.ref('admin_broadcast').set(payload).then(() => {
+                document.getElementById('adminBroadcastMsg').value = '';
+                fileInput.value = '';
+                showCustomAlert('Berhasil', 'Pesan info berhasil dikirim ke user.', 'success');
+            }).catch(err => {
+                console.error("Gagal broadcast:", err);
+                showCustomAlert('Gagal', 'Terjadi kesalahan saat mengirim info.', 'danger');
+            });
+        };
+
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+                processBroadcast(e.target.result, file.name);
+            };
+        } else {
+            processBroadcast();
+        }
+    }
+
+    function listenToAdminFeatures() {
+        db.ref('user_reply').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const replyBox = document.getElementById('adminUserReplyBox');
+            const statusInfo = document.getElementById('adminUserStatusInfo');
+
+            if (data && data.text) {
+                const timeStr = new Date(data.timestamp || Date.now()).toLocaleTimeString('id-ID');
+                replyBox.innerHTML = `<strong>Waktu (${timeStr}):</strong> ${escapeHtml(data.text)}`;
+                statusInfo.innerHTML = `<span style="color: var(--success-gradient);"><i class="fa-solid fa-circle-check"></i> User sudah membalas & aktif menginput.</span>`;
+            } else {
+                replyBox.innerHTML = `Belum ada balasan dari user. User sedang diblokir inputnya menunggu balasan.`;
+                statusInfo.innerHTML = `<span style="color: var(--danger-color);"><i class="fa-solid fa-triangle-exclamation"></i> Menunggu balasan user...</span>`;
+            }
+        });
+    }
+
+    function listenToUserBroadcastState() {
+        db.ref('admin_broadcast').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (data && data.active) {
+                if (submitBtn) submitBtn.disabled = true;
+
+                let contentHtml = `<p><strong>Pesan Admin:</strong> ${escapeHtml(data.message || '-')}</p>`;
+                if (data.fileData) {
+                    if (data.fileName && (data.fileName.endsWith('.jpg') || data.fileName.endsWith('.png') || data.fileName.endsWith('.jpeg'))) {
+                        contentHtml += `<div style="margin-top: 0.5rem;"><img src="${data.fileData}" style="max-width: 100%; max-height: 200px; border-radius: 8px;" /></div>`;
+                    } else {
+                        contentHtml += `<div style="margin-top: 0.5rem;"><a href="${data.fileData}" download="${data.fileName}" class="btn btn-info" style="font-size:0.8rem; padding:0.4rem 0.8rem;"><i class="fa-solid fa-download"></i> Download Lampiran: ${escapeHtml(data.fileName)}</a></div>`;
+                    }
+                }
+
+                document.getElementById('broadcastContentDisplay').innerHTML = contentHtml;
+                document.getElementById('adminBroadcastPopupModal').classList.add('active');
+            } else {
+                if (submitBtn && isLocationValid) submitBtn.disabled = false;
+                document.getElementById('adminBroadcastPopupModal').classList.remove('active');
+            }
+        });
+    }
+
+    window.submitUserReply = function() {
+        const replyText = document.getElementById('userReplyInput').value.trim();
+        if (!replyText) {
+            showCustomAlert('Validasi', 'Mohon isi balasan Anda terlebih dahulu.', 'warning');
+            return;
+        }
+
+        db.ref('user_reply').set({
+            text: replyText,
+            timestamp: Date.now(),
+            user: sessionStorage.getItem('userName') || 'AdminSo'
+        }).then(() => {
+            return db.ref('admin_broadcast/active').set(false);
+        }).then(() => {
+            document.getElementById('userReplyInput').value = '';
+            document.getElementById('adminBroadcastPopupModal').classList.remove('active');
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn && isLocationValid) submitBtn.disabled = false;
+            showCustomAlert('Berhasil', 'Balasan terkirim. Input barang kembali dibuka.', 'success');
+        }).catch(err => {
+            console.error('Gagal kirim balasan:', err);
+            showCustomAlert('Gagal', 'Terjadi kesalahan saat mengirim balasan.', 'danger');
+        });
+    };
+
+    function checkAndRecordAttendance() {
+        const todayStr = getFormattedDate();
+        const userName = sessionStorage.getItem('userName');
+        if (userName === 'AdminSo') {
+            db.ref('stock_barang/' + todayStr).once('value', (snapshot) => {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yestStr = getFormattedDate(yesterday);
+
+                db.ref('stock_barang/' + yestStr).once('value', (snapYest) => {
+                    const hasInputYest = snapYest.exists() && Object.keys(snapYest.val()).length > 0;
+                    if (!hasInputYest) {
+                        db.ref('attendance_reports/' + yestStr).set({
+                            status: 'TIDAK HADIR / TIDAK ADA INPUT',
+                            user: 'AdminSo',
+                            timestamp: Date.now()
+                        });
+                    }
+                });
+            });
+        }
+    }
+
+    document.getElementById('itemForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const selectedDate = getCurrentSelectedDate();
+        const userRole = sessionStorage.getItem('userRole');
+        const userName = sessionStorage.getItem('userName');
+
+        if (selectedDate !== getFormattedDate() && userRole !== 'admin' && userName !== 'Serang') {
+            showCustomAlert('Akses Terbatas', 'Hanya Admin yang dapat memasukkan data ke tanggal arsip!', 'warning');
+            return;
+        }
+
+        if (!isLocationValid) {
+            showCustomAlert('Akses Di-Blokir', 'Aplikasi hanya dapat digunakan di lokasi SPPG KOTA SERANG 2. Aktifkan GPS dan berada di lokasi resmi!', 'danger');
+            return;
+        }
+
+        const nama = document.getElementById('namaBarang').value.trim();
+        const satuan = document.getElementById('satuan').value.trim();
+        const rawJumlah = document.getElementById('jumlah').value;
+        const jumlah = parseJumlahInput(rawJumlah);
+        const expiredDate = document.getElementById('expiredDate').value;
+        const fotoInput = document.getElementById('fotoBahan');
+
+        if (!nama || !satuan || isNaN(jumlah)) {
+            showCustomAlert('Validasi Gagal', 'Mohon isi semua data barang dengan benar.', 'warning');
+            return;
+        }
+
+        if (userName !== 'Serang' && (!fotoInput.files || fotoInput.files.length === 0)) {
+            showCustomAlert('Wajib Upload Foto', 'Ambil foto menggunakan kamera terlebih dahulu!', 'warning');
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sedang Di Proses...`;
+
+        try {
+            let base64Photo = '';
+            let driveResponse = { fileId: '', url: '', directUrl: '' };
+
+            if (fotoInput.files && fotoInput.files[0]) {
+                const file = fotoInput.files[0];
+                base64Photo = await convertFileToBase64WithWatermark(file, userCurrentLat, userCurrentLng);
+                const fileName = `${selectedDate}_${nama.replace(/\s+/g, '_')}_${Date.now()}.jpg`;
+                
+                driveResponse = await uploadPhotoToGoogleDrive(base64Photo, fileName, nama, selectedDate);
+            }
+
+            const ref = db.ref('stock_barang/' + selectedDate);
+            ref.orderByChild('nama').equalTo(nama).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        let existingVal = parseJumlahInput(child.val().jumlah);
+                        ref.child(child.key).update({ 
+                            jumlah: existingVal + jumlah, 
+                            satuan: satuan,
+                            expiredDate: expiredDate || child.val().expiredDate || '',
+                            driveFileId: driveResponse.fileId || child.val().driveFileId || '',
+                            fotoDriveUrl: driveResponse.url || child.val().fotoDriveUrl || '',
+                            fotoDriveDirect: driveResponse.directUrl || child.val().fotoDriveDirect || base64Photo
+                        });
+                    });
+                } else {
+                    ref.push({ 
+                        nama: nama, 
+                        satuan: satuan, 
+                        jumlah: rawJumlah.trim(),
+                        expiredDate: expiredDate || '',
+                        driveFileId: driveResponse.fileId || '',
+                        fotoDriveUrl: driveResponse.url || '',
+                        fotoDriveDirect: driveResponse.directUrl || base64Photo
+                    });
+                }
+                
+                document.getElementById('itemForm').reset();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Simpan`;
+                showCustomAlert('Berhasil', 'Data barang tersimpan.', 'success');
+            });
+        } catch (error) {
+            console.error('Error unggah:', error);
+            showCustomAlert('Gagal Upload', 'Terjadi kesalahan saat unggah foto.', 'danger');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-plus"></i> Simpan`;
+        }
+    });
+
+    window.openEditModal = function(key, encodedNama, encodedSatuan, jumlah, expiredDate) {
+        document.getElementById('editItemKey').value = key;
+        document.getElementById('editNamaBarang').value = decodeURIComponent(encodedNama);
+        document.getElementById('editSatuan').value = decodeURIComponent(encodedSatuan);
+        document.getElementById('editJumlah').value = jumlah;
+        document.getElementById('editExpiredDate').value = expiredDate || '';
+        document.getElementById('editModal').classList.add('active');
+    };
+
+    window.closeEditModal = function() {
+        document.getElementById('editModal').classList.remove('active');
+    };
+
+    window.submitEditData = function() {
+        const key = document.getElementById('editItemKey').value;
+        const nama = document.getElementById('editNamaBarang').value.trim();
+        const satuan = document.getElementById('editSatuan').value.trim();
+        const rawJumlah = document.getElementById('editJumlah').value;
+        const jumlahNum = parseJumlahInput(rawJumlah);
+        const expiredDate = document.getElementById('editExpiredDate').value;
+
+        if (!nama || !satuan || isNaN(jumlahNum)) {
+            showCustomAlert('Validasi Gagal', 'Mohon isi seluruh data dengan benar.', 'warning');
+            return;
+        }
+
+        const selectedDate = getCurrentSelectedDate();
+        db.ref('stock_barang/' + selectedDate + '/' + key).update({
+            nama: nama,
+            satuan: satuan,
+            jumlah: rawJumlah.trim(),
+            expiredDate: expiredDate || ''
+        }).then(() => {
+            closeEditModal();
+            showCustomAlert('Berhasil', 'Perubahan data barang berhasil disimpan.', 'success');
+        }).catch(err => {
+            console.error('Gagal memperbarui data:', err);
+            showCustomAlert('Gagal', 'Gagal memperbarui data barang.', 'danger');
+        });
+    };
+
+    window.promptDelete = (key) => { 
+        itemKeyToDelete = key; 
+        document.getElementById('deleteModal').classList.add('active'); 
+    };
+
+    window.closeDeleteModal = () => { 
+        itemKeyToDelete = null; 
+        document.getElementById('deleteModal').classList.remove('active'); 
+    };
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+        if (itemKeyToDelete) {
+            const selectedDate = getCurrentSelectedDate();
+            const targetRef = db.ref('stock_barang/' + selectedDate + '/' + itemKeyToDelete);
+            
+            if (rawDailyData && rawDailyData[itemKeyToDelete]) {
+                const itemData = rawDailyData[itemKeyToDelete];
+                delete rawDailyData[itemKeyToDelete];
+                filterTableItems();
+                
+                // Menghapus file terkait di Google Drive secara otomatis
+                if (itemData && itemData.driveFileId) {
+                    deletePhotoFromGoogleDrive(itemData.driveFileId);
+                }
+            }
+            closeDeleteModal();
+            showCustomAlert('Terhapus', 'Data barang dan foto di Sistem berhasil dihapus.', 'success');
+
+            targetRef.remove().catch(err => {
+                console.error('Gagal menghapus data di database:', err);
+            });
+        }
+    });
+
+    window.openCodeModal = function() {
+        document.getElementById('secretCodeInput').value = '';
+        document.getElementById('codeError').style.display = 'none';
+        document.getElementById('codeModal').classList.add('active');
+        document.getElementById('secretCodeInput').focus();
+    };
+
+    window.closeCodeModal = function() {
+        document.getElementById('codeModal').classList.remove('active');
+    };
+
+    window.verifySecretCode = function() {
+        const code = document.getElementById('secretCodeInput').value.trim();
+        if (code === "071001" || sessionStorage.getItem('userName') === "Serang") {
+            closeCodeModal();
+            enableInvoicePreviewMode();
+        } else {
+            document.getElementById('codeError').style.display = 'flex';
+        }
+    };
+
+    function enableInvoicePreviewMode() {
+        document.getElementById('webHeader').style.display = 'none';
+        document.getElementById('floatingEditBar').style.display = 'flex';
+
+        const selectedDate = getCurrentSelectedDate();
+        const dateObj = new Date(selectedDate + 'T00:00:00');
+        const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        document.getElementById('invoiceDateText').innerText = formattedDate;
+        document.getElementById('printTimestamp').innerText = 'Dicetak: ' + new Date().toLocaleString('id-ID');
+
+        makeElementsEditable(true);
+    }
+
+    function makeElementsEditable(isEditable) {
+        const editableIDs = ['invTitleHeader', 'invSubHeader', 'lblPetugasText', 'valPetugasText', 'lblMengetahuiText', 'lblJabatanText', 'valMengetahuiName'];
+        editableIDs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.contentEditable = isEditable ? 'true' : 'false';
+            }
+        });
+    }
+
+    window.openExportModal = function() {
+        const currentPetugas = document.getElementById('valPetugasText').innerText.replace(/[()]/g, '').trim();
+        document.getElementById('exportPetugasInput').value = currentPetugas;
+        document.getElementById('exportModal').classList.add('active');
+    };
+
+    window.closeExportModal = function() {
+        document.getElementById('exportModal').classList.remove('active');
+    };
+
+    window.processExportReport = function() {
+        const inputName = document.getElementById('exportPetugasInput').value.trim();
+        const exportFormat = document.getElementById('exportFormatSelect').value;
+
+        if (inputName) {
+            document.getElementById('valPetugasText').innerText = `( ${inputName} )`;
+        }
+        closeExportModal();
+
+        const exportBtn = document.getElementById('exportProcessBtn') || document.getElementById('exportBtn');
+        const originalBtnHtml = exportBtn.innerHTML;
+        exportBtn.disabled = true;
+        exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sedang Mengunduh...`;
+
+        const actionCols = document.querySelectorAll('.action-col');
+        const searchBox = document.getElementById('searchBarContainer');
+
+        actionCols.forEach(col => col.style.display = 'none');
+        if (searchBox) searchBox.style.display = 'none';
+
+        const selectedDate = getCurrentSelectedDate();
+        const dateObj = new Date(selectedDate + 'T00:00:00');
+        const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        document.getElementById('invoiceDateText').innerText = formattedDate;
+        document.getElementById('printTimestamp').innerText = 'Dicetak: ' + new Date().toLocaleString('id-ID');
+
+        const targetExportArea = document.getElementById('exportContainer');
+
+        setTimeout(() => {
+            html2canvas(targetExportArea, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                actionCols.forEach(col => col.style.display = '');
+                if (searchBox) searchBox.style.display = 'flex';
+
+                const mainExportBtn = document.getElementById('exportBtn');
+                if (mainExportBtn) {
+                    mainExportBtn.disabled = false;
+                    mainExportBtn.innerHTML = `<i class="fa-solid fa-file-image"></i> Export Data`;
+                }
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = originalBtnHtml;
+
+                if (exportFormat === 'png') {
+                    canvas.toBlob((blob) => {
+                        const blobUrl = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = `Laporan_Stock_SPPG_${selectedDate}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                    }, 'image/png');
+                } else if (exportFormat === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 210;
+                    const pageHeight = 297;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    let position = 0;
+
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    
+                    const pdfBlob = pdf.output('blob');
+                    const blobUrl = URL.createObjectURL(pdfBlob);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = `Laporan_Stock_SPPG_${selectedDate}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                }
+            }).catch(err => {
+                console.error("Gagal export laporan:", err);
+                showCustomAlert('Gagal Export', 'Terjadi kesalahan saat memproses laporan.', 'danger');
+                actionCols.forEach(col => col.style.display = '');
+                if (searchBox) searchBox.style.display = 'flex';
+                const mainExportBtn = document.getElementById('exportBtn');
+                if (mainExportBtn) {
+                    mainExportBtn.disabled = false;
+                    mainExportBtn.innerHTML = `<i class="fa-solid fa-file-image"></i> Export Data`;
+                }
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = originalBtnHtml;
+            });
+        }, 300);
+    };
+
+    checkAuth();
+</script>
+
+</body>
+</html>
