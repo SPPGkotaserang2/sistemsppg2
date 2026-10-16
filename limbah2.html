@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Keuangan & Limbah</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss-cdn@3.4.10/tailwindcss.min.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas & jsPDF & SheetJS untuk Export PNG, PDF, Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- OVERLAY DETEKSI INTERNET & KUOTA (OFFLINE / NO-QUOTA LOCK) -->
+    <div id="offlineOverlay" class="hidden fixed inset-0 bg-slate-900/95 z-[99999] flex flex-col items-center justify-center p-6 text-center text-white backdrop-blur-md">
+        <div class="w-20 h-20 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mb-4 text-4xl animate-pulse border border-red-500/30">
+            <i class="fa-solid fa-wifi-slash"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Koneksi Internet / Kuota Terputus</h2>
+        <p class="text-sm text-gray-300 max-w-md">Aplikasi mendeteksi tidak ada akses internet aktif (atau kuota habis). Mohon pastikan perangkat terhubung ke internet yang stabil.</p>
+    </div>
+
+    <!-- NOTIFIKASI TOAST -->
+    <div id="toastNotification" class="fixed top-5 right-5 z-[100000] transform translate-y-[-200%] transition-all duration-300 max-w-sm w-full">
+        <div id="toastBox" class="flex items-center p-4 rounded-2xl shadow-xl border bg-white">
+            <div id="toastIcon" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-lg"></div>
+            <div class="flex-1 mr-2">
+                <h4 id="toastTitle" class="font-bold text-sm text-gray-900"></h4>
+                <p id="toastMessage" class="text-xs text-gray-500 mt-0.5"></p>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </div>
+
+    <!-- MODAL ISI SALDO PEMBELIAN -->
+    <div id="modalAddSaldoPembelian" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-base font-bold text-gray-900 flex items-center">
+                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-right-left"></i></span>
+                    Isi Saldo Khusus Pembelian
+                </h3>
+                <button onclick="closeModalAddSaldoPembelian()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleTransferSaldoPembelian(event)" class="space-y-4">
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Uang akan dipindahkan dari <strong>UANG DI PEGANG PAK JIMI KURNIAWAN</strong> Di Kasih Ke <strong>Aslap buat kebutuhan</strong>.
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nominal Saldo (Rp)</label>
+                    <input type="number" id="input_nominal_transfer" required min="1" placeholder="Masukkan jumlah nominal" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3">
+                    <button type="button" onclick="closeModalAddSaldoPembelian()" class="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl text-xs">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs shadow-md">Pindahkan Saldo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TRANSFER BALIK SALDO PEMBELIAN -->
+    <div id="modalTransferSaldoKePenjualan" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-base font-bold text-gray-900 flex items-center">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-arrow-right-arrow-left"></i></span>
+                    Transfer Saldo Pembelian ke Penjualan
+                </h3>
+                <button onclick="closeModalTransferSaldoKePenjualan()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleTransferSaldoKePenjualan(event)" class="space-y-4">
+                <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs text-emerald-800">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Saldo akan dipindahkan dari <strong>Uang yang di pegang Pak ASLAP</strong> Di kembalikan ke <strong>Uang yang di pegang Pak Jimi Kurniawan</strong>.
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nominal Transfer (Rp)</label>
+                    <input type="number" id="input_nominal_transfer_balik" required min="1" placeholder="Masukkan nominal transfer" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3">
+                    <button type="button" onclick="closeModalTransferSaldoKePenjualan()" class="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl text-xs">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs shadow-md">Kembalikan Saldo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI KUSTOM -->
+    <div id="confirmModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-all">
+            <div id="confirmIconContainer" class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle" class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Tindakan</h3>
+            <p id="confirmMessage" class="text-xs text-gray-500 mb-6 leading-relaxed"></p>
+            <div class="flex space-x-3">
+                <button id="confirmCancelBtn" onclick="closeConfirmModal()" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-xs transition-all">Batal</button>
+                <button id="confirmOkBtn" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs transition-all shadow-md shadow-red-600/30">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT DATA -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 transform transition-all my-8">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <h3 class="text-base font-bold text-gray-900 flex items-center">
+                    <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-pen-to-square"></i></span>
+                    Edit Data Transaksi
+                </h3>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="editForm" onsubmit="handleUpdateData(event)" class="space-y-4">
+                <input type="hidden" id="edit_type">
+                <input type="hidden" id="edit_id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Tanggal</label>
+                    <input type="date" id="edit_tanggal" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div id="edit_field_barang">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nama Barang</label>
+                    <input type="text" id="edit_namaBarang" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div id="edit_field_berat">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Berat / Satuan</label>
+                    <input type="text" id="edit_berat" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div id="edit_field_banyaknya">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Banyaknya</label>
+                    <input type="number" step="any" id="edit_banyaknya" oninput="calculateEditTotal()" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div id="edit_field_harga">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Harga Satuan (Rp)</label>
+                    <input type="number" step="any" id="edit_harga" oninput="calculateEditTotal()" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div id="edit_field_tim" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Diterima</label>
+                    <select id="edit_namaTim" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                        <option value="Sopiyan">Sopiyan</option>
+                        <option value="Nurhayati">Nurhayati</option>
+                        <option value="Anisa Hayatun Nufus">Anisa Hayatun Nufus</option>
+                        <option value="Herman Sawiran">Herman Sawiran</option>
+                        <option value="Fajar Rizki Ramadhan">Fajar Rizki Ramadhan</option>
+                        <option value="Suryati">Suryati</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div id="edit_field_orang" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Jumlah Orang</label>
+                    <input type="number" id="edit_jumlahOrang" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div id="edit_field_uang" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Jumlah Uang (Rp)</label>
+                    <input type="number" step="any" id="edit_jumlahUang" oninput="calculateEditTotal()" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Jumlah Total</label>
+                    <input type="text" id="edit_jumlah_display" readonly class="w-full px-4 py-2.5 bg-amber-50 font-bold text-amber-700 border border-amber-200 rounded-xl text-sm">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-xs transition-all">Batal</button>
+                    <button type="submit" id="editSubmitBtn" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs transition-all shadow-md shadow-amber-600/30">
+                        <i class="fa-solid fa-floppy-disk mr-1.5"></i>Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- HALAMAN LOGIN -->
+    <div id="loginPage" class="fixed inset-0 bg-gradient-to-br from-emerald-700 to-teal-900 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 transform transition-all my-auto">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-emerald-50 rounded-full mb-4 shadow-inner overflow-hidden border border-emerald-100">
+                    <img src="logo.png" alt="Logo Lokal" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=LOGO';">
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">Sistem Manajemen Limbah</h1>
+                <p class="text-sm text-gray-500 mt-1">Silakan masuk atau lihat data secara publik</p>
+            </div>
+            
+            <!-- TOMBOL FITUR LIHAT DATA (KHUSUS SEBELUM LOGIN / HANYA LIHAT TANPA EDITOR) -->
+            <div class="mb-6">
+                <button type="button" onclick="openPublicViewerModal()" class="w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl border border-blue-200 transition-all text-sm flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-eye mr-2 text-base"></i> Lihat Data
+                </button>
+            </div>
+
+            <div class="relative flex py-2 items-center mb-6">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase tracking-wider 
+              
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    
+              
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL LIHAT DATA (PUBLIC VIEWER - HANYA LIHAT, TANPA EDITOR/HAPUS) -->
+    <div id="publicViewerModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[90000] p-4 overflow-y-auto">
+        <div class="relative max-w-6xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] my-auto">
+            <div class="p-5 bg-gradient-to-r from-blue-700 to-indigo-800 text-white flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base">Portal Lihat Data</h3>
+                        <p class="text-xs text-blue-100">Anda dapat melihat rekapitulasi data dan mengunduh nota/gambar.</p>
+                    </div>
+                </div>
+                <button onclick="closePublicViewerModal()" class="text-white/80 hover:text-white text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-4 sm:p-6 bg-gray-50 border-b flex flex-wrap items-center justify-between gap-3">
+                <div class="flex space-x-2 overflow-x-auto pb-1">
+                    <button onclick="switchPublicTab('penjualan')" id="pubTabBtn-penjualan" class="pub-tab-btn px-4 py-2 rounded-xl font-semibold text-xs transition-all bg-blue-600 text-white shadow flex items-center space-x-1.5">
+                        <i class="fa-solid fa-cash-register"></i><span>Penjualan</span>
+                    </button>
+                    <button onclick="switchPublicTab('pembelian')" id="pubTabBtn-pembelian" class="pub-tab-btn px-4 py-2 rounded-xl font-semibold text-xs transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-cart-shopping"></i><span>Pembelian</span>
+                    </button>
+                    <button onclick="switchPublicTab('pembagian')" id="pubTabBtn-pembagian" class="pub-tab-btn px-4 py-2 rounded-xl font-semibold text-xs transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-hand-holding-dollar"></i><span>Pembagian</span>
+                    </button>
+                    <button onclick="switchPublicTab('saldo')" id="pubTabBtn-saldo" class="pub-tab-btn px-4 py-2 rounded-xl font-semibold text-xs transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-wallet"></i><span>Saldo & Riwayat</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs text-gray-500 font-medium">Dari:</span>
+                    <input type="date" id="pub_start_date" onchange="loadPublicTableData()" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
+                    <span class="text-xs text-gray-500 font-medium">s/d:</span>
+                    <input type="date" id="pub_end_date" onchange="loadPublicTableData()" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
+                    <button onclick="resetPublicFilter()" class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-xs font-medium transition">Hari Ini</button>
+                    <button id="pubBtnNota" onclick="openPublicNotaPreview()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow flex items-center"><i class="fa-solid fa-file-arrow-down mr-1"></i> Unduh Nota</button>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 bg-white">
+                <!-- KONTEN SALDO PUBLIK (Hanya menampilkan Uang di Pak Jimi Kurniawan) -->
+                <div id="pub-content-saldo" class="pub-tab-content hidden space-y-6">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-5 text-white shadow">
+                            <p class="text-xs uppercase tracking-wider text-emerald-100 font-semibold mb-1">UANG DI PAK JIMI KURNIAWAN</p>
+                            <h2 id="pub_saldoGlobalDisplay" class="text-2xl font-bold">Rp 0</h2>
+                            <p class="text-[11px] text-emerald-200 mt-2">Penjualan dikurangi Pembagian, Saldo Khusus Pembelian, & Pembelian</p>
+                        </div>
+                    </div>
+                    <div id="pubTableContainer_saldo" class="overflow-x-auto"></div>
+                </div>
+
+                <!-- KONTEN TABEL DATA PUBLIK (PENJUALAN, PEMBELIAN, PEMBAGIAN) -->
+                <div id="pub-content-table" class="pub-tab-content">
+                    <div id="pubTableContainer" class="overflow-x-auto"></div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-gray-100 border-t flex justify-end">
+                <button onclick="closePublicViewerModal()" class="px-5 py-2.5 bg-gray-700 hover:bg-gray-800 text-white font-semibold rounded-xl text-xs shadow">Tutup Portal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN UTAMA APLIKASI -->
+    <div id="appPage" class="hidden flex-1 flex flex-col">
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-emerald-600 text-white p-2 rounded-xl shadow">
+                        <i class="fa-solid fa-recycle text-xl"></i>
+                    </div>
+                    <span class="font-bold text-lg text-gray-900">Sistem Data Limbah</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userRoleBadge" class="text-xs font-medium bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200"></span>
+                    <button onclick="handleLogout()" class="text-gray-500 hover:text-red-600 text-sm font-medium">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+            <!-- Tab Menu -->
+            <div class="flex space-x-2 border-b border-gray-200 pb-4 mb-8 overflow-x-auto">
+                <button onclick="switchTab('penjualan')" id="tabBtn-penjualan" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-emerald-600 text-white shadow-md flex items-center space-x-2">
+                    <i class="fa-solid fa-cash-register"></i><span>Penjualan</span>
+                </button>
+                <button onclick="switchTab('pembelian')" id="tabBtn-pembelian" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping"></i><span>Pembelian</span>
+                </button>
+                <button onclick="switchTab('pembagian')" id="tabBtn-pembagian" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-hand-holding-dollar"></i><span>Pembagian</span>
+                </button>
+                <button onclick="switchTab('saldo')" id="tabBtn-saldo" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-wallet"></i><span>Saldo & Riwayat</span>
+                </button>
+                <button onclick="switchTab('adminWA')" id="tabBtn-adminWA" class="admin-only tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
+                    <i class="fa-brands fa-whatsapp text-emerald-600"></i><span>Kelola WhatsApp</span>
+                </button>
+                <button onclick="switchTab('pesanWA')" id="tabBtn-pesanWA" class="admin-only tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-paper-plane text-emerald-600"></i><span>Kirim Pesan WhatsApp</span>
+                </button>
+            </div>
+
+            <!-- PENJUALAN -->
+            <div id="content-penjualan" class="tab-content space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-plus"></i></span>
+                        Tambah Data Penjualan
+                    </h2>
+                    <form onsubmit="saveData(event, 'penjualan')" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Tanggal</label>
+                            <input type="date" name="tanggal" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Nama Barang</label>
+                            <input type="text" name="namaBarang" required placeholder="Contoh: Botol Plastik" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Berat / Satuan</label>
+                            <input type="text" name="berat" placeholder="Contoh: 15 Kg / Pcs" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Banyaknya</label>
+                            <input type="number" step="any" name="banyaknya" id="banyaknya_penjualan" required oninput="calculateTotal('penjualan')" placeholder="0" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Harga Satuan (Rp)</label>
+                            <input type="number" step="any" name="harga" id="harga_penjualan" required oninput="calculateTotal('penjualan')" placeholder="0" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Jumlah Total</label>
+                            <input type="text" name="jumlah" id="jumlah_penjualan" readonly placeholder="Rp 0" class="w-full px-4 py-2.5 bg-emerald-50 font-bold text-emerald-700 border border-emerald-200 rounded-xl text-sm">
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Foto Dokumentasi (Wajib) <span class="text-red-500">*</span></label>
+                                <button type="button" onclick="clearSelectedImages('penjualan')" class="text-xs text-red-500 hover:text-red-700 font-semibold hidden" id="clearBtn_penjualan"><i class="fa-solid fa-xmark mr-1"></i>Batal Foto</button>
+                            </div>
+                            <input type="file" id="input_file_penjualan" name="media" required multiple accept="image/*" onchange="previewLocalImages(event, 'preview_penjualan', 'penjualan')" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700">
+                            <div id="preview_penjualan" class="flex flex-wrap gap-2 mt-3"></div>
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3 flex justify-end">
+                            <button type="submit" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i>Simpan Penjualan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h3 class="text-base font-bold text-gray-900">Riwayat Data Penjualan</h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-500 font-medium">Dari:</span>
+                            <input type="date" id="start_penjualan" onchange="loadTableData('penjualan')" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <span class="text-xs text-gray-500 font-medium">s/d:</span>
+                            <input type="date" id="end_penjualan" onchange="loadTableData('penjualan')" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <button onclick="resetFilter('penjualan')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition">Hari Ini</button>
+                            <button id="btnNota_penjualan" onclick="openNotaPreviewModal('penjualan')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow flex items-center"><i class="fa-solid fa-file-arrow-down mr-1.5"></i> Unduh Nota</button>
+                        </div>
+                    </div>
+                    <div id="tableContainer_penjualan" class="overflow-x-auto"></div>
+                </div>
+            </div>
+
+            <!-- PEMBELIAN -->
+            <div id="content-pembelian" class="tab-content hidden space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-plus"></i></span>
+                        Tambah Data Pembelian
+                    </h2>
+                    <form onsubmit="saveData(event, 'pembelian')" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Tanggal</label>
+                            <input type="date" name="tanggal" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Nama Barang</label>
+                            <input type="text" name="namaBarang" required placeholder="Contoh: Kardus Bekas" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Berat / Satuan</label>
+                            <input type="text" name="berat" placeholder="Contoh: 50 Kg / Karung" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Banyaknya</label>
+                            <input type="number" step="any" name="banyaknya" id="banyaknya_pembelian" required oninput="calculateTotal('pembelian')" placeholder="0" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Harga Satuan (Rp)</label>
+                            <input type="number" step="any" name="harga" id="harga_pembelian" required oninput="calculateTotal('pembelian')" placeholder="0" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Jumlah Total</label>
+                            <input type="text" name="jumlah" id="jumlah_pembelian" readonly placeholder="Rp 0" class="w-full px-4 py-2.5 bg-emerald-50 font-bold text-emerald-700 border border-emerald-200 rounded-xl text-sm">
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Foto Dokumentasi (Wajib) <span class="text-red-500">*</span></label>
+                                <button type="button" onclick="clearSelectedImages('pembelian')" class="text-xs text-red-500 hover:text-red-700 font-semibold hidden" id="clearBtn_pembelian"><i class="fa-solid fa-xmark mr-1"></i>Batal Foto</button>
+                            </div>
+                            <input type="file" id="input_file_pembelian" name="media" required multiple accept="image/*" onchange="previewLocalImages(event, 'preview_pembelian', 'pembelian')" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700">
+                            <div id="preview_pembelian" class="flex flex-wrap gap-2 mt-3"></div>
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3 flex justify-end">
+                            <button type="submit" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i>Simpan Pembelian
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h3 class="text-base font-bold text-gray-900">Riwayat Data Pembelian</h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-500 font-medium">Dari:</span>
+                            <input type="date" id="start_pembelian" onchange="loadTableData('pembelian')" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <span class="text-xs text-gray-500 font-medium">s/d:</span>
+                            <input type="date" id="end_pembelian" onchange="loadTableData('pembelian')" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <button onclick="resetFilter('pembelian')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition">Hari Ini</button>
+                            <button id="btnNota_pembelian" onclick="openNotaPreviewModal('pembelian')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow flex items-center"><i class="fa-solid fa-file-arrow-down mr-1.5"></i> Unduh Nota</button>
+                        </div>
+                    </div>
+                    <div id="tableContainer_pembelian" class="overflow-x-auto"></div>
+                </div>
+            </div>
+
+            <!-- PEMBAGIAN -->
+            <div id="content-pembagian" class="tab-content hidden space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h2 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-plus"></i></span>
+                        Tambah Data Pembagian
+                    </h2>
+                    <form onsubmit="saveData(event, 'pembagian')" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Tanggal</label>
+                            <input type="date" name="tanggal" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Diterima</label>
+                            <select name="namaTim" id="pembagian_namaTim" required onchange="handleSelectTim(this)" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                                <option value="" disabled selected>-- Pilih Penerima --</option>
+                                <option value="Sopiyan">Sopiyan</option>
+                                <option value="Nurhayati">Nurhayati</option>
+                                <option value="Anisa Hayatun Nufus">Anisa Hayatun Nufus</option>
+                                <option value="Herman Sawiran">Herman Sawiran</option>
+                                <option value="Fajar Rizki Ramadhan">Fajar Rizki Ramadhan</option>
+                                <option value="Suryati">Suryati</option>
+                                <option value="Lainnya">Lainnya (Ketik Manual)</option>
+                            </select>
+                            <input type="text" name="namaTimCustom" id="pembagian_namaTimCustom" placeholder="Isi nama penerima bebas..." class="hidden mt-2 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Nama Tim (Otomatis)</label>
+                            <input type="text" id="pembagian_namaTimOtomatisDisplay" readonly placeholder="Pilih penerima dulu..." class="w-full px-4 py-2.5 bg-gray-100 font-semibold text-gray-700 border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Jumlah Orang</label>
+                            <input type="number" name="jumlahOrang" required placeholder="Contoh: 8" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Jumlah Uang (Rp)</label>
+                            <input type="number" step="any" name="jumlahUang" id="jumlah_uang_pembagian" required oninput="calculateTotal('pembagian')" placeholder="0" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Jumlah Total</label>
+                            <input type="text" name="jumlah" id="jumlah_pembagian" readonly placeholder="Rp 0" class="w-full px-4 py-2.5 bg-emerald-50 font-bold text-emerald-700 border border-emerald-200 rounded-xl text-sm">
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Foto Dokumentasi (Wajib) <span class="text-red-500">*</span></label>
+                                <button type="button" onclick="clearSelectedImages('pembagian')" class="text-xs text-red-500 hover:text-red-700 font-semibold hidden" id="clearBtn_pembagian"><i class="fa-solid fa-xmark mr-1"></i>Batal Foto</button>
+                            </div>
+                            <input type="file" id="input_file_pembagian" name="media" required multiple accept="image/*" onchange="previewLocalImages(event, 'preview_pembagian', 'pembagian')" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700">
+                            <div id="preview_pembagian" class="flex flex-wrap gap-2 mt-3"></div>
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3 flex justify-end">
+                            <button type="submit" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md">
+                                <i class="fa-solid fa-floppy-disk mr-2"></i>Simpan Pembagian
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h3 class="text-base font-bold text-gray-900">Riwayat Data Pembagian</h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-500 font-medium">Dari:</span>
+                            <input type="date" id="start_pembagian" onchange="loadTableData('pembagian')" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <span class="text-xs text-gray-500 font-medium">s/d:</span>
+                            <input type="date" id="end_pembagian" onchange="loadTableData('pembagian')" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <button onclick="resetFilter('pembagian')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition">Hari Ini</button>
+                            <button id="btnNota_pembagian" onclick="openNotaPreviewModal('pembagian')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow flex items-center"><i class="fa-solid fa-file-arrow-down mr-1.5"></i> Unduh Nota</button>
+                        </div>
+                    </div>
+                    <div id="tableContainer_pembagian" class="overflow-x-auto"></div>
+                </div>
+            </div>
+
+            <!-- SALDO & RIWAYAT -->
+            <div id="content-saldo" class="tab-content hidden space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-5 text-white shadow-lg">
+                        <p class="text-xs uppercase tracking-wider text-emerald-100 font-semibold mb-1">UANG DI PAK JIMI KURNIAWAN</p>
+                        <h2 id="saldoGlobalDisplay" class="text-xl font-bold">Rp 0</h2>
+                        <p class="text-[10px] text-emerald-200 mt-2">Penjualan dikurangi Pembagian, Saldo Khusus Pembelian, & Pembelian</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg">
+                        <p class="text-xs uppercase tracking-wider text-purple-100 font-semibold mb-1">Saldo Global</p>
+                        <h2 id="saldoGlobalKotorDisplay" class="text-xl font-bold">Rp 0</h2>
+                        <p class="text-[10px] text-purple-200 mt-2">Uang Dari Pak Jimi Kurniawan + Uang Dari Pak Aslap</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm relative overflow-hidden">
+                        <p class="text-xs uppercase tracking-wider text-amber-600 font-semibold mb-1">Semua Uang Masuk Dari Hasil Penjualan</p>
+                        <h2 id="saldoPemasukanDisplay" class="text-xl font-bold text-amber-600">Rp 0</h2>
+                        <p class="text-[10px] text-gray-400 mt-2">Total Seluruh Transaksi Penjualan Masuk</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">UANG DI PAK ASLAP</p>
+                            <div class="flex items-center gap-1">
+                                <button onclick="openModalAddSaldoPembelian()" title="Isi Saldo Khusus Pembelian" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-plus text-xs"></i> Isi
+                                </button>
+                                <button onclick="openModalTransferSaldoKePenjualan()" title="Transfer Saldo Pembelian ke Penjualan" class="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-right-arrow-left text-xs"></i> Transfer Ke Pak Jimi
+                                </button>
+                            </div>
+                        </div>
+                        <h2 id="saldoPembelianDisplay" class="text-xl font-bold text-blue-600">Rp 0</h2>
+                        <p class="text-[10px] text-gray-400 mt-2">Sisa Alokasi Kas Khusus Pembelian</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                        <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-1">Total Pembagian Uang Ke Relawan</p>
+                        <h2 id="saldoPengeluaranDisplay" class="text-xl font-bold text-red-600">Rp 0</h2>
+                        <p class="text-[10px] text-gray-400 mt-2">Total Seluruh Uang Pembagian Keluar</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                        <p class="text-xs uppercase tracking-wider text-rose-600 font-semibold mb-1">Total Semua Pengeluaran</p>
+                        <h2 id="totalSemuaPengeluaranDisplay" class="text-xl font-bold text-rose-600">Rp 0</h2>
+                        <p class="text-[10px] text-gray-400 mt-2">Total Pembagian + Total Pembelian Barang</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h3 class="text-base font-bold text-gray-900 flex items-center">
+                            <i class="fa-solid fa-clock-rotate-left mr-2 text-emerald-600"></i>Riwayat Saldo
+                        </h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-500 font-medium">Dari:</span>
+                            <input type="date" id="start_saldo" onchange="loadSaldoData()" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <span class="text-xs text-gray-500 font-medium">s/d:</span>
+                            <input type="date" id="end_saldo" onchange="loadSaldoData()" class="px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-xs">
+                            <button onclick="resetFilter('saldo')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-medium transition">Hari Ini</button>
+                            <div class="flex items-center space-x-1 pl-2 border-l">
+                                <button onclick="exportSaldoHistory('png')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs font-semibold flex items-center"><i class="fa-solid fa-file-image mr-1"></i> PNG</button>
+                                <button onclick="exportSaldoHistory('pdf')" class="px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-lg text-xs font-semibold flex items-center"><i class="fa-solid fa-file-pdf mr-1"></i> PDF</button>
+                                <button onclick="exportSaldoHistory('excel')" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-semibold flex items-center"><i class="fa-solid fa-file-excel mr-1"></i> Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tableContainer_saldo" class="overflow-x-auto"></div>
+                </div>
+            </div>
+
+            <!-- KELOLA WHATSAPP -->
+            <div id="content-adminWA" class="tab-content hidden space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h2 class="text-lg font-bold text-gray-900 mb-2 flex items-center">
+                        <i class="fa-brands fa-whatsapp text-emerald-600 text-2xl mr-3"></i> Kelola Nomor Penerima Pesan WhatsApp
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-6">Atur nomor WhatsApp penerima laporan otomatis. Berikan centang untuk mengirim ke nomor tersebut.</p>
+
+                    <form onsubmit="handleAddWaNumber(event)" class="flex flex-col sm:flex-row gap-3 mb-6">
+                        <input type="text" id="newWaLabel" required placeholder="Label/Nama Pemilik (Contoh: Bpk Supri)" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        <input type="text" id="newWaNumber" required placeholder="Nomor WA (Contoh: 628812345678)" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs shadow-md">
+                            <i class="fa-solid fa-plus mr-1"></i> Tambah Nomor
+                        </button>
+                    </form>
+
+                    <div class="overflow-x-auto border border-gray-100 rounded-xl">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+                                    <th class="p-3.5 text-center w-16">Kirim</th>
+                                    <th class="p-3.5">Nama / Label</th>
+                                    <th class="p-3.5">Nomor WhatsApp</th>
+                                    <th class="p-3.5 text-center w-32">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="waNumbersTableBody" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KIRIM PESAN WHATSAPP (MULTI-TARGET) -->
+            <div id="content-pesanWA" class="tab-content hidden space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h2 class="text-lg font-bold text-gray-900 mb-2 flex items-center">
+                        <i class="fa-solid fa-paper-plane text-emerald-600 text-2xl mr-3"></i> Kirim Pesan ke Beberapa Nomor WhatsApp
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-6">Pilih beberapa nomor tujuan sekaligus dari daftar di bawah, tulis pesan Anda, lalu kirimkan.</p>
+
+                    <form onsubmit="handleSendCustomWaMessage(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Pilih Daftar Nomor Tujuan (Bisa Centang Banyak)</label>
+                            <div id="customWaTargetCheckboxes" class="max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-4 space-y-2 bg-gray-50"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Isi Pesan</label>
+                            <textarea id="customWaMessageText" rows="5" required placeholder="Tulis pesan yang ingin dikirim..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500"></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" id="sendCustomWaBtn" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md flex items-center">
+                                <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Kirim Pesan Sekarang
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL EDIT NOMOR WHATSAPP -->
+    <div id="modalEditWa" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-base font-bold text-gray-900 flex items-center">
+                    <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-pen-to-square"></i></span>
+                    Edit Nomor WhatsApp
+                </h3>
+                <button onclick="closeModalEditWa()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleUpdateWaNumber(event)" class="space-y-4">
+                <input type="hidden" id="editWaIndex">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nama / Label</label>
+                    <input type="text" id="editWaLabel" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nomor WhatsApp</label>
+                    <input type="text" id="editWaNumber" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3">
+                    <button type="button" onclick="closeModalEditWa()" class="px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl text-xs">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs shadow-md">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL MEDIA VIEWER -->
+    <div id="mediaModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100000] p-4">
+        <div class="relative max-w-4xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-image mr-2 text-emerald-600"></i>Pratinjau Foto Dokumentasi</h3>
+                <button onclick="closeMediaModal()" class="text-gray-400 hover:text-gray-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 flex items-center justify-center bg-black/5 overflow-auto flex-1">
+                <img id="modalImageElement" src="" class="max-h-[70vh] max-w-full object-contain rounded-lg shadow-md" alt="Pratinjau Foto">
+            </div>
+            <div class="p-4 bg-gray-50 border-t flex justify-end space-x-3">
+                <button onclick="closeMediaModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl text-xs">Tutup</button>
+                <button id="downloadImageBtn" onclick="downloadCurrentMediaImage()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs shadow flex items-center"><i class="fa-solid fa-download mr-1.5"></i> Unduh Gambar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PRATINJAU NOTA HARIAN -->
+    <div id="notaPreviewModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="relative max-w-2xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] my-auto">
+            <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-file-lines mr-2 text-emerald-600"></i>Pratinjau Nota</h3>
+                <button onclick="closeNotaPreviewModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-4 sm:p-6 flex items-center justify-center bg-gray-100 overflow-y-auto flex-1">
+                <div id="notaPreviewWrapper" class="w-full flex justify-center"></div>
+            </div>
+            <div class="p-4 bg-gray-50 border-t flex flex-col space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="text-xs font-semibold text-gray-600">Pilih Format File:</label>
+                    <select id="downloadFormatSelect" class="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500">
+                        <option value="png">PNG (Gambar)</option>
+                        <option value="pdf">PDF (Dokumen)</option>
+                        <option value="excel">Excel (.xlsx)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeNotaPreviewModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-xl text-xs">Batal</button>
+                    <button id="confirmDownloadNotaBtn" onclick="executeDownloadNota()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-xs shadow flex items-center"><i class="fa-solid fa-download mr-1.5"></i> Unduh Nota</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE NOTA TERSEMBUNYI -->
+    <div id="notaContainer" class="fixed left-[-9999px] top-0 pointer-events-none z-[-999]">
+        <div id="notaBox" class="bg-white w-[750px] p-8 text-gray-800 font-sans border border-gray-200 shadow-xl rounded-2xl">
+            <div class="text-center border-b pb-4 mb-4">
+                <h2 id="notaHeaderTitle" class="font-bold text-lg text-emerald-700 uppercase">BUKTI TRANSAKSI NOTA</h2>
+                <p class="text-xs text-gray-500">Hasil Dari Limbah</p>
+                <p class="text-xs text-gray-500">SPPG KOTA SERANG 2</p>
+                <p id="notaHeaderTanggal" class="text-xs font-semibold text-gray-600 mt-1"></p>
+            </div>
+            <div class="mb-6">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr id="notaTableHeadRow" class="border-b text-gray-500"></tr>
+                    </thead>
+                    <tbody id="notaTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+            <div class="border-t pt-4 flex justify-between items-center text-sm font-bold text-emerald-800">
+                <span>TOTAL KESELURUHAN</span>
+                <span id="notaHeaderTotal">Rp 0</span>
+            </div>
+            <div class="text-center border-t mt-6 pt-4">
+                <p class="text-[10px] text-gray-400">Dokumen Nota sah dicetak oleh sistem SPPG Kota Serang 2.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT FIREBASE & APLIKASI -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-4SHVseJrabUxIOCjup1KuNmxq22TJK4",
+            authDomain: "limbah-972c1.firebaseapp.com",
+            projectId: "limbah-972c1",
+            storageBucket: "limbah-972c1.firebasestorage.app",
+            messagingSenderId: "858465641305",
+            appId: "1:858465641305:web:4c69ecb84d1a7246c02248",
+            measurementId: "G-R96LK61QVQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwE_H5QqATsS2hS0uZHAow4hvv-FmBpf9k_6GNXHq9b78J4vAkpXbTObgmXj0dupOv_OA/exec';
+        const WA_TOKEN = 'uJ8CF79nyQaJbPrVGeeE';
+        const WA_TARGET_PRIMARY = '6283111399112';
+
+        const DEFAULT_WA_LIST = [
+            { id: '1', name: 'Nomor Utama 1', number: '6283804346245', active: true },
+            { id: '2', name: 'Nomor Utama 2', number: '6287785982118', active: true },
+        ];
+
+        window.appData = { penjualan: [], pembelian: [], pembagian: [] };
+        window.waNumbersList = [];
+        window.saldoPembelianKhusus = 0;
+        window.currentNotaDownloadInfo = { type: '', startDate: '', endDate: '' };
+        window.currentMediaUrl = '';
+        window.currentPublicTab = 'penjualan';
+
+        function getNamaTimAutomatic(diterimaName) {
+            if (diterimaName === 'Nurhayati') return 'Tim Persiapan';
+            if (diterimaName === 'Anisa Hayatun Nufus') return 'Tim Pemorsian/Packing';
+            if (diterimaName === 'Herman Sawiran') return 'Tim pencuci ompreng/foodtray';
+            if (diterimaName === 'Fajar Rizki Ramadhan') return 'Tim Distribusi,Aslap,admin sosmed';
+            if (diterimaName === 'Suryati') return 'Tim Scurity,Cleaning service, admin,internal';
+            if (diterimaName === 'Sopiyan') return 'Tim Masak';
+            return diterimaName || '-';
+        }
+
+        async function checkInternetConnection() {
+            const overlay = document.getElementById('offlineOverlay');
+            if (!navigator.onLine) {
+                overlay.classList.remove('hidden');
+                return;
+            }
+            try {
+                await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' });
+                overlay.classList.add('hidden');
+            } catch (err) {
+                overlay.classList.remove('hidden');
+            }
+        }
+        window.addEventListener('online', checkInternetConnection);
+        window.addEventListener('offline', checkInternetConnection);
+        setInterval(checkInternetConnection, 10000);
+
+        function setViewportMode(mode) {
+            const viewportMeta = document.getElementById('viewportMeta');
+            viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function formatDateID(dateString) {
+            if (!dateString) return '-';
+            const parts = dateString.split('-');
+            return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
+        }
+
+        async function sendWhatsAppNotification(message, targetList = null) {
+            try {
+                let targets = targetList && Array.isArray(targetList) ? targetList : window.waNumbersList.filter(item => item.active).map(item => item.number);
+                if (targets.length === 0) return;
+
+                const bodyData = new URLSearchParams();
+                bodyData.append('target', targets.join(','));
+                bodyData.append('message', message);
+                bodyData.append('token', WA_TOKEN);
+
+                await fetch('https://api.fonnte.com/send', {
+                    method: 'POST',
+                    headers: { 'Authorization': WA_TOKEN },
+                    body: bodyData
+                });
+            } catch (err) {
+                console.error("Gagal mengirim pesan WhatsApp:", err);
+            }
+        }
+
+        window.showToast = function(title, message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const toastBox = document.getElementById('toastBox');
+            const toastIcon = document.getElementById('toastIcon');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = message;
+
+            toastIcon.className = "flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center mr-3 text-lg ";
+            if (type === 'success') {
+                toastIcon.classList.add('bg-emerald-100', 'text-emerald-600');
+                toastIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                toastBox.className = "flex items-center p-4 rounded-2xl shadow-xl border border-emerald-100 bg-white";
+            } else if (type === 'error') {
+                toastIcon.classList.add('bg-red-100', 'text-red-600');
+                toastIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+                toastBox.className = "flex items-center p-4 rounded-2xl shadow-xl border border-red-100 bg-white";
+            } else {
+                toastIcon.classList.add('bg-amber-100', 'text-amber-600');
+                toastIcon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+                toastBox.className = "flex items-center p-4 rounded-2xl shadow-xl border border-amber-100 bg-white";
+            }
+
+            toast.classList.remove('translate-y-[-200%]');
+            toast.classList.add('translate-y-0');
+            setTimeout(() => { hideToast(); }, 4000);
+        };
+
+        window.hideToast = function() {
+            const toast = document.getElementById('toastNotification');
+            if (toast) {
+                toast.classList.remove('translate-y-0');
+                toast.classList.add('translate-y-[-200%]');
+            }
+        };
+
+        window.showCustomConfirm = function(title, message, callback) {
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMessage').innerText = message;
+            const okBtn = document.getElementById('confirmOkBtn');
+            const newOkBtn = okBtn.cloneNode(true);
+            okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+
+            newOkBtn.addEventListener('click', function() {
+                closeConfirmModal();
+                if (callback) callback();
+            });
+
+            document.getElementById('confirmModal').classList.remove('hidden');
+        };
+
+        window.closeConfirmModal = function() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        };
+
+        window.onload = function() {
+            checkInternetConnection();
+            const todayStr = getTodayDateString();
+            ['penjualan', 'pembelian', 'pembagian', 'saldo', 'pub'].forEach(tab => {
+                const startEl = document.getElementById(tab === 'pub' ? 'pub_start_date' : `start_${tab}`);
+                const endEl = document.getElementById(tab === 'pub' ? 'pub_end_date' : `end_${tab}`);
+                if(startEl) startEl.value = todayStr;
+                if(endEl) endEl.value = todayStr;
+            });
+
+            fetchAllDataSilent();
+
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const loginTime = parseInt(localStorage.getItem('loginTime') || '0', 10);
+            const now = new Date().getTime();
+
+            if (isLoggedIn && (now - loginTime < 60 * 60 * 1000)) {
+                showApp();
+            } else {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('loginTime');
+                localStorage.removeItem('loggedUsername');
+                setViewportMode('mobile');
+            }
+        };
+
+        async function fetchAllDataSilent() {
+            try {
+                await loadWaNumbers();
+                for (const type of ['penjualan', 'pembelian', 'pembagian']) {
+                    const querySnapshot = await getDocs(collection(db, type));
+                    let list = [];
+                    querySnapshot.forEach((docSnap) => list.push({ id: docSnap.id, ...docSnap.data() }));
+                    window.appData[type] = list;
+                }
+                const saldoSnap = await getDoc(doc(db, "settings", "saldo_pembelian"));
+                if (saldoSnap.exists()) window.saldoPembelianKhusus = saldoSnap.data().amount || 0;
+                else window.saldoPembelianKhusus = 0;
+            } catch (e) {
+                console.error("Silent fetch error:", e);
+            }
+        }
+
+        window.resetFilter = function(tab) {
+            const todayStr = getTodayDateString();
+            document.getElementById(`start_${tab}`).value = todayStr;
+            document.getElementById(`end_${tab}`).value = todayStr;
+            if(tab === 'saldo') loadSaldoData();
+            else loadTableData(tab);
+        };
+
+        window.resetPublicFilter = function() {
+            const todayStr = getTodayDateString();
+            document.getElementById('pub_start_date').value = todayStr;
+            document.getElementById('pub_end_date').value = todayStr;
+            loadPublicTableData();
+        };
+
+        window.openPublicViewerModal = async function() {
+            showToast('Memuat', 'Mengambil data terbaru dari sistem...', 'info');
+            await fetchAllDataSilent();
+            switchPublicTab('penjualan');
+            document.getElementById('publicViewerModal').classList.remove('hidden');
+        };
+
+        window.closePublicViewerModal = function() {
+            document.getElementById('publicViewerModal').classList.add('hidden');
+        };
+
+        window.switchPublicTab = function(tabName) {
+            window.currentPublicTab = tabName;
+            document.querySelectorAll('.pub-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow');
+                btn.classList.add('bg-white', 'text-gray-600', 'hover:bg-gray-100');
+            });
+            const activeBtn = document.getElementById(`pubTabBtn-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'text-gray-600', 'hover:bg-gray-100');
+                activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
+            }
+
+            const tableContent = document.getElementById('pub-content-table');
+            const saldoContent = document.getElementById('pub-content-saldo');
+
+            if (tabName === 'saldo') {
+                tableContent.classList.add('hidden');
+                saldoContent.classList.remove('hidden');
+                loadPublicSaldoData();
+            } else {
+                saldoContent.classList.add('hidden');
+                tableContent.classList.remove('hidden');
+                loadPublicTableData();
+            }
+        };
+
+        window.loadPublicTableData = function() {
+            const type = window.currentPublicTab;
+            const container = document.getElementById('pubTableContainer');
+            let data = window.appData[type] || [];
+
+            const startDate = document.getElementById('pub_start_date').value;
+            const endDate = document.getElementById('pub_end_date').value;
+
+            if (startDate && endDate) {
+                data = data.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">Belum ada data tersedia pada rentang tanggal ini.</div>`;
+                return;
+            }
+            data.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            let html = `<table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
+                        <th class="p-3">Tanggal</th>
+                        ${type !== 'pembagian' ? '<th class="p-3">Nama Barang</th><th class="p-3">Berat/Satuan</th><th class="p-3">Qty</th><th class="p-3">Harga</th>' : '<th class="p-3">Diterima</th><th class="p-3">Nama Tim</th><th class="p-3">Jumlah Orang</th><th class="p-3">Jumlah Uang</th>'}
+                        <th class="p-3">Total</th>
+                        <th class="p-3 text-center">Foto Dokumentasi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">`;
+
+            data.forEach(item => {
+                html += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 font-medium">${formatDateID(item.tanggal)}</td>`;
+                if (type !== 'pembagian') {
+                    html += `<td class="p-3">${item.namaBarang}</td>
+                             <td class="p-3 text-gray-500">${item.berat}</td>
+                             <td class="p-3">${item.banyaknya}</td>
+                             <td class="p-3">${formatRupiah(parseFloat(item.harga))}</td>`;
+                } else {
+                    html += `<td class="p-3 font-semibold text-gray-800">${item.namaTim || '-'}</td>
+                             <td class="p-3 text-emerald-700 font-medium">${item.namaTimOtomatis || getNamaTimAutomatic(item.namaTim)}</td>
+                             <td class="p-3 text-center">${item.jumlahOrang || '-'} Orang</td>
+                             <td class="p-3">${formatRupiah(parseFloat(item.jumlahUang))}</td>`;
+                }
+                html += `<td class="p-3 font-bold text-emerald-700">${formatRupiah(item.rawJumlah)}</td>`;
+                
+                html += `<td class="p-3 text-center"><div class="flex justify-center gap-2 flex-wrap items-center">`;
+                if (item.driveUrls && item.driveUrls.length > 0) {
+                    item.driveUrls.forEach((url) => {
+                        let directImgUrl = url;
+                        if (url.includes('drive.google.com')) {
+                            const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (fileIdMatch && fileIdMatch[1]) {
+                                directImgUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
+                            }
+                        }
+                        html += `<div class="relative group">
+                            <img src="${directImgUrl}" onclick="openMediaModal('${directImgUrl}')" class="w-14 h-14 object-cover rounded-xl border-2 border-blue-500 shadow-sm cursor-pointer hover:scale-105 transition" alt="Foto" onerror="this.onerror=null; this.src='https://via.placeholder.com/64?text=FOTO';">
+                        </div>`;
+                    });
+                } else {
+                    html += `<span class="text-xs text-gray-400">Tidak ada foto</span>`;
+                }
+                html += `</div></td></tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        };
+
+        window.loadPublicSaldoData = function() {
+            const totalPemasukan = window.appData.penjualan.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            const totalPembagian = window.appData.pembagian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            const totalPembelianBarang = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            
+            let saldoGlobalBersih = totalPemasukan - totalPembagian - window.saldoPembelianKhusus - totalPembelianBarang;
+
+            // Hanya menampilkan Uang di Pak Jimi Kurniawan, menyembunyikan yang lainnya
+            document.getElementById('pub_saldoGlobalDisplay').innerText = formatRupiah(saldoGlobalBersih);
+
+            const startDate = document.getElementById('pub_start_date').value;
+            const endDate = document.getElementById('pub_end_date').value;
+
+            let combinedList = [];
+            window.appData.penjualan.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Penjualan', masuk: item.rawJumlah, keluar: 0 }));
+            window.appData.pembelian.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Pembelian', masuk: 0, keluar: item.rawJumlah }));
+            window.appData.pembagian.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Pembagian', masuk: 0, keluar: item.rawJumlah }));
+
+            if (startDate && endDate) {
+                combinedList = combinedList.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            combinedList.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            const container = document.getElementById('pubTableContainer_saldo');
+            if (combinedList.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Tidak ada riwayat saldo pada rentang tanggal ini.</div>`;
+                return;
+            }
+
+            let html = `<table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
+                        <th class="p-3">Tanggal</th>
+                        <th class="p-3">Jenis Transaksi</th>
+                        <th class="p-3">Keterangan / Detail</th>
+                        <th class="p-3 text-right">Pemasukan (+)</th>
+                        <th class="p-3 text-right">Pengeluaran (-)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">`;
+
+            combinedList.forEach(item => {
+                let ket = item.namaBarang || item.namaTim || '-';
+                if(item.jenisTransaksi === 'Pembagian') ket += ` (${item.namaTimOtomatis || '-'})`;
+                html += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 font-medium">${formatDateID(item.tanggal)}</td>
+                    <td class="p-3 font-semibold ${item.jenisTransaksi === 'Penjualan' ? 'text-emerald-600' : (item.jenisTransaksi === 'Pembelian' ? 'text-blue-600' : 'text-red-600')}">${item.jenisTransaksi}</td>
+                    <td class="p-3 text-gray-700">${ket}</td>
+                    <td class="p-3 text-right font-bold text-emerald-600">${item.masuk > 0 ? formatRupiah(item.masuk) : '-'}</td>
+                    <td class="p-3 text-right font-bold text-red-600">${item.keluar > 0 ? formatRupiah(item.keluar) : '-'}</td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        };
+
+        window.openPublicNotaPreview = function() {
+            if (window.currentPublicTab === 'saldo') {
+                showToast('Informasi', 'Unduh nota tersedia pada tab Penjualan, Pembelian, atau Pembagian.', 'info');
+                return;
+            }
+            const startDate = document.getElementById('pub_start_date').value;
+            const endDate = document.getElementById('pub_end_date').value;
+            const type = window.currentPublicTab;
+            window.currentNotaDownloadInfo = { type, startDate, endDate };
+
+            let data = window.appData[type] || [];
+            if (startDate && endDate) {
+                data = data.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            if (data.length === 0) {
+                showToast('Perhatian', 'Tidak ada data untuk dicetak pada rentang tanggal tersebut!', 'error');
+                return;
+            }
+
+            buildNotaTemplate(type, data, startDate, endDate);
+            document.getElementById('notaPreviewWrapper').innerHTML = document.getElementById('notaBox').outerHTML;
+            document.getElementById('notaPreviewModal').classList.remove('hidden');
+        };
+
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            const user = document.getElementById('usernameInput').value.trim();
+            const pass = document.getElementById('passwordInput').value.trim();
+
+            let role = '';
+            let displayName = '';
+            
+            if (user === 'Serang' && pass === 'Mandiri02srg') {
+                role = 'admin';
+                displayName = 'Admin';
+            } else if (user.toLowerCase() === 'jimi' && pass === 'User123') {
+                role = 'user';
+                displayName = 'Jimi Kurniawan';
+            }
+
+            if (role !== '') {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('loggedUsername', displayName);
+                localStorage.setItem('loginTime', new Date().getTime().toString());
+                
+                document.getElementById('loginError').classList.add('hidden');
+                showToast('Login Berhasil', `Selamat datang kembali ${displayName}`, 'success');
+                showApp();
+                
+                await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${displayName}* berhasil *MASUK (LOGIN)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+                showToast('Gagal Masuk', 'Username atau sandi salah.', 'error');
+            }
+        };
+
+        window.handleLogout = function() {
+            showCustomConfirm('Konfirmasi Keluar', 'Apakah Anda yakin ingin keluar dari sistem?', async function() {
+                const currentUser = localStorage.getItem('loggedUsername') || 'User';
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('loginTime');
+                localStorage.removeItem('loggedUsername');
+                document.getElementById('appPage').classList.add('hidden');
+                document.getElementById('loginPage').classList.remove('hidden');
+                setViewportMode('mobile');
+                showToast('Berhasil Keluar', 'Sesi berakhir.', 'success');
+                await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${currentUser}* telah *KELUAR (LOGOUT)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
+            });
+        };
+
+        window.showApp = function() {
+            const role = localStorage.getItem('userRole') || 'user';
+            const displayName = localStorage.getItem('loggedUsername') || 'Jimi Kurniawan';
+            const roleBadge = document.getElementById('userRoleBadge');
+            
+            setViewportMode('mobile');
+
+            if (role === 'admin') {
+                roleBadge.innerHTML = `<i class="fa-solid fa-shield-halved mr-1"></i> ${displayName}`;
+                roleBadge.className = "text-xs font-medium bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200";
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            } else {
+                roleBadge.innerHTML = `<i class="fa-solid fa-user mr-1"></i> ${displayName}`;
+                roleBadge.className = "text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full border border-blue-200";
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            }
+
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('appPage').classList.remove('hidden');
+            loadAllDataFromFirebase();
+        };
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+                el.classList.add('bg-white', 'text-gray-600', 'hover:bg-gray-100');
+            });
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+            activeBtn.classList.remove('bg-white', 'text-gray-600', 'hover:bg-gray-100');
+            activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+            if(tabName === 'saldo') loadSaldoData();
+            if(tabName === 'adminWA') renderWaNumbersTable();
+            if(tabName === 'pesanWA') populateWaTargetCheckboxes();
+        };
+
+        window.handleSelectTim = function(selectEl) {
+            const customInput = document.getElementById('pembagian_namaTimCustom');
+            const timDisplay = document.getElementById('pembagian_namaTimOtomatisDisplay');
+
+            if (selectEl.value === 'Lainnya') {
+                customInput.classList.remove('hidden');
+                customInput.required = true;
+                timDisplay.value = '-';
+            } else {
+                customInput.classList.add('hidden');
+                customInput.required = false;
+                timDisplay.value = getNamaTimAutomatic(selectEl.value);
+            }
+        };
+
+        window.calculateTotal = function(type) {
+            if (type === 'penjualan' || type === 'pembelian') {
+                const qty = parseFloat(document.getElementById(`banyaknya_${type}`).value) || 0;
+                const harga = parseFloat(document.getElementById(`harga_${type}`).value) || 0;
+                document.getElementById(`jumlah_${type}`).value = formatRupiah(qty * harga);
+            } else if (type === 'pembagian') {
+                const jumlahUang = parseFloat(document.getElementById('jumlah_uang_pembagian').value) || 0;
+                document.getElementById('jumlah_pembagian').value = formatRupiah(jumlahUang);
+            }
+        };
+
+        function formatRupiah(angka) {
+            return 'Rp ' + Number(angka || 0).toLocaleString('id-ID');
+        }
+
+        function compressImage(file, maxWidth = 1000, quality = 0.7) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = error => reject(error);
+                    img.src = event.target.result;
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.previewLocalImages = function(event, previewId, type) {
+            const container = document.getElementById(previewId);
+            const clearBtn = document.getElementById(`clearBtn_${type}`);
+            container.innerHTML = '';
+            const files = event.target.files;
+            if (!files || files.length === 0) {
+                if(clearBtn) clearBtn.classList.add('hidden');
+                return;
+            }
+            if(clearBtn) clearBtn.classList.remove('hidden');
+
+            for (let i = 0; i < files.length; i++) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = "w-12 h-12 object-cover rounded-lg border shadow-sm";
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(files[i]);
+            }
+        };
+
+        window.clearSelectedImages = function(type) {
+            const inputEl = document.getElementById(`input_file_${type}`);
+            if(inputEl) inputEl.value = "";
+            document.getElementById(`preview_${type}`).innerHTML = "";
+            const clearBtn = document.getElementById(`clearBtn_${type}`);
+            if(clearBtn) clearBtn.classList.add('hidden');
+        };
+
+        window.openModalAddSaldoPembelian = function() {
+            document.getElementById('input_nominal_transfer').value = '';
+            document.getElementById('modalAddSaldoPembelian').classList.remove('hidden');
+        };
+
+        window.closeModalAddSaldoPembelian = function() {
+            document.getElementById('modalAddSaldoPembelian').classList.add('hidden');
+        };
+
+        window.handleTransferSaldoPembelian = async function(e) {
+            e.preventDefault();
+            const nominal = parseFloat(document.getElementById('input_nominal_transfer').value) || 0;
+            if (nominal <= 0) {
+                showToast('Perhatian', 'Masukkan nominal saldo yang valid!', 'error');
+                return;
+            }
+
+            let totalPemasukan = window.appData.penjualan.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            let totalPembagian = window.appData.pembagian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            let totalPembelianTerpakai = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            let saldoGlobalBersih = totalPemasukan - totalPembagian - window.saldoPembelianKhusus - totalPembelianTerpakai;
+
+            if (nominal > saldoGlobalBersih) {
+                showToast('Saldo Tidak Cukup', `Saldo Global Bersih (${formatRupiah(saldoGlobalBersih)}) tidak mencukupi.`, 'error');
+                return;
+            }
+
+            try {
+                window.saldoPembelianKhusus += nominal;
+                await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
+                closeModalAddSaldoPembelian();
+                loadSaldoData();
+                showToast('Berhasil', `Berhasil memindahkan ${formatRupiah(nominal)} ke Saldo Khusus Pembelian.`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal', 'Terjadi kesalahan saat memindahkan saldo.', 'error');
+            }
+        };
+
+        window.openModalTransferSaldoKePenjualan = function() {
+            document.getElementById('input_nominal_transfer_balik').value = '';
+            document.getElementById('modalTransferSaldoKePenjualan').classList.remove('hidden');
+        };
+
+        window.closeModalTransferSaldoKePenjualan = function() {
+            document.getElementById('modalTransferSaldoKePenjualan').classList.add('hidden');
+        };
+
+        window.handleTransferSaldoKePenjualan = async function(e) {
+            e.preventDefault();
+            const nominal = parseFloat(document.getElementById('input_nominal_transfer_balik').value) || 0;
+            if (nominal <= 0) {
+                showToast('Perhatian', 'Masukkan nominal transfer yang valid!', 'error');
+                return;
+            }
+
+            if (nominal > window.saldoPembelianKhusus) {
+                showToast('Saldo Tidak Cukup', `Saldo Khusus Pembelian (${formatRupiah(window.saldoPembelianKhusus)}) tidak mencukupi.`, 'error');
+                return;
+            }
+
+            try {
+                window.saldoPembelianKhusus -= nominal;
+                await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
+                closeModalTransferSaldoKePenjualan();
+                loadSaldoData();
+                showToast('Berhasil', `Berhasil mengembalikan ${formatRupiah(nominal)} ke Saldo Penjualan.`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal', 'Terjadi kesalahan.', 'error');
+            }
+        };
+
+        async function loadWaNumbers() {
+            try {
+                const docSnap = await getDoc(doc(db, "settings", "wa_numbers"));
+                if (docSnap.exists() && docSnap.data().list) {
+                    window.waNumbersList = docSnap.data().list;
+                } else {
+                    window.waNumbersList = DEFAULT_WA_LIST;
+                    await setDoc(doc(db, "settings", "wa_numbers"), { list: DEFAULT_WA_LIST });
+                }
+            } catch(e) {
+                window.waNumbersList = DEFAULT_WA_LIST;
+            }
+        }
+
+        async function saveWaNumbers() {
+            try {
+                await setDoc(doc(db, "settings", "wa_numbers"), { list: window.waNumbersList });
+            } catch(e) {
+                showToast("Gagal", "Pengaturan WA tidak dapat disimpan", "error");
+            }
+        }
+
+        window.renderWaNumbersTable = function() {
+            const tbody = document.getElementById('waNumbersTableBody');
+            if (!tbody) return;
+
+            if (window.waNumbersList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Belum ada nomor tersimpan.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            window.waNumbersList.forEach((item, index) => {
+                html += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 text-center">
+                        <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleWaNumberActive(${index})" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer">
+                    </td>
+                    <td class="p-3 font-semibold text-gray-800">${item.name}</td>
+                    <td class="p-3 text-gray-600">${item.number}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="openModalEditWa(${index})" class="text-amber-600 hover:text-amber-800 p-1.5 rounded-lg hover:bg-amber-50" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteWaNumber(${index})" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50" title="Hapus"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        };
+
+        window.toggleWaNumberActive = async function(index) {
+            window.waNumbersList[index].active = !window.waNumbersList[index].active;
+            await saveWaNumbers();
+            renderWaNumbersTable();
+            showToast("Berhasil", "Status pengiriman nomor diperbarui", "success");
+        };
+
+        window.handleAddWaNumber = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('newWaLabel').value.trim();
+            let number = document.getElementById('newWaNumber').value.trim().replace(/[^0-9]/g, '');
+
+            if (number.startsWith('0')) number = '62' + number.slice(1);
+
+            window.waNumbersList.push({
+                id: Date.now().toString(),
+                name: name,
+                number: number,
+                active: true
+            });
+
+            document.getElementById('newWaLabel').value = '';
+            document.getElementById('newWaNumber').value = '';
+
+            await saveWaNumbers();
+            renderWaNumbersTable();
+            showToast("Berhasil", "Nomor WhatsApp baru berhasil ditambahkan", "success");
+        };
+
+        window.openModalEditWa = function(index) {
+            const item = window.waNumbersList[index];
+            if (!item) return;
+            document.getElementById('editWaIndex').value = index;
+            document.getElementById('editWaLabel').value = item.name;
+            document.getElementById('editWaNumber').value = item.number;
+            document.getElementById('modalEditWa').classList.remove('hidden');
+        };
+
+        window.closeModalEditWa = function() {
+            document.getElementById('modalEditWa').classList.add('hidden');
+        };
+
+        window.handleUpdateWaNumber = async function(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('editWaIndex').value, 10);
+            const name = document.getElementById('editWaLabel').value.trim();
+            let number = document.getElementById('editWaNumber').value.trim().replace(/[^0-9]/g, '');
+
+            if (number.startsWith('0')) number = '62' + number.slice(1);
+
+            if (window.waNumbersList[index]) {
+                window.waNumbersList[index].name = name;
+                window.waNumbersList[index].number = number;
+                await saveWaNumbers();
+                renderWaNumbersTable();
+                closeModalEditWa();
+                showToast("Berhasil", "Nomor WhatsApp berhasil diperbarui", "success");
+            }
+        };
+
+        window.deleteWaNumber = function(index) {
+            showCustomConfirm('Hapus Nomor WA', 'Apakah Anda yakin ingin menghapus nomor ini?', async function() {
+                window.waNumbersList.splice(index, 1);
+                await saveWaNumbers();
+                renderWaNumbersTable();
+                showToast("Berhasil", "Nomor WA dihapus", "success");
+            });
+        };
+
+        window.populateWaTargetCheckboxes = function() {
+            const container = document.getElementById('customWaTargetCheckboxes');
+            if (!container) return;
+            if (window.waNumbersList.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400">Belum ada nomor tujuan terdaftar.</p>`;
+                return;
+            }
+            let html = '';
+            window.waNumbersList.forEach(item => {
+                html += `<label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition">
+                    <input type="checkbox" name="customWaTarget" value="${item.number}" ${item.active ? 'checked' : ''} class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                    <span class="text-sm font-medium text-gray-800">${item.name} (${item.number})</span>
+                </label>`;
+            });
+            container.innerHTML = html;
+        };
+
+        window.handleSendCustomWaMessage = async function(e) {
+            e.preventDefault();
+            const checkboxes = document.querySelectorAll('input[name="customWaTarget"]:checked');
+            const messageText = document.getElementById('customWaMessageText').value.trim();
+            const btn = document.getElementById('sendCustomWaBtn');
+
+            if (checkboxes.length === 0 || !messageText) {
+                showToast('Perhatian', 'Pilih minimal satu nomor tujuan dan isi pesan terlebih dahulu!', 'error');
+                return;
+            }
+
+            let selectedNumbers = Array.from(checkboxes).map(cb => cb.value);
+
+            try {
+                btn.disabled = true;
+                btn.innerText = 'Mengirim Pesan ke Beberapa Nomor...';
+
+                await sendWhatsAppNotification(messageText, selectedNumbers);
+
+                document.getElementById('customWaMessageText').value = '';
+                showToast('Berhasil', `Pesan WhatsApp berhasil dikirim ke ${selectedNumbers.length} nomor tujuan.`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal', 'Gagal mengirim pesan WhatsApp.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Kirim Pesan Sekarang';
+            }
+        };
+
+        window.saveData = async function(e, type) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            let rawJumlah = 0;
+            let identifierName = "";
+            let namaTimDidefinisikan = "";
+
+            if (type === 'penjualan' || type === 'pembelian') {
+                rawJumlah = (parseFloat(formData.get('banyaknya')) || 0) * (parseFloat(formData.get('harga')) || 0);
+                identifierName = formData.get('namaBarang');
+            } else {
+                rawJumlah = parseFloat(formData.get('jumlahUang')) || 0;
+                const selectTim = formData.get('namaTim');
+                identifierName = selectTim === 'Lainnya' ? formData.get('namaTimCustom') : selectTim;
+                namaTimDidefinisikan = getNamaTimAutomatic(identifierName);
+            }
+
+            if (type === 'pembelian') {
+                if (rawJumlah > window.saldoPembelianKhusus) {
+                    showToast('Saldo Pembelian Kurang', `Saldo khusus pembelian (${formatRupiah(window.saldoPembelianKhusus)}) tidak mencukupi.`, 'error');
+                    return;
+                }
+            }
+
+            const tanggal = formData.get('tanggal');
+            const customFileName = `${identifierName}_${tanggal}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const mediaFiles = form.querySelector('input[type="file"]').files;
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            if (!mediaFiles || mediaFiles.length === 0) {
+                showToast('Perhatian', 'Foto dokumentasi wajib diunggah!', 'error');
+                return;
+            }
+
+            let uploadedUrls = [];
+            let uploadedFileIds = [];
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Mengompres & Mengirim Foto...';
+
+                let imagePromises = Array.from(mediaFiles).map(async file => {
+                    let compressedBase64 = await compressImage(file);
+                    return { name: file.name, type: 'image/jpeg', base64: compressedBase64 };
+                });
+
+                let base64Images = await Promise.all(imagePromises);
+
+                submitBtn.innerText = 'Menyimpan Ke Sistem...';
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'upload', images: base64Images, customName: customFileName, tanggal: tanggal })
+                });
+                
+                const result = await response.json();
+                if (result.status !== 'success') throw new Error(result.message);
+                uploadedUrls = result.urls || [];
+                uploadedFileIds = result.fileIds || [];
+
+                let item = {
+                    tanggal: tanggal,
+                    namaBarang: formData.get('namaBarang') || null,
+                    berat: formData.get('berat') || '-',
+                    banyaknya: formData.get('banyaknya') ? parseFloat(formData.get('banyaknya')) : null,
+                    harga: formData.get('harga') ? parseFloat(formData.get('harga')) : null,
+                    namaTim: identifierName || null,
+                    namaTimOtomatis: namaTimDidefinisikan || null,
+                    jumlahOrang: formData.get('jumlahOrang') ? parseInt(formData.get('jumlahOrang')) : null,
+                    jumlahUang: formData.get('jumlahUang') ? parseFloat(formData.get('jumlahUang')) : null,
+                    rawJumlah: rawJumlah,
+                    driveUrls: uploadedUrls,
+                    driveFileIds: uploadedFileIds,
+                    createdAt: new Date().toISOString()
+                };
+
+                await addDoc(collection(db, type), item);
+
+                if (type === 'pembelian') {
+                    window.saldoPembelianKhusus -= rawJumlah;
+                    await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
+                }
+
+                form.reset();
+                clearSelectedImages(type);
+                document.getElementById(`jumlah_${type}`).value = '';
+                const customTimInput = document.getElementById('pembagian_namaTimCustom');
+                if (customTimInput) customTimInput.classList.add('hidden');
+                const timDisplay = document.getElementById('pembagian_namaTimOtomatisDisplay');
+                if (timDisplay) timDisplay.value = '';
+
+                await loadAllDataFromFirebase();
+                showToast('Berhasil Menyimpan', `Data berhasil disimpan & folder tanggal ${formatDateID(tanggal)} otomatis terbuat di Sistem!`, 'success');
+
+                let totalPenjualan = window.appData.penjualan.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+                let totalPembagian = window.appData.pembagian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+                let totalPembelianTerpakai = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+                let saldoGlobalBersih = totalPenjualan - totalPembagian - window.saldoPembelianKhusus - totalPembelianTerpakai;
+                let saldoGlobalKotor = saldoGlobalBersih + window.saldoPembelianKhusus;
+
+                let namaPenerima = identifierName || '';
+                let waMessage = '';
+                if (type === 'pembagian') {
+                    waMessage = `> *Pesan Otomatis*\n\n*LAPORAN PEMBAGIAN UANG LIMBAH*\n\nDikirim : Sistem Admin\nDiterima : ${namaPenerima}\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Tim : ${namaTimDidefinisikan}\n• Jumlah Orang : ${formData.get('jumlahOrang') || '-'}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa saldo : ${formatRupiah(saldoGlobalKotor)}`;
+                } else if (type === 'pembelian') {
+                    waMessage = `> *Pesan Otomatis*\n\n*LAPORAN PENGELUARAN UANG LIMBAH*\n\nDikirim : Sistem Admin\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Barang : ${namaPenerima}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa saldo : ${formatRupiah(saldoGlobalKotor)}`;
+                } else {
+                    waMessage = `> *Pesan Otomatis*\n\n*LAPORAN PENJUALAN LIMBAH*\n\nDikirim : Sistem Admin\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Barang : ${namaPenerima}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa saldo : ${formatRupiah(saldoGlobalKotor)}`;
+                }
+
+                await sendWhatsAppNotification(waMessage);
+
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan data.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Simpan';
+            }
+        };
+
+        window.loadAllDataFromFirebase = async function() {
+            await loadWaNumbers();
+            for (const type of ['penjualan', 'pembelian', 'pembagian']) {
+                const querySnapshot = await getDocs(collection(db, type));
+                let list = [];
+                querySnapshot.forEach((docSnap) => list.push({ id: docSnap.id, ...docSnap.data() }));
+                window.appData[type] = list;
+                loadTableData(type);
+            }
+            
+            try {
+                const saldoSnap = await getDoc(doc(db, "settings", "saldo_pembelian"));
+                if (saldoSnap.exists()) window.saldoPembelianKhusus = saldoSnap.data().amount || 0;
+                else window.saldoPembelianKhusus = 0;
+            } catch (err) {
+                window.saldoPembelianKhusus = 0;
+            }
+
+            loadSaldoData();
+        };
+
+        window.loadTableData = function(type) {
+            const container = document.getElementById(`tableContainer_${type}`);
+            let data = window.appData[type];
+            const role = localStorage.getItem('userRole') || 'user';
+            
+            const startDate = document.getElementById(`start_${type}`).value;
+            const endDate = document.getElementById(`end_${type}`).value;
+
+            if (startDate && endDate) {
+                data = data.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Belum ada data tersedia pada rentang tanggal ini.</div>`;
+                return;
+            }
+            data.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            let html = `<table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
+                        <th class="p-3">Tanggal</th>
+                        ${type !== 'pembagian' ? '<th class="p-3">Nama Barang</th><th class="p-3">Berat/Satuan</th><th class="p-3">Qty</th><th class="p-3">Harga</th>' : '<th class="p-3">Diterima</th><th class="p-3">Nama Tim</th><th class="p-3">Jumlah Orang</th><th class="p-3">Jumlah Uang</th>'}
+                        <th class="p-3">Total</th>
+                        <th class="p-3 text-center">Foto Dokumentasi</th>
+                        ${role === 'admin' ? '<th class="p-3 text-center">Aksi</th>' : ''}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">`;
+
+            data.forEach(item => {
+                html += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 font-medium">${formatDateID(item.tanggal)}</td>`;
+                if (type !== 'pembagian') {
+                    html += `<td class="p-3">${item.namaBarang}</td>
+                             <td class="p-3 text-gray-500">${item.berat}</td>
+                             <td class="p-3">${item.banyaknya}</td>
+                             <td class="p-3">${formatRupiah(parseFloat(item.harga))}</td>`;
+                } else {
+                    html += `<td class="p-3 font-semibold text-gray-800">${item.namaTim || '-'}</td>
+                             <td class="p-3 text-emerald-700 font-medium">${item.namaTimOtomatis || getNamaTimAutomatic(item.namaTim)}</td>
+                             <td class="p-3 text-center">${item.jumlahOrang || '-'} Orang</td>
+                             <td class="p-3">${formatRupiah(parseFloat(item.jumlahUang))}</td>`;
+                }
+                html += `<td class="p-3 font-bold text-emerald-700">${formatRupiah(item.rawJumlah)}</td>`;
+                
+                html += `<td class="p-3 text-center"><div class="flex justify-center gap-2 flex-wrap items-center">`;
+                if (item.driveUrls && item.driveUrls.length > 0) {
+                    item.driveUrls.forEach((url) => {
+                        let directImgUrl = url;
+                        if (url.includes('drive.google.com')) {
+                            const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (fileIdMatch && fileIdMatch[1]) {
+                                directImgUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}`;
+                            }
+                        }
+                        html += `<div class="relative group">
+                            <img src="${directImgUrl}" onclick="openMediaModal('${directImgUrl}')" class="w-16 h-16 object-cover rounded-xl border-2 border-emerald-500 shadow-md cursor-pointer hover:scale-105 transition" alt="Foto Dokumentasi" onerror="this.onerror=null; this.src='https://via.placeholder.com/64?text=FOTO';">
+                            <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition cursor-pointer" onclick="openMediaModal('${directImgUrl}')">
+                                <i class="fa-solid fa-magnifying-glass-plus text-white text-sm"></i>
+                            </div>
+                        </div>`;
+                    });
+                } else {
+                    html += `<span class="text-xs text-gray-400">Tidak ada foto</span>`;
+                }
+                html += `</div></td>`;
+
+                if (role === 'admin') {
+                    let fileIdsAttr = item.driveFileIds ? JSON.stringify(item.driveFileIds).replace(/"/g, '&quot;') : '[]';
+                    html += `<td class="p-3 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="openEditModal('${type}', '${item.id}')" class="text-amber-600 hover:text-amber-800 p-1.5 rounded-lg hover:bg-amber-50" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick='deleteData("${type}", "${item.id}", ${item.rawJumlah}, ${fileIdsAttr})' class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50" title="Hapus Data"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>`;
+                }
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        };
+
+        window.openMediaModal = function(url) {
+            window.currentMediaUrl = url;
+            const modalImg = document.getElementById('modalImageElement');
+            modalImg.src = url;
+            document.getElementById('mediaModal').classList.remove('hidden');
+        };
+
+        window.closeMediaModal = function() {
+            document.getElementById('mediaModal').classList.add('hidden');
+            window.currentMediaUrl = '';
+        };
+
+        window.downloadCurrentMediaImage = async function() {
+            if (!window.currentMediaUrl) {
+                showToast('Perhatian', 'Tidak ada gambar yang dipilih untuk diunduh.', 'error');
+                return;
+            }
+            try {
+                showToast('Memproses', 'Sedang menyiapkan unduhan gambar...', 'info');
+                const response = await fetch(window.currentMediaUrl, { mode: 'cors' });
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `Dokumentasi_Limbah_${Date.now()}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(blobUrl);
+                showToast('Berhasil', 'Gambar berhasil diunduh.', 'success');
+            } catch (err) {
+                const a = document.createElement('a');
+                a.href = window.currentMediaUrl;
+                a.target = '_blank';
+                a.download = `Dokumentasi_Limbah_${Date.now()}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        };
+
+        window.deleteData = function(type, id, rawJumlah, fileIds = []) {
+            showCustomConfirm('Hapus Data', 'Apakah Anda yakin ingin menghapus data transaksi ini beserta foto di Sistem?', async function() {
+                try {
+                    showToast('Memproses', 'Menghapus data & file foto di Sistem...', 'info');
+                    
+                    if (fileIds && fileIds.length > 0) {
+                        await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'deleteFiles', fileIds: fileIds })
+                        });
+                    }
+
+                    await deleteDoc(doc(db, type, id));
+                    if (type === 'pembelian') {
+                        window.saldoPembelianKhusus += rawJumlah;
+                        await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
+                    }
+                    await loadAllDataFromFirebase();
+                    showToast('Berhasil', 'Data transaksi dan foto di Sistem berhasil dihapus.', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Gagal', 'Terjadi kesalahan saat menghapus data.', 'error');
+                }
+            });
+        };
+
+        window.openEditModal = function(type, id) {
+            const dataList = window.appData[type];
+            const item = dataList.find(d => d.id === id);
+            if (!item) return;
+
+            document.getElementById('edit_type').value = type;
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_tanggal').value = item.tanggal;
+
+            const fieldBarang = document.getElementById('edit_field_barang');
+            const fieldBerat = document.getElementById('edit_field_berat');
+            const fieldBanyaknya = document.getElementById('edit_field_banyaknya');
+            const fieldHarga = document.getElementById('edit_field_harga');
+            const fieldTim = document.getElementById('edit_field_tim');
+            const fieldOrang = document.getElementById('edit_field_orang');
+            const fieldUang = document.getElementById('edit_field_uang');
+
+            if (type !== 'pembagian') {
+                fieldBarang.classList.remove('hidden');
+                fieldBerat.classList.remove('hidden');
+                fieldBanyaknya.classList.remove('hidden');
+                fieldHarga.classList.remove('hidden');
+                fieldTim.classList.add('hidden');
+                fieldOrang.classList.add('hidden');
+                fieldUang.classList.add('hidden');
+
+                document.getElementById('edit_namaBarang').value = item.namaBarang || '';
+                document.getElementById('edit_berat').value = item.berat || '';
+                document.getElementById('edit_banyaknya').value = item.banyaknya || 0;
+                document.getElementById('edit_harga').value = item.harga || 0;
+            } else {
+                fieldBarang.classList.add('hidden');
+                fieldBerat.classList.add('hidden');
+                fieldBanyaknya.classList.add('hidden');
+                fieldHarga.classList.add('hidden');
+                fieldTim.classList.remove('hidden');
+                fieldOrang.classList.remove('hidden');
+                fieldUang.classList.remove('hidden');
+
+                document.getElementById('edit_namaTim').value = item.namaTim || 'Sopiyan';
+                document.getElementById('edit_jumlahOrang').value = item.jumlahOrang || 0;
+                document.getElementById('edit_jumlahUang').value = item.jumlahUang || 0;
+            }
+
+            calculateEditTotal();
+            document.getElementById('editModal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = function() {
+            document.getElementById('editModal').classList.add('hidden');
+        };
+
+        window.calculateEditTotal = function() {
+            const type = document.getElementById('edit_type').value;
+            let total = 0;
+            if (type !== 'pembagian') {
+                const qty = parseFloat(document.getElementById('edit_banyaknya').value) || 0;
+                const harga = parseFloat(document.getElementById('edit_harga').value) || 0;
+                total = qty * harga;
+            } else {
+                total = parseFloat(document.getElementById('edit_jumlahUang').value) || 0;
+            }
+            document.getElementById('edit_jumlah_display').value = formatRupiah(total);
+        };
+
+        window.handleUpdateData = async function(e) {
+            e.preventDefault();
+            const type = document.getElementById('edit_type').value;
+            const id = document.getElementById('edit_id').value;
+            const tanggal = document.getElementById('edit_tanggal').value;
+            const submitBtn = document.getElementById('editSubmitBtn');
+
+            let rawJumlah = 0;
+            let updatePayload = { tanggal: tanggal };
+
+            if (type !== 'pembagian') {
+                const namaBarang = document.getElementById('edit_namaBarang').value.trim();
+                const berat = document.getElementById('edit_berat').value.trim();
+                const banyaknya = parseFloat(document.getElementById('edit_banyaknya').value) || 0;
+                const harga = parseFloat(document.getElementById('edit_harga').value) || 0;
+                rawJumlah = banyaknya * harga;
+
+                updatePayload.namaBarang = namaBarang;
+                updatePayload.berat = berat;
+                updatePayload.banyaknya = banyaknya;
+                updatePayload.harga = harga;
+                updatePayload.rawJumlah = rawJumlah;
+            } else {
+                const namaTim = document.getElementById('edit_namaTim').value;
+                const jumlahOrang = parseInt(document.getElementById('edit_jumlahOrang').value) || 0;
+                const jumlahUang = parseFloat(document.getElementById('edit_jumlahUang').value) || 0;
+                rawJumlah = jumlahUang;
+
+                updatePayload.namaTim = namaTim;
+                updatePayload.namaTimOtomatis = getNamaTimAutomatic(namaTim);
+                updatePayload.jumlahOrang = jumlahOrang;
+                updatePayload.jumlahUang = jumlahUang;
+                updatePayload.rawJumlah = rawJumlah;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Menyimpan...';
+
+                await updateDoc(doc(db, type, id), updatePayload);
+                closeEditModal();
+                await loadAllDataFromFirebase();
+                showToast('Berhasil', 'Data transaksi berhasil diperbarui.', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal', 'Terjadi kesalahan saat memperbarui data.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Simpan Perubahan';
+            }
+        };
+
+        window.loadSaldoData = function() {
+            const totalPemasukan = window.appData.penjualan.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            const totalPembagian = window.appData.pembagian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            const totalPembelianBarang = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
+            
+            let saldoGlobalBersih = totalPemasukan - totalPembagian - window.saldoPembelianKhusus - totalPembelianBarang;
+            let saldoGlobalKotor = saldoGlobalBersih + window.saldoPembelianKhusus;
+            let totalSemuaPengeluaran = totalPembagian + totalPembelianBarang;
+
+            document.getElementById('saldoGlobalDisplay').innerText = formatRupiah(saldoGlobalBersih);
+            document.getElementById('saldoGlobalKotorDisplay').innerText = formatRupiah(saldoGlobalKotor);
+            document.getElementById('saldoPemasukanDisplay').innerText = formatRupiah(totalPemasukan);
+            document.getElementById('saldoPembelianDisplay').innerText = formatRupiah(window.saldoPembelianKhusus);
+            document.getElementById('saldoPengeluaranDisplay').innerText = formatRupiah(totalPembagian);
+            document.getElementById('totalSemuaPengeluaranDisplay').innerText = formatRupiah(totalSemuaPengeluaran);
+
+            const startDate = document.getElementById('start_saldo').value;
+            const endDate = document.getElementById('end_saldo').value;
+
+            let combinedList = [];
+            window.appData.penjualan.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Penjualan', masuk: item.rawJumlah, keluar: 0 }));
+            window.appData.pembelian.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Pembelian', masuk: 0, keluar: item.rawJumlah }));
+            window.appData.pembagian.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Pembagian', masuk: 0, keluar: item.rawJumlah }));
+
+            if (startDate && endDate) {
+                combinedList = combinedList.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            combinedList.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+            const container = document.getElementById('tableContainer_saldo');
+            if (combinedList.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Tidak ada riwayat saldo pada rentang tanggal ini.</div>`;
+                return;
+            }
+
+            let html = `<table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
+                        <th class="p-3">Tanggal</th>
+                        <th class="p-3">Jenis Transaksi</th>
+                        <th class="p-3">Keterangan / Detail</th>
+                        <th class="p-3 text-right">Pemasukan (+)</th>
+                        <th class="p-3 text-right">Pengeluaran (-)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">`;
+
+            combinedList.forEach(item => {
+                let ket = item.namaBarang || item.namaTim || '-';
+                if(item.jenisTransaksi === 'Pembagian') ket += ` (${item.namaTimOtomatis || '-'})`;
+                html += `<tr class="hover:bg-gray-50">
+                    <td class="p-3 font-medium">${formatDateID(item.tanggal)}</td>
+                    <td class="p-3 font-semibold ${item.jenisTransaksi === 'Penjualan' ? 'text-emerald-600' : (item.jenisTransaksi === 'Pembelian' ? 'text-blue-600' : 'text-red-600')}">${item.jenisTransaksi}</td>
+                    <td class="p-3 text-gray-700">${ket}</td>
+                    <td class="p-3 text-right font-bold text-emerald-600">${item.masuk > 0 ? formatRupiah(item.masuk) : '-'}</td>
+                    <td class="p-3 text-right font-bold text-red-600">${item.keluar > 0 ? formatRupiah(item.keluar) : '-'}</td>
+                </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        };
+
+        window.openNotaPreviewModal = function(type) {
+            const startDate = document.getElementById(`start_${type}`).value;
+            const endDate = document.getElementById(`end_${type}`).value;
+            window.currentNotaDownloadInfo = { type, startDate, endDate };
+
+            let data = window.appData[type];
+            if (startDate && endDate) {
+                data = data.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            if (data.length === 0) {
+                showToast('Perhatian', 'Tidak ada data untuk dicetak pada rentang tanggal tersebut!', 'error');
+                return;
+            }
+
+            buildNotaTemplate(type, data, startDate, endDate);
+            document.getElementById('notaPreviewWrapper').innerHTML = document.getElementById('notaBox').outerHTML;
+            document.getElementById('notaPreviewModal').classList.remove('hidden');
+        };
+
+        window.closeNotaPreviewModal = function() {
+            document.getElementById('notaPreviewModal').classList.add('hidden');
+        };
+
+        function buildNotaTemplate(type, data, startDate, endDate) {
+            const titleEl = document.getElementById('notaHeaderTitle');
+            const tanggalEl = document.getElementById('notaHeaderTanggal');
+            const headRowEl = document.getElementById('notaTableHeadRow');
+            const bodyEl = document.getElementById('notaTableBody');
+            const totalEl = document.getElementById('notaHeaderTotal');
+
+            titleEl.innerText = `NOTA REKAPITULASI ${type.toUpperCase()}`;
+            tanggalEl.innerText = `Periode: ${formatDateID(startDate)} s/d ${formatDateID(endDate)}`;
+
+            if (type !== 'pembagian') {
+                headRowEl.innerHTML = `<th class="pb-2">No</th><th class="pb-2">Tanggal</th><th class="pb-2">Nama Barang</th><th class="pb-2">Berat/Satuan</th><th class="pb-2">Qty</th><th class="pb-2">Harga</th><th class="pb-2 text-right">Total</th>`;
+            } else {
+                headRowEl.innerHTML = `<th class="pb-2">No</th><th class="pb-2">Tanggal</th><th class="pb-2">Diterima</th><th class="pb-2">Nama Tim</th><th class="pb-2 text-center">Org</th><th class="pb-2 text-right">Jumlah Uang</th>`;
+            }
+
+            let bodyHtml = '';
+            let grandTotal = 0;
+
+            data.forEach((item, index) => {
+                grandTotal += (item.rawJumlah || 0);
+                if (type !== 'pembagian') {
+                    bodyHtml += `<tr>
+                        <td class="py-2">${index + 1}</td>
+                        <td class="py-2">${formatDateID(item.tanggal)}</td>
+                        <td class="py-2 font-medium">${item.namaBarang}</td>
+                        <td class="py-2 text-gray-500">${item.berat}</td>
+                        <td class="py-2">${item.banyaknya}</td>
+                        <td class="py-2">${formatRupiah(item.harga)}</td>
+                        <td class="py-2 text-right font-bold text-emerald-700">${formatRupiah(item.rawJumlah)}</td>
+                    </tr>`;
+                } else {
+                    bodyHtml += `<tr>
+                        <td class="py-2">${index + 1}</td>
+                        <td class="py-2">${formatDateID(item.tanggal)}</td>
+                        <td class="py-2 font-semibold">${item.namaTim || '-'}</td>
+                        <td class="py-2 text-emerald-700">${item.namaTimOtomatis || '-'}</td>
+                        <td class="py-2 text-center">${item.jumlahOrang || '-'}</td>
+                        <td class="py-2 text-right font-bold text-emerald-700">${formatRupiah(item.rawJumlah)}</td>
+                    </tr>`;
+                }
+            });
+
+            bodyEl.innerHTML = bodyHtml;
+            totalEl.innerText = formatRupiah(grandTotal);
+        }
+
+        window.executeDownloadNota = async function() {
+            const format = document.getElementById('downloadFormatSelect').value;
+            const { type, startDate, endDate } = window.currentNotaDownloadInfo;
+            let data = window.appData[type];
+            if (startDate && endDate) {
+                data = data.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
+            }
+
+            if (format === 'excel') {
+                let excelData = data.map((item, idx) => {
+                    if (type !== 'pembagian') {
+                        return {
+                            No: idx + 1,
+                            Tanggal: item.tanggal,
+                            'Nama Barang': item.namaBarang,
+                            'Berat/Satuan': item.berat,
+                            Banyaknya: item.banyaknya,
+                            'Harga Satuan': item.harga,
+                            Total: item.rawJumlah
+                        };
+                    } else {
+                        return {
+                            No: idx + 1,
+                            Tanggal: item.tanggal,
+                            Diterima: item.namaTim,
+                            'Nama Tim': item.namaTimOtomatis,
+                            'Jumlah Orang': item.jumlahOrang,
+                            'Jumlah Uang': item.jumlahUang
+                        };
+                    }
+                });
+
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, type.toUpperCase());
+                XLSX.writeFile(workbook, `Nota_${type}_${startDate}_sd_${endDate}.xlsx`);
+                showToast('Berhasil', 'Nota Excel berhasil diunduh.', 'success');
+                closeNotaPreviewModal();
+                return;
+            }
+
+            const notaBox = document.getElementById('notaBox');
+            notaBox.style.position = 'absolute';
+            notaBox.style.left = '0px';
+            notaBox.style.top = '0px';
+            notaBox.style.zIndex = '999999';
+
+            try {
+                showToast('Memproses', 'Menyiapkan file unduhan...', 'info');
+                const canvas = await html2canvas(notaBox, { scale: 2, useCORS: true });
+                notaBox.style.position = 'fixed';
+                notaBox.style.left = '-9999px';
+
+                if (format === 'png') {
+                    const link = document.createElement('a');
+                    link.download = `Nota_${type}_${startDate}_sd_${endDate}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    showToast('Berhasil', 'Nota PNG berhasil diunduh.', 'success');
+                } else if (format === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 190;
+                    const pageHeight = 295;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 10;
+
+                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+
+                    pdf.save(`Nota_${type}_${startDate}_sd_${endDate}.pdf`);
+                    showToast('Berhasil', 'Nota PDF berhasil diunduh.', 'success');
+                }
+                closeNotaPreviewModal();
+            } catch (err) {
+                console.error(err);
+                notaBox.style.position = 'fixed';
+                notaBox.style.left = '-9999px';
+                showToast('Gagal', 'Terjadi kesalahan saat mengunduh nota.', 'error');
+            }
+        };
+    </script>
+</body>
+</html>
