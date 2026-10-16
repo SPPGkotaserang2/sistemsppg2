@@ -788,23 +788,19 @@
             });
         }
 
-        // FUNGSI KOMPRESI FOTO AMAN DI SEMUA PERANGKAT (ANTI OUT-OF-MEMORY)
+        // PERBAIKAN KOMPRESI LEBIH RINGAN (MAX 700PX & KUALITAS 0.45)
         async function applyWatermarkAndCompress(file, category, uploaderName) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onerror = () => {
-                    resolve(null); // Fallback jika gagal baca file
-                };
+                reader.onerror = () => resolve(null);
                 reader.onload = (event) => {
                     const img = new Image();
-                    img.onerror = () => {
-                        resolve(event.target.result); // Fallback ke data asli jika gambar korup/gagal load
-                    };
+                    img.onerror = () => resolve(event.target.result);
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const maxWidth = 900; // Optimal untuk kecepatan & ukuran file kecil
+                        const maxWidth = 700; // Dikurangi agar ukuran Base64 sangat kecil & ringan
 
                         if (width > maxWidth) {
                             height = Math.round((height * maxWidth) / width);
@@ -822,17 +818,17 @@
                         const brandStr = "SPPG KOTA SERANG SERANG SERANG 2 - Uploader: " + uploaderName;
 
                         ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-                        ctx.fillRect(10, height - 90, width - 20, 80);
+                        ctx.fillRect(10, height - 70, width - 20, 60);
 
                         ctx.fillStyle = "#ffffff";
-                        ctx.font = "bold 13px sans-serif";
-                        ctx.fillText(timeStr, 20, height - 65);
-                        ctx.font = "11px sans-serif";
-                        ctx.fillText(locationStr, 20, height - 42);
+                        ctx.font = "bold 11px sans-serif";
+                        ctx.fillText(timeStr, 15, height - 50);
+                        ctx.font = "10px sans-serif";
+                        ctx.fillText(locationStr, 15, height - 33);
                         ctx.fillStyle = "#38bdf8";
-                        ctx.fillText(brandStr, 20, height - 20);
+                        ctx.fillText(brandStr, 15, height - 16);
 
-                        resolve(canvas.toDataURL('image/jpeg', 0.55));
+                        resolve(canvas.toDataURL('image/jpeg', 0.45)); // Kompresi ringan anti error payload Firestore
                     };
                     img.src = event.target.result;
                 };
@@ -881,7 +877,7 @@
             }
 
             btnUpload.disabled = true;
-            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Sedang Dikirim...`;
+            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses & Mengirim...`;
 
             try {
                 let relawanHadirArr = [];
@@ -914,25 +910,32 @@
                 const uploadBatchGroupId = Date.now().toString();
                 const syncStartTime = Date.now();
 
-                const reportPayload = {
-                    uploader: currentUser.name,
-                    division: currentUser.division,
-                    instansi: instansi,
-                    kategori: kategori,
-                    tanggal: tanggalPilih,
-                    relawanHadir: relawanHadirArr,
-                    files: allCompressedFiles,
-                    syncedToDrive: false,
-                    syncFailed: false,
-                    syncStartTime: syncStartTime,
-                    batchGroupId: uploadBatchGroupId
-                };
+                // PERBAIKAN: Kirim foto satu per satu ke dokumen terpisah jika ukuran besar, atau simpan ringan
+                // Bagi foto jika lebih dari 2 foto untuk mencegah batas 1MB Firestore
+                for (let i = 0; i < allCompressedFiles.length; i += 2) {
+                    const fileChunk = allCompressedFiles.slice(i, i + 2);
+                    const reportPayload = {
+                        uploader: currentUser.name,
+                        division: currentUser.division,
+                        instansi: instansi,
+                        kategori: kategori,
+                        tanggal: tanggalPilih,
+                        relawanHadir: relawanHadirArr,
+                        files: fileChunk,
+                        syncedToDrive: false,
+                        syncFailed: false,
+                        syncStartTime: syncStartTime,
+                        batchGroupId: uploadBatchGroupId
+                    };
 
-                // SIMPAN INSTAN KE FIREBASE DATABASE
-                const docRef = await window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
-                    ...reportPayload,
-                    createdAt: window.serverTimestamp()
-                });
+                    const docRef = await window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
+                        ...reportPayload,
+                        createdAt: window.serverTimestamp()
+                    });
+
+                    // Background sync ke Drive
+                    syncToDriveInBackground(docRef.id, reportPayload, formattedDateFolder);
+                }
 
                 document.getElementById('upload-form').reset();
                 document.getElementById('input-instansi').value = "SPPG KOTA SERANG SERANG SERANG 2";
@@ -940,18 +943,16 @@
                 setTodayDate();
                 updateCategoryDropdownOptions();
 
-                // NOTIFIKASI SUKSES INSTAN (TIDAK MENUNGGU PROSES LAIN)
+                // NOTIFIKASI SUKSES INSTAN
                 Swal.fire({
                     icon: 'success',
                     title: 'BERHASIL DIKIRIM!',
-                    text: `Laporan berhasil terkirim instan atas nama ${currentUser.name}.`,
+                    text: `Laporan berhasil terkirim atas nama ${currentUser.name}.`,
                     confirmButtonColor: '#2563eb',
                     timer: 2000,
                     showConfirmButton: false
                 });
 
-                // BACKGROUND SYNC KE GOOGLE DRIVE & WHATSAPP (BERJALAN DI LATAR BELAKANG)
-                syncToDriveInBackground(docRef.id, reportPayload, formattedDateFolder);
                 sendWhatsAppNotification(currentUser.name, currentUser.division, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
 
             } catch (error) {
