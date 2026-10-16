@@ -148,7 +148,7 @@
                             </div>
                         </div>
 
-                        <!-- Bagian Khusus Kolom Upload Foto (Dinamis Berdasarkan Peraturan Divisi & 5 Kolom Kamera) -->
+                        <!-- Bagian Khusus Kolom Upload Foto -->
                         <div id="dynamic-upload-container" class="space-y-3">
                             <!-- Diisi secara dinamis via JS -->
                         </div>
@@ -375,10 +375,7 @@
 
         // DATABASE AKUN LENGKAP DENGAN DIVISI & HAK AKSESNYA
         const usersDB = {
-            // Admin
             "Serang": { pass: "Mandiri02srg", role: "admin", name: "Admin", division: "ADMIN" },
-            
-            // A. Divisi Security
             "Muamar": { pass: "Muamar2", role: "user", name: "Muamar", division: "SECURITY", allowed: [
                 "FOTO SERAH TERIMA SCURITY", "FOTO PENERIMAAN BAHAN BAKU", "FOTO TIMBANGAN LIMBAH B3", 
                 "FOTO AREA PARKIRAN / DEPAN DAPUR", "FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN", "FOTO ISI TABUNG GAS", 
@@ -393,27 +390,23 @@
                 "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK", "FOTO PERBAIKAN DAPUR/LAINNYA JIKA"
             ], cameraOnly: ["FOTO SERAH TERIMA SCURITY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
 
-            // B. Divisi Persiapan
             "Nurhayati": { pass: "Nurhayati2", role: "user", name: "Nurhayati", division: "PERSIAPAN", allowed: [
                 "FOTO ABSENSI RELAWAN", "FOTO LIMBAH RIJEK PERSIAPAN", "FOTO TIMBANGAN LIMBAH B3", 
                 "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PERSIAPAN - PENGOLAHAN", 
                 "KERJA TIM PERSIAPAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
             ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PERSIAPAN - PENGOLAHAN", "KERJA TIM PERSIAPAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PERSIAPAN": 3 } },
 
-            // C. Divisi Pengolahan
             "Sopiyan": { pass: "Sopiyan2", role: "user", name: "Sopiyan", division: "PENGOLAHAN", allowed: [
                 "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
                 "SERAH TERIMA PENGOLAHAN - PEMORSIAN", "KERJA TIM PENGOLAHAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
             ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PENGOLAHAN - PEMORSIAN", "KERJA TIM PENGOLAHAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PENGOLAHAN": 3 } },
 
-            // D. Divisi Pemorsian & Packing
             "Anisa": { pass: "Anisa2", role: "user", name: "Anisa Hayatun Nufus", division: "PEMORSIAN", allowed: [
                 "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
                 "SERAH TERIMA PEMORSIAN - DISTRIBUSI", "KERJA TIM PEMORSIAN", "FOTO SISA MAKANAN PEMORSIAN", 
                 "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
             ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PEMORSIAN - DISTRIBUSI", "KERJA TIM PEMORSIAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PEMORSIAN": 3 } },
 
-            // E. Divisi Distribusi
             "Jimi": { pass: "A1403DV", role: "user", name: "Jimi Kurniawan", division: "DISTRIBUSI", allowed: [
                 "FOTO TIMBANGAN LIMBAH B3", "SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "FOTO CUCI KENDARAAN", 
                 "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
@@ -424,7 +417,6 @@
                 "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
             ], cameraOnly: ["SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
 
-            // F. Divisi Kebersihan
             "Suryati": { pass: "Suryati2", role: "user", name: "Suryati", division: "KEBERSIHAN", allowed: [
                 "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
                 "FOTO CLEANING SERVICE SIANG", "FOTO CLEANING SERVICE MALAM", "FOTO GENERAL CLEANING", 
@@ -437,19 +429,16 @@
                 "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
             ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
 
-            // G. Divisi Pencuci Foodtray
             "Herman": { pass: "Herman2", role: "user", name: "Herman Sawiran", division: "FOODTRAY", allowed: [
                 "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
                 "SERAH TERIMA PENCUCI FOODTRAY - ASLAP", "KERJA TIM PENCUCI FOODTRAY", "FOTO SISA MAKANAN FOODTRAY", 
                 "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
             ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PENCUCI FOODTRAY - ASLAP", "KERJA TIM PENCUCI FOODTRAY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PENCUCI FOODTRAY": 3 } },
 
-            // H. Divisi Aslap
             "Fajar": { pass: "Aslap123", role: "user", name: "Fajar Rizki Ramadhan", division: "ASLAP", allowed: [
                 "FOTO BAHAN BAKU", "FOTO TIMBANGAN LIMBAH B3", "SERAH TERIMA PENCUCI FOODTRAY - ASLAP"
             ], cameraOnly: ["SERAH TERIMA PENCUCI FOODTRAY - ASLAP"] },
 
-            // I. Warehouse
             "AdminSo": { pass: "Admin123", role: "user", name: "Admin Gudang", division: "WAREHOUSE", allowed: [
                 "FOTO SAAT SO BAHAN BAKU"
             ], cameraOnly: ["FOTO SAAT SO BAHAN BAKU"], minPhotos: { "FOTO SAAT SO BAHAN BAKU": 3 } }
@@ -466,39 +455,15 @@
         ];
 
         const ALL_CATEGORIES = [
-            "FOTO SERAH TERIMA SCURITY",
-            "FOTO ABSENSI RELAWAN",
-            "FOTO PENERIMAAN BAHAN BAKU",
-            "FOTO BAHAN BAKU",
-            "FOTO LIMBAH RIJEK PERSIAPAN",
-            "FOTO TIMBANGAN LIMBAH B3",
-            "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN",
-            "FOTO AREA PARKIRAN / DEPAN DAPUR",
-            "FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN",
-            "FOTO CLEANING SERVICE SIANG",
-            "FOTO CLEANING SERVICE MALAM",
-            "SERAH TERIMA PERSIAPAN - PENGOLAHAN",
-            "SERAH TERIMA PENGOLAHAN - PEMORSIAN",
-            "SERAH TERIMA PEMORSIAN - DISTRIBUSI",
-            "SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY",
-            "SERAH TERIMA PENCUCI FOODTRAY - ASLAP",
-            "FOTO CUCI KENDARAAN",
-            "FOTO KENDARAAN",
-            "KERJA TIM PERSIAPAN",
-            "KERJA TIM PENGOLAHAN",
-            "KERJA TIM PEMORSIAN",
-            "KERJA TIM PENCUCI FOODTRAY",
-            "FOTO ISI GALON",
-            "FOTO ISI TABUNG GAS",
-            "FOTO DATANG/TERIMA PAKET",
-            "FOTO SISA MAKANAN PEMORSIAN",
-            "FOTO SISA MAKANAN FOODTRAY",
-            "FOTO SAAT PENGAMBILAN TUKANG SAMPAH",
-            "FOTO SAAT SO BAHAN BAKU",
-            "FOTO GENERAL CLEANING",
-            "FOTO PERALATAN YANG BARU",
-            "FOTO PERALATAN YANG RUSAK",
-            "FOTO PERBAIKAN DAPUR/LAINNYA JIKA"
+            "FOTO SERAH TERIMA SCURITY", "FOTO ABSENSI RELAWAN", "FOTO PENERIMAAN BAHAN BAKU", "FOTO BAHAN BAKU", 
+            "FOTO LIMBAH RIJEK PERSIAPAN", "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
+            "FOTO AREA PARKIRAN / DEPAN DAPUR", "FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN", "FOTO CLEANING SERVICE SIANG", 
+            "FOTO CLEANING SERVICE MALAM", "SERAH TERIMA PERSIAPAN - PENGOLAHAN", "SERAH TERIMA PENGOLAHAN - PEMORSIAN", 
+            "SERAH TERIMA PEMORSIAN - DISTRIBUSI", "SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "SERAH TERIMA PENCUCI FOODTRAY - ASLAP", 
+            "FOTO CUCI KENDARAAN", "FOTO KENDARAAN", "KERJA TIM PERSIAPAN", "KERJA TIM PENGOLAHAN", "KERJA TIM PEMORSIAN", 
+            "KERJA TIM PENCUCI FOODTRAY", "FOTO ISI GALON", "FOTO ISI TABUNG GAS", "FOTO DATANG/TERIMA PAKET", 
+            "FOTO SISA MAKANAN PEMORSIAN", "FOTO SISA MAKANAN FOODTRAY", "FOTO SAAT PENGAMBILAN TUKANG SAMPAH", 
+            "FOTO SAAT SO BAHAN BAKU", "FOTO GENERAL CLEANING", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK", "FOTO PERBAIKAN DAPUR/LAINNYA JIKA"
         ];
 
         function updateCategoryDropdownOptions() {
@@ -507,7 +472,7 @@
 
             const now = new Date();
             const currentHour = now.getHours();
-            const currentDay = now.getDay(); // 6 = Sabtu
+            const currentDay = now.getDay(); 
 
             let allowedList = ALL_CATEGORIES;
             if (currentUser && currentUser.role !== 'admin' && currentUser.allowed) {
@@ -527,7 +492,6 @@
             handleCategoryChange();
         }
 
-        // FUNGSI PERBAIKAN DENGAN FITUR PRATINJAU LANGSUNG DARI KAMERA
         function handleCategoryChange() {
             const selectEl = document.getElementById('input-kategori');
             const relawanContainer = document.getElementById('relawan-container');
@@ -563,7 +527,6 @@
                         <div class="border border-slate-200 rounded-xl p-2.5 bg-slate-50 flex flex-col items-center text-center shadow-sm relative group" id="slot-box-${i}">
                             <span class="text-[11px] font-bold text-slate-700 mb-1.5 bg-white px-2 py-0.5 rounded border border-slate-100">Foto ${i}</span>
                             
-                            <!-- Kontainer Pratinjau Foto -->
                             <div id="preview-wrapper-${i}" class="hidden w-full flex flex-col items-center space-y-1">
                                 <div class="relative w-full h-24 rounded-lg overflow-hidden border border-slate-300 bg-black/5">
                                     <img id="img-preview-${i}" src="" alt="Pratinjau Foto ${i}" class="w-full h-full object-cover">
@@ -576,7 +539,6 @@
                                 </button>
                             </div>
 
-                            <!-- Input Foto Kamera -->
                             <div id="input-wrapper-${i}" class="w-full">
                                 <input type="file" id="input-file-${i}" accept="image/*" capture="environment" ${i === 1 ? 'required' : ''} onchange="previewCameraPhoto(this, ${i})" 
                                     class="w-full text-[10px] text-slate-500 file:w-full file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
@@ -596,7 +558,6 @@
             dynamicContainer.innerHTML = html;
         }
 
-        // FUNGSI UNTUK MENAMPILKAN PRATINJAU SETELAH FOTO DIAMBIL
         function previewCameraPhoto(input, slotIndex) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -615,7 +576,6 @@
             }
         }
 
-        // FUNGSI UNTUK MENGHAPUS/MENGULANGI FOTO PADA SLOT KAMERA
         function clearCameraSlot(slotIndex) {
             const input = document.getElementById(`input-file-${slotIndex}`);
             const previewWrapper = document.getElementById(`preview-wrapper-${slotIndex}`);
@@ -828,16 +788,23 @@
             });
         }
 
+        // FUNGSI KOMPRESI FOTO AMAN DI SEMUA PERANGKAT (ANTI OUT-OF-MEMORY)
         async function applyWatermarkAndCompress(file, category, uploaderName) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
+                reader.onerror = () => {
+                    resolve(null); // Fallback jika gagal baca file
+                };
                 reader.onload = (event) => {
                     const img = new Image();
+                    img.onerror = () => {
+                        resolve(event.target.result); // Fallback ke data asli jika gambar korup/gagal load
+                    };
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-                        const maxWidth = 1000;
+                        const maxWidth = 900; // Optimal untuk kecepatan & ukuran file kecil
 
                         if (width > maxWidth) {
                             height = Math.round((height * maxWidth) / width);
@@ -858,14 +825,14 @@
                         ctx.fillRect(10, height - 90, width - 20, 80);
 
                         ctx.fillStyle = "#ffffff";
-                        ctx.font = "bold 14px sans-serif";
+                        ctx.font = "bold 13px sans-serif";
                         ctx.fillText(timeStr, 20, height - 65);
-                        ctx.font = "12px sans-serif";
+                        ctx.font = "11px sans-serif";
                         ctx.fillText(locationStr, 20, height - 42);
                         ctx.fillStyle = "#38bdf8";
                         ctx.fillText(brandStr, 20, height - 20);
 
-                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                        resolve(canvas.toDataURL('image/jpeg', 0.55));
                     };
                     img.src = event.target.result;
                 };
@@ -873,42 +840,8 @@
             });
         }
 
-        function checkGlobalSyncStatus(groupedData) {
-            const btnUpload = document.getElementById('btn-upload');
-            if (!btnUpload) return;
-
-            const now = Date.now();
-            let hasUnsynced = false;
-
-            for (const item of groupedData) {
-                if (item.syncedToDrive !== true && item.syncFailed !== true) {
-                    const startTime = item.syncStartTime || (item.createdAt ? new Date(item.createdAt).getTime() : now);
-                    if (now - startTime < 35000) {
-                        hasUnsynced = true;
-                        break;
-                    }
-                }
-            }
-
-            isSyncingActive = hasUnsynced;
-            if (isSyncingActive) {
-                btnUpload.disabled = true;
-                btnUpload.classList.add('opacity-50', 'cursor-not-allowed');
-                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Tunggu Sebentar...`;
-            } else {
-                btnUpload.disabled = false;
-                btnUpload.classList.remove('opacity-50', 'cursor-not-allowed');
-                btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Kirim Laporan`;
-            }
-        }
-
         async function handleUpload(e) {
             e.preventDefault();
-
-            if (isSyncingActive) {
-                Swal.fire({ icon: 'warning', title: 'Proses sedang Berjalan', text: 'Mohon tunggu! Ada data sebelumnya yang sedang dikirim.', confirmButtonColor: '#2563eb' });
-                return;
-            }
 
             const tanggalPilih = document.getElementById('input-tanggal-laporan').value;
             const instansi = document.getElementById('input-instansi').value;
@@ -948,7 +881,7 @@
             }
 
             btnUpload.disabled = true;
-            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses Watermark...`;
+            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Sedang Dikirim...`;
 
             try {
                 let relawanHadirArr = [];
@@ -968,12 +901,14 @@
                 let allCompressedFiles = [];
                 for (let i = 0; i < selectedFiles.length; i++) {
                     const base64Watermarked = await applyWatermarkAndCompress(selectedFiles[i], kategori, currentUser.name);
-                    allCompressedFiles.push({
-                        fileName: `${kategori}_${Date.now()}_${i + 1}.jpg`,
-                        fileData: base64Watermarked,
-                        category: kategori,
-                        dateFolder: formattedDateFolder
-                    });
+                    if (base64Watermarked) {
+                        allCompressedFiles.push({
+                            fileName: `${kategori}_${Date.now()}_${i + 1}.jpg`,
+                            fileData: base64Watermarked,
+                            category: kategori,
+                            dateFolder: formattedDateFolder
+                        });
+                    }
                 }
 
                 const uploadBatchGroupId = Date.now().toString();
@@ -993,6 +928,7 @@
                     batchGroupId: uploadBatchGroupId
                 };
 
+                // SIMPAN INSTAN KE FIREBASE DATABASE
                 const docRef = await window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
                     ...reportPayload,
                     createdAt: window.serverTimestamp()
@@ -1004,21 +940,23 @@
                 setTodayDate();
                 updateCategoryDropdownOptions();
 
+                // NOTIFIKASI SUKSES INSTAN (TIDAK MENUNGGU PROSES LAIN)
                 Swal.fire({
                     icon: 'success',
-                    title: 'BERHASIL DIUNGGAH!',
-                    text: `Laporan berhasil dikirim dan tercatat atas nama ${currentUser.name} (${currentUser.division}).`,
+                    title: 'BERHASIL DIKIRIM!',
+                    text: `Laporan berhasil terkirim instan atas nama ${currentUser.name}.`,
                     confirmButtonColor: '#2563eb',
-                    timer: 2500,
+                    timer: 2000,
                     showConfirmButton: false
                 });
 
+                // BACKGROUND SYNC KE GOOGLE DRIVE & WHATSAPP (BERJALAN DI LATAR BELAKANG)
                 syncToDriveInBackground(docRef.id, reportPayload, formattedDateFolder);
                 sendWhatsAppNotification(currentUser.name, currentUser.division, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
 
             } catch (error) {
                 console.error("Gagal Upload:", error);
-                Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Terjadi kesalahan saat memproses foto.', confirmButtonColor: '#2563eb' });
+                Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Terjadi kendala koneksi saat mengirim foto. Silakan coba lagi.', confirmButtonColor: '#2563eb' });
             } finally {
                 btnUpload.disabled = false;
                 btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Kirim Laporan`;
