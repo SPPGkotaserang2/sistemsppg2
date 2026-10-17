@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Hadir Relawan - SPPG KOTA SERANG SERANG SERANG 2</title>
+
+    <!-- Font & Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --biru-telur-asin: #80cbd3;
+            --biru-telur-asin-light: #e0f2f1;
+            --biru-telur-asin-dark: #00897b;
+            --bg-gradient: linear-gradient(135deg, #e0f7fa 0%, #80cbd3 50%, #4db6ac 100%);
+            --dark-color: #263238;
+            --white: #ffffff;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--dark-color);
+            padding: 20px;
+        }
+
+        /* Modal Overlay & Lock Screen */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-card h2 {
+            color: var(--biru-telur-asin-dark);
+            margin-bottom: 5px;
+            font-size: 20px;
+        }
+
+        .modal-card p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--biru-telur-asin-dark);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .modal-btn:hover {
+            background: #00695c;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 3px solid var(--biru-telur-asin);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            color: var(--biru-telur-asin-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .admin-badge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            background: #e0f2f1;
+            padding: 6px 12px;
+            border-radius: 8px;
+            color: var(--biru-telur-asin-dark);
+            font-weight: 600;
+            border: 1px solid var(--biru-telur-asin);
+        }
+
+        .live-clock {
+            background: var(--biru-telur-asin-dark);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 12px;
+            text-align: right;
+            box-shadow: 0 4px 10px rgba(0, 137, 123, 0.3);
+        }
+
+        .live-clock #clock {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .live-clock #date {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #e0e0e0;
+            color: #333;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--biru-telur-asin-dark);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 137, 123, 0.3);
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: var(--biru-telur-asin-light);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .date-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .date-picker-group label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="date"], select, input[type="text"] {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-form-grid {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 2fr auto;
+            gap: 10px;
+            align-items: center;
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary { background: var(--biru-telur-asin-dark); color: white; }
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-excel { background: #2e7d32; color: white; }
+        .btn-pdf { background: #c62828; color: white; }
+        .btn-png { background: #ef6c00; color: white; }
+        .btn-delete { background: #e53935; color: white; padding: 6px 10px; font-size: 12px; }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        thead {
+            background: var(--biru-telur-asin);
+            color: #004d40;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-hadir { background: #c8e6c9; color: #2e7d32; }
+        .badge-izin { background: #bbdefb; color: #1565c0; }
+        .badge-sakit { background: #fff9c4; color: #f57f17; }
+        .badge-alpa { background: #ffcdd2; color: #c62828; }
+        .badge-backup { background: #e1bee7; color: #6a1b9a; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .export-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .footer-credit { margin-top: 20px; text-align: center; font-size: 12px; color: #666; font-weight: 600; }
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--biru-telur-asin-dark);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            .input-form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- MODAL LOCK SCREEN / CEK LOKASI AWAL -->
+<div class="modal-overlay" id="locationLockModal" style="display: flex;">
+    <div class="modal-card" style="max-width: 400px;">
+        <!-- Logo Lokasi dengan Event Klik Tersembunyi (Klik 5x untuk buka Login Admin) -->
+        <div id="lockIcon" onclick="handleSecretAdminTrigger()" style="font-size: 45px; color: var(--biru-telur-asin-dark); margin-bottom: 15px; cursor: pointer;" title="Pemeriksaan Lokasi">
+            <i class="fa-solid fa-location-crosshairs fa-spin"></i>
+        </div>
+        <h2 id="lockTitle">Memeriksa Lokasi Anda</h2>
+        <p id="lockMessage">Harap izinkan akses lokasi (GPS) pada browser Anda untuk membuka halaman presensi ini.</p>
+        <button class="modal-btn" id="btnRetryLocation" onclick="initLocationCheck()" style="display: none; margin-top: 10px;">
+            <i class="fa-solid fa-rotate-right"></i> Coba Ulangi Lokasi
+        </button>
+    </div>
+</div>
+
+<!-- MODAL LOGIN ADMIN -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal-card">
+        <button class="close-modal" onclick="toggleLoginModal(false)"><i class="fa-solid fa-xmark"></i></button>
+        <h2><i class="fa-solid fa-lock"></i> LOGIN ADMIN</h2>
+        <p>SPPG KOTA SERANG SERANG SERANG 2</p>
+        <form onsubmit="handleLoginAdmin(event)">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="usernameInput" placeholder="Username admin" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Password admin" required>
+            </div>
+            <button type="submit" class="modal-btn"><i class="fa-solid fa-right-to-bracket"></i> Masuk Admin</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL NOTIFIKASI PROFESIONAL -->
+<div class="modal-overlay" id="customNotificationModal">
+    <div class="modal-card">
+        <div id="notifIcon" style="font-size: 40px; color: var(--biru-telur-asin-dark); margin-bottom: 15px;">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2 id="notifTitle" style="margin-bottom: 10px;">Informasi Sistem</h2>
+        <p id="notifMessage">Pesan informasi sistem akan muncul di sini.</p>
+        <button class="modal-btn" onclick="closeNotification()">OK, Mengerti</button>
+    </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS (PROFESIONAL) -->
+<div class="modal-overlay" id="customConfirmModal">
+    <div class="modal-card">
+        <div style="font-size: 40px; color: #e53935; margin-bottom: 15px;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h2 style="margin-bottom: 10px; color: #e53935;">Konfirmasi Hapus</h2>
+        <p id="confirmMessage">Apakah Anda yakin ingin menghapus data relawan ini dari sistem?</p>
+        <div style="display: flex; gap: 10px;">
+            <button class="modal-btn" style="background: #e53935;" id="btnConfirmYes">Ya, Hapus</button>
+            <button class="modal-btn" style="background: #888;" onclick="closeConfirmModal()">Batal</button>
+        </div>
+    </div>
+</div>
+
+<!-- UTAMA CONTAINER -->
+<div class="container" id="mainContainer">
+    <header>
+        <div class="header-title">
+            <h1><i class="fa-solid fa-clipboard-user"></i> SPPG KOTA SERANG SERANG SERANG 2</h1>
+            <p>Sistem Presensi Relawan & Operasional Dapur</p>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" id="btnLoginToggle" onclick="toggleLoginModal(true)">
+                <i class="fa-solid fa-user-shield"></i> Admin
+            </button>
+            <div class="admin-badge" id="adminBadgeInfo">
+                <span><i class="fa-solid fa-circle-check"></i> ADMIN AKTIF</span>
+                <button class="btn-delete" style="padding: 2px 6px; font-size: 10px;" onclick="logoutAdmin()">Keluar</button>
+            </div>
+            <div class="live-clock">
+                <div id="clock">00:00:00 WIB</div>
+                <div id="date">Hari, 00 Bulan 0000</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" id="tabInputBtn" onclick="switchTab('input-tab')">
+            <i class="fa-solid fa-pen-to-square"></i> Input Presensi
+        </button>
+        <button class="tab-btn" id="tabHistoryBtn" onclick="switchTab('history-tab')" style="display: none;">
+            <i class="fa-solid fa-chart-line"></i> Riwayat
+        </button>
+    </div>
+
+    <!-- TAB 1: INPUT PRESENSI -->
+    <div id="input-tab" class="tab-content active">
+        <div class="control-panel">
+            <div class="date-picker-group">
+                <label for="presensiDate"><i class="fa-regular fa-calendar-days"></i> Tanggal Presensi:</label>
+                <input type="date" id="presensiDate" onchange="fetchExistingPresensi()">
+            </div>
+            <button class="btn btn-success" onclick="fetchExistingPresensi()" title="Muat ulang data terbaru">
+                <i class="fa-solid fa-rotate"></i> Refresh Data
+            </button>
+        </div>
+
+        <!-- FORM INPUT SATU PERSATU -->
+        <div class="input-form-grid" id="inputFormSection">
+            <div>
+                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">PILIH RELAWAN</label>
+                <select id="selectRelawan" style="width: 100%;" onchange="updateBagianOtomatis()">
+                    <option value="">-- Pilih Nama Relawan --</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">BAGIAN / JABATAN</label>
+                <input type="text" id="inputBagian" placeholder="Otomatis terisi" readonly style="width: 100%; background: #f0f0f0;">
+            </div>
+            <div>
+                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">STATUS</label>
+                <select id="selectStatus" style="width: 100%;">
+                    <option value="Hadir" selected>Hadir</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                    <option value="Tanpa Keterangan">Tanpa Keterangan</option>
+                    <option value="Backup">Backup</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">KETERANGAN</label>
+                <input type="text" id="inputCatatan" placeholder="misalkan yang backup atau lainnya..." style="width: 100%;">
+            </div>
+            <div>
+                <label style="font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">&nbsp;</label>
+                <button class="btn btn-primary" id="btnSimpanSatu" onclick="tambahDanSimpanSatu()">
+                    <i class="fa-solid fa-plus"></i> Simpan
+                </button>
+            </div>
+        </div>
+
+        <div id="loadingInputSpinner" class="spinner"></div>
+
+        <!-- TABEL ARSIRAN DI BAWAH -->
+        <h3 style="margin-bottom: 10px; font-size: 16px; color: var(--biru-telur-asin-dark);"><i class="fa-solid fa-list-check"></i> Daftar Hadir Tanggal Terpilih</h3>
+        <div class="table-responsive">
+            <table id="tableArsipHarian">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">NO</th>
+                        <th>NAMA RELAWAN</th>
+                        <th>BAGIAN</th>
+                        <th>STATUS</th>
+                        <th>KETERANGAN</th>
+                        <th style="width: 80px; text-align: center;" id="thAksiHeader">AKSI</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyArsip">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #888;">Memuat data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB 2: RIWAYAT & ADMIN EXPORT -->
+    <div id="history-tab" class="tab-content">
+        <div class="control-panel" style="flex-direction: column; align-items: stretch; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div class="date-picker-group">
+                    <label><i class="fa-solid fa-filter"></i> Filter Tanggal:</label>
+                    <input type="date" id="filterStartDate">
+                    <span>s/d</span>
+                    <input type="date" id="filterEndDate">
+                </div>
+                <div class="date-picker-group">
+                    <label><i class="fa-solid fa-user"></i> Filter Nama:</label>
+                    <select id="filterNama" style="min-width: 200px;">
+                        <option value="">-- Semua Relawan --</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="loadHistory()">
+                    <i class="fa-solid fa-magnifying-glass"></i> Tampilkan
+                </button>
+            </div>
+            
+            <div class="export-group" style="justify-content: flex-end; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 10px;">
+                <button class="btn btn-excel" onclick="exportExcel()">
+                    <i class="fa-solid fa-file-excel"></i> Excel
+                </button>
+                <button class="btn btn-pdf" onclick="exportPDF()">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </button>
+                <button class="btn btn-png" onclick="exportPNG()">
+                    <i class="fa-solid fa-file-image"></i> PNG
+                </button>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="spinner"></div>
+
+        <div class="table-responsive" id="exportArea">
+            <table id="tableHistory">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">NO</th>
+                        <th>TANGGAL</th>
+                        <th>NAMA RELAWAN</th>
+                        <th>BAGIAN</th>
+                        <th>STATUS</th>
+                        <th>KETERANGAN</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHistory">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #888;">Silakan klik "Tampilkan" untuk memuat data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-credit">
+        SISTEM SPPG KOTA SERANG SERANG SERANG 2
+    </div>
+</div>
+
+<!-- Firebase SDK & Database Logic -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC-pTKuWlMAzV9PwIlGcOSsKXAiAJNKYx0",
+        authDomain: "absen-1eb02.firebaseapp.com",
+        projectId: "absen-1eb02",
+        storageBucket: "absen-1eb02.firebasestorage.app",
+        messagingSenderId: "154831588581",
+        appId: "1:154831588581:web:4ba9d4607f6f393ac1980c",
+        measurementId: "G-FMBNJZDKR7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.simpanKeFirebase = async function(recordData) {
+        try {
+            await addDoc(collection(db, "presensi_relawan"), {
+                ...recordData,
+                createdAt: new Date()
+            });
+            return true;
+        } catch (error) {
+            console.error("Error saving to Firebase:", error);
+            return false;
+        }
+    };
+
+    window.ambilDataFirebase = async function(targetDate) {
+        try {
+            const q = query(collection(db, "presensi_relawan"), where("tanggal", "==", targetDate));
+            const querySnapshot = await getDocs(q);
+            let hasil = [];
+            querySnapshot.forEach((docSnap) => {
+                hasil.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            return hasil;
+        } catch (error) {
+            console.error("Error fetching from Firebase:", error);
+            return [];
+        }
+    };
+
+    window.hapusDataFirebase = async function(docId) {
+        try {
+            await deleteDoc(doc(db, "presensi_relawan", docId));
+            return true;
+        } catch (error) {
+            console.error("Error deleting from Firebase:", error);
+            return false;
+        }
+    };
+
+    window.ambilRiwayatFirebase = async function(startDate, endDate, namaFilter) {
+        try {
+            const querySnapshot = await getDocs(collection(db, "presensi_relawan"));
+            let hasil = [];
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const matchTanggal = data.tanggal >= startDate && data.tanggal <= endDate;
+                const matchNama = !namaFilter || data.nama === namaFilter;
+
+                if (matchTanggal && matchNama) {
+                    hasil.push({ id: docSnap.id, ...data });
+                }
+            });
+            hasil.sort((a, b) => a.tanggal.localeCompare(b.tanggal));
+            return hasil;
+        } catch (error) {
+            console.error("Error fetching history:", error);
+            return [];
+        }
+    };
+
+    window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<script>
+    const FONNTE_TOKEN = "N1L5tFSqGg2BJQVD42SC";
+    const FONNTE_TARGET = "6283111399112";
+
+    // Koordinat Target SPPG D&D SERANG MANDIRI
+    const TARGET_LAT = -6.1265918;
+    const TARGET_LNG = 106.1490035;
+    const MAX_RADIUS_METERS = 100; // Radius diperketat menjadi maksimal 100 meter
+
+    // Status Admin persistent (tersimpan selamanya di localStorage)
+    let isAdmin = localStorage.getItem('sppg_admin_logged') === 'true';
+    let daftarAbsenHariIni = []; 
+    let secretClickCount = 0;
+    let secretClickTimer = null;
+
+    const dataRelawan = [
+        { nama: "Fajar Rizki Ramadhan", bagian: "Koordinator Lapangan" },
+        { nama: "Nurhajanah", bagian: "Chef" },
+        { nama: "Riyan", bagian: "Admin" },
+        { nama: "Muamar", bagian: "Scurity" },
+        { nama: "Lili", bagian: "Scuriti" },
+        { nama: "Suryati", bagian: "Cleaning Service" },
+        { nama: "Munyadi", bagian: "Cleaning Service" },
+        { nama: "Nurhayati", bagian: "Kordinator Persiapan & Bahan Baku" },
+        { nama: "Erni Sumarni", bagian: "Persiapan" },
+        { nama: "Fatimah", bagian: "Persiapan" },
+        { nama: "Firman Tata Alaita", bagian: "Persiapan" },
+        { nama: "Lia Tresna Mulia", bagian: "Persiapan" },
+        { nama: "Meliawati", bagian: "Persiapan" },
+        { nama: "Muhamad Alam Ramadhan", bagian: "Persiapan" },
+        { nama: "Rani Juwita", bagian: "Persiapan" },
+        { nama: "Sopiyan", bagian: "Koordinator Juru Masak" },
+        { nama: "Amir Muzani", bagian: "Juru Masak" },
+        { nama: "Nurjanah", bagian: "Juru Masak" },
+        { nama: "Rifeni Maruyah", bagian: "Juru Masak" },
+        { nama: "Siti Asnawati", bagian: "Juru Masak" },
+        { nama: "Salsa Bilah", bagian: "Juru Masak" },
+        { nama: "Somad", bagian: "Juru Masak" },
+        { nama: "Anisa Hayatun Nufus", bagian: "Koordinator Pemorsian & Packing" },
+        { nama: "Ananda Aprilia", bagian: "Pemorsian" },
+        { nama: "Bustomi", bagian: "Packing" },
+        { nama: "Fajar Andriansyah", bagian: "Packing" },
+        { nama: "M Rizki", bagian: "Packing" },
+        { nama: "Muhamad Fakhri", bagian: "Packing" },
+        { nama: "Putri Sari", bagian: "Pemorsian" },
+        { nama: "Sapinah", bagian: "Pemorsian" },
+        { nama: "Siti Amelia", bagian: "Pemorsian" },
+        { nama: "Zubaedilah", bagian: "Packing" },
+        { nama: "Jimi Kurniawan", bagian: "Koordinator Distribusi 1" },
+        { nama: "Wiranto Galuh Saputra", bagian: "Koordinator Distribusi 2" },
+        { nama: "Maulana Insan Kamil", bagian: "Helper Distribusi 1" },
+        { nama: "Hendri kuspiandi", bagian: "Helper Distribusi 2" },
+        { nama: "Herman Sawiran", bagian: "Koordinator Pencuci Foodtray & Limbah" },
+        { nama: "Ahmad Kusmunadi Arif", bagian: "Pencuci Foodtray" },
+        { nama: "Alit Kartiko Dewo", bagian: "Pencuci Foodtray" },
+        { nama: "Hariri", bagian: "Pencuci Foodtray" },
+        { nama: "Ismatullah", bagian: "Pencuci Foodtray" },
+        { nama: "Putri Aullora Septaduarida", bagian: "Pencuci Foodtray" },
+        { nama: "Rian Ramadhan", bagian: "Pencuci Foodtray" },
+        { nama: "Rizal Ramadani", bagian: "Pencuci Foodtray" },
+        { nama: "Robi Dairobi Sodik", bagian: "Pencuci Foodtray" },
+        { nama: "Siti Mulyana", bagian: "Pencuci Foodtray" },
+        { nama: "Tri Wulan Sari", bagian: "Pencuci Foodtray" }
+    ];
+
+    function populateFilterNamaDropdown() {
+        const filterSelect = document.getElementById('filterNama');
+        filterSelect.innerHTML = '<option value="">-- Semua Relawan --</option>';
+        dataRelawan.forEach(rel => {
+            const opt = document.createElement('option');
+            opt.value = rel.nama;
+            opt.textContent = rel.nama;
+            filterSelect.appendChild(opt);
+        });
+    }
+    populateFilterNamaDropdown();
+
+    function showNotification(title, message, type = "success") {
+        const modal = document.getElementById('customNotificationModal');
+        const titleEl = document.getElementById('notifTitle');
+        const msgEl = document.getElementById('notifMessage');
+        const iconEl = document.getElementById('notifIcon');
+
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+
+        if (type === "success") {
+            iconEl.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #2e7d32;"></i>';
+        } else if (type === "error") {
+            iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color: #c62828;"></i>';
+        } else {
+            iconEl.innerHTML = '<i class="fa-solid fa-circle-info" style="color: var(--biru-telur-asin-dark);"></i>';
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function closeNotification() {
+        document.getElementById('customNotificationModal').style.display = 'none';
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('customConfirmModal').style.display = 'none';
+    }
+
+    function toggleLoginModal(show) {
+        document.getElementById('loginModal').style.display = show ? 'flex' : 'none';
+    }
+
+    // Fitur Admin Tersembunyi: Klik 5x pada logo lokasi
+    function handleSecretAdminTrigger() {
+        secretClickCount++;
+        clearTimeout(secretClickTimer);
+
+        if (secretClickCount >= 5) {
+            secretClickCount = 0;
+            toggleLoginModal(true);
+        } else {
+            secretClickTimer = setTimeout(() => {
+                secretClickCount = 0;
+            }, 1000);
+        }
+    }
+
+    function handleLoginAdmin(e) {
+        e.preventDefault();
+        const u = document.getElementById('usernameInput').value.trim();
+        const p = document.getElementById('passwordInput').value.trim();
+
+        if (u === "Serang" && p === "Mandiri02srg") {
+            isAdmin = true;
+            localStorage.setItem('sppg_admin_logged', 'true');
+            applyAdminUIState();
+            toggleLoginModal(false);
+            // Tutup juga modal lock screen jika sedang terkunci
+            document.getElementById('locationLockModal').style.display = 'none';
+            showNotification("Autentikasi Berhasil", "Selamat datang, Administrator berhasil masuk.", "success");
+            renderArsipTable();
+        } else {
+            showNotification("Akses Ditolak", "Username atau Password Administrator yang Anda masukkan salah.", "error");
+        }
+    }
+
+    function logoutAdmin() {
+        isAdmin = false;
+        localStorage.removeItem('sppg_admin_logged');
+        applyAdminUIState();
+        switchTab('input-tab');
+        renderArsipTable();
+        showNotification("Keluar Sesi", "Anda telah berhasil keluar dari mode Administrator.", "info");
+        initLocationCheck(); // Kunci kembali jika bukan di area lokasi
+    }
+
+    function applyAdminUIState() {
+        if (isAdmin) {
+            document.getElementById('btnLoginToggle').style.display = 'none';
+            document.getElementById('adminBadgeInfo').style.display = 'flex';
+            document.getElementById('tabHistoryBtn').style.display = 'flex';
+        } else {
+            document.getElementById('btnLoginToggle').style.display = 'inline-flex';
+            document.getElementById('adminBadgeInfo').style.display = 'none';
+            document.getElementById('tabHistoryBtn').style.display = 'none';
+        }
+    }
+    applyAdminUIState();
+
+    function updateClock() {
+        const now = new Date();
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        
+        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', timeOptions) + ' WIB';
+        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', dateOptions);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('presensiDate').value = today;
+    document.getElementById('filterStartDate').value = today;
+    document.getElementById('filterEndDate').value = today;
+
+    function populateDropdownRelawan() {
+        const select = document.getElementById('selectRelawan');
+        select.innerHTML = '<option value="">-- Pilih Nama Relawan --</option>';
+
+        const sudahAbsenNama = daftarAbsenHariIni.map(item => item.nama.trim());
+
+        dataRelawan.forEach(relawan => {
+            if (!sudahAbsenNama.includes(relawan.nama.trim())) {
+                const opt = document.createElement('option');
+                opt.value = relawan.nama;
+                opt.textContent = `${relawan.nama} (${relawan.bagian})`;
+                select.appendChild(opt);
+            }
+        });
+
+        document.getElementById('inputBagian').value = '';
+        document.getElementById('inputCatatan').value = '';
+    }
+
+    function updateBagianOtomatis() {
+        const selectedNama = document.getElementById('selectRelawan').value;
+        const found = dataRelawan.find(r => r.nama === selectedNama);
+        if (found) {
+            document.getElementById('inputBagian').value = found.bagian;
+        } else {
+            document.getElementById('inputBagian').value = '';
+        }
+    }
+
+    async function fetchExistingPresensi() {
+        const targetDate = document.getElementById('presensiDate').value;
+        if (!targetDate || typeof window.ambilDataFirebase !== 'function') return;
+
+        const spinner = document.getElementById('loadingInputSpinner');
+        spinner.style.display = 'block';
+
+        daftarAbsenHariIni = await window.ambilDataFirebase(targetDate);
+        spinner.style.display = 'none';
+        
+        populateDropdownRelawan();
+        renderArsipTable();
+    }
+
+    window.addEventListener('firebase-ready', () => {
+        fetchExistingPresensi();
+    });
+
+    // Fungsi Hitung Jarak (Haversine Formula) dalam meter
+    function hitungJarakMeter(lat1, lon1, lat2, lon2) {
+        const R = 6371e3;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    // Pengecekan Lokasi Saat Buka Web (Lock Screen) Maksimal 100 Meter
+    function initLocationCheck() {
+        const lockModal = document.getElementById('locationLockModal');
+        const lockIcon = document.getElementById('lockIcon');
+        const lockTitle = document.getElementById('lockTitle');
+        const lockMessage = document.getElementById('lockMessage');
+        const btnRetry = document.getElementById('btnRetryLocation');
+
+        lockModal.style.display = 'flex';
+        lockIcon.innerHTML = '<i class="fa-solid fa-location-crosshairs fa-spin"></i>';
+        lockTitle.textContent = "Memeriksa Lokasi Anda";
+        lockMessage.textContent = "Harap izinkan akses lokasi (GPS) pada perangkat Anda untuk membuka halaman web ini.";
+        btnRetry.style.display = 'none';
+
+        // Jika admin aktif, lewati pemeriksaan lokasi saat buka web
+        if (isAdmin) {
+            lockModal.style.display = 'none';
+            return;
+        }
+
+        if (!navigator.geolocation) {
+            lockIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #c62828;"></i>';
+            lockTitle.textContent = "Perangkat Tidak Mendukung";
+            lockMessage.textContent = "Browser Anda tidak mendukung layanan GPS/Lokasi.";
+            btnRetry.style.display = 'block';
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                if (position.mocked || accuracy < 1) {
+                    lockIcon.innerHTML = '<i class="fa-solid fa-ban" style="color: #c62828;"></i>';
+                    lockTitle.textContent = "Akses Ditolak (Fake GPS)";
+                    lockMessage.textContent = "Terdeteksi penggunaan aplikasi pihak ketiga (Fake GPS/Mock Location). Halaman dikunci!";
+                    btnRetry.style.display = 'block';
+                    return;
+                }
+
+                const jarak = hitungJarakMeter(userLat, userLng, TARGET_LAT, TARGET_LNG);
+
+                if (jarak > MAX_RADIUS_METERS) {
+                    lockIcon.innerHTML = '<i class="fa-solid fa-location-dot" style="color: #c62828;"></i>';
+                    lockTitle.textContent = "Diluar Area Dapur";
+                    lockMessage.textContent = `Anda berada di luar area Dapur SPPG KOTA SERANG 2. Jarak Anda sekitar ${Math.round(jarak)} meter dari lokasi utama (Maksimal ${MAX_RADIUS_METERS} meter).`;
+                    btnRetry.style.display = 'block';
+                } else {
+                    // Berhasil & Valid - Buka Gembok Web
+                    lockModal.style.display = 'none';
+                }
+            },
+            (error) => {
+                lockIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #c62828;"></i>';
+                lockTitle.textContent = "Gagal Mendapatkan Lokasi";
+                let errMsg = "Gagal mendeteksi lokasi GPS Anda.";
+                if (error.code === error.PERMISSION_DENIED) {
+                    errMsg = "Izin akses lokasi (GPS) ditolak. Harap izinkan akses lokasi pada browser Anda dan coba lagi.";
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    errMsg = "Informasi lokasi tidak tersedia.";
+                } else if (error.code === error.TIMEOUT) {
+                    errMsg = "Waktu permintaan lokasi habis (Timeout).";
+                }
+                lockMessage.textContent = errMsg;
+                btnRetry.style.display = 'block';
+            },
+            { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+        );
+    }
+
+    // Jalankan pemeriksaan lokasi segera saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+        initLocationCheck();
+    });
+
+    async function sendWhatsAppNotification(nama, bagian, status, tanggal, keterangan) {
+        const pesan = `📢 *NOTIFIKASI PRESENSI RELAWAN*
+SPPG KOTA SERANG SERANG SERANG 2
+
+- Tanggal: ${tanggal}
+- Nama: *${nama}*
+- Bagian: ${bagian}
+- Status: *${status}*
+- Catatan: ${keterangan || '-'}
+
+_Pesan otomatis dikirim melalui sistem terintegrasi._`;
+
+        const formData = new URLSearchParams();
+        formData.append('target', FONNTE_TARGET);
+        formData.append('message', pesan);
+
+        try {
+            await fetch('https://api.fonnte.com/send', {
+                method: 'POST',
+                headers: {
+                    'Authorization': FONNTE_TOKEN
+                },
+                body: formData
+            });
+        } catch (err) {
+            console.error("Gagal mengirim notifikasi WhatsApp:", err);
+        }
+    }
+
+    async function tambahDanSimpanSatu() {
+        const dateVal = document.getElementById('presensiDate').value;
+        const namaVal = document.getElementById('selectRelawan').value;
+        const bagianVal = document.getElementById('inputBagian').value;
+        const statusVal = document.getElementById('selectStatus').value;
+        const catatanVal = document.getElementById('inputCatatan').value;
+
+        if (!dateVal) {
+            showNotification("Peringatan", "Silakan pilih tanggal presensi terlebih dahulu.", "error");
+            return;
+        }
+        if (!namaVal) {
+            showNotification("Peringatan", "Silakan pilih nama relawan yang akan diabsen.", "error");
+            return;
+        }
+
+        const btn = document.getElementById('btnSimpanSatu');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+
+        const recordData = {
+            tanggal: dateVal,
+            nama: namaVal,
+            bagian: bagianVal,
+            status: statusVal,
+            catatan: catatanVal
+        };
+
+        const sukses = await window.simpanKeFirebase(recordData);
+        
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-plus"></i> Simpan`;
+
+        if (sukses) {
+            sendWhatsAppNotification(namaVal, bagianVal, statusVal, dateVal, catatanVal);
+            showNotification("Berhasil", "Data presensi relawan berhasil disimpan ke Sistem!", "success");
+            fetchExistingPresensi();
+        } else {
+            showNotification("Gagal", "Gagal menyimpan data ke Sistem.", "error");
+        }
+    }
+
+    function renderArsipTable() {
+        const tbody = document.getElementById('tbodyArsip');
+        const thAksi = document.getElementById('thAksiHeader');
+        tbody.innerHTML = '';
+
+        if (isAdmin) {
+            thAksi.style.display = 'table-cell';
+            thAksi.innerText = 'AKSI';
+        } else {
+            thAksi.style.display = 'none';
+        }
+
+        if (daftarAbsenHariIni.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">Belum ada data relawan yang diabsen pada tanggal ini.</td></tr>';
+            return;
+        }
+
+        daftarAbsenHariIni.forEach((item, index) => {
+            let badgeClass = 'badge-hadir';
+            if(item.status === 'Izin') badgeClass = 'badge-izin';
+            if(item.status === 'Sakit') badgeClass = 'badge-sakit';
+            if(item.status === 'Tanpa Keterangan') badgeClass = 'badge-alpa';
+            if(item.status === 'Backup') badgeClass = 'badge-backup';
+
+            let actionHtml = '';
+            if (isAdmin) {
+                actionHtml = `<td style="text-align: center;"><button class="btn btn-delete" onclick="konfirmasiHapusItem('${item.id}')"><i class="fa-solid fa-trash"></i></button></td>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${item.nama}</strong></td>
+                <td>${item.bagian}</td>
+                <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                <td>${item.catatan || '-'}</td>
+                ${isAdmin ? actionHtml : ''}
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Fungsi Konfirmasi Hapus Menggunakan Modal Profesional (Pengganti confirm() bawaan)
+    function konfirmasiHapusItem(docId) {
+        if (!isAdmin) {
+            showNotification("Akses Ditolak", "Anda tidak memiliki hak akses untuk menghapus data.", "error");
+            return;
+        }
+
+        const confirmModal = document.getElementById('customConfirmModal');
+        const btnYes = document.getElementById('btnConfirmYes');
+        
+        confirmModal.style.display = 'flex';
+
+        // Hapus event listener sebelumnya agar tidak menumpuk
+        const newBtnYes = btnYes.cloneNode(true);
+        btnYes.parentNode.replaceChild(newBtnYes, btnYes);
+
+        newBtnYes.addEventListener('click', async () => {
+            closeConfirmModal();
+            const sukses = await window.hapusDataFirebase(docId);
+            if (sukses) {
+                fetchExistingPresensi();
+                showNotification("Berhasil", "Data relawan berhasil dihapus.", "success");
+            } else {
+                showNotification("Gagal", "Gagal menghapus data dari server.", "error");
+            }
+        });
+    }
+
+    function switchTab(tabId) {
+        if (tabId === 'history-tab' && !isAdmin) {
+            showNotification("Akses Terbatas", "Menu Riwayat & Export hanya dapat diakses oleh Administrator.", "error");
+            return;
+        }
+
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        if (tabId === 'input-tab') document.getElementById('tabInputBtn').classList.add('active');
+        if (tabId === 'history-tab') {
+            document.getElementById('tabHistoryBtn').classList.add('active');
+            loadHistory();
+        }
+    }
+
+    async function loadHistory() {
+        const startDate = document.getElementById('filterStartDate').value;
+        const endDate = document.getElementById('filterEndDate').value;
+        const namaFilter = document.getElementById('filterNama').value;
+        const spinner = document.getElementById('loadingSpinner');
+        const tbody = document.getElementById('tbodyHistory');
+
+        spinner.style.display = 'block';
+        tbody.innerHTML = '';
+
+        const data = await window.ambilRiwayatFirebase(startDate, endDate, namaFilter);
+        spinner.style.display = 'none';
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">Tidak ada data presensi yang sesuai dengan filter.</td></tr>';
+            return;
+        }
+
+        data.forEach((item, index) => {
+            let badgeClass = 'badge-hadir';
+            if(item.status === 'Izin') badgeClass = 'badge-izin';
+            if(item.status === 'Sakit') badgeClass = 'badge-sakit';
+            if(item.status === 'Tanpa Keterangan') badgeClass = 'badge-alpa';
+            if(item.status === 'Backup') badgeClass = 'badge-backup';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${item.tanggal}</td>
+                <td><strong>${item.nama}</strong></td>
+                <td>${item.bagian}</td>
+                <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                <td>${item.catatan || '-'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function exportExcel() {
+        const table = document.getElementById("tableHistory");
+        const wb = XLSX.utils.table_to_book(table, { sheet: "Riwayat Presensi" });
+        XLSX.writeFile(wb, `Presensi_SPPG_SERANG_2_${document.getElementById('filterStartDate').value}_sd_${document.getElementById('filterEndDate').value}.xlsx`);
+    }
+
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'pt', 'a4');
+
+        doc.setFontSize(14);
+        doc.text("LAPORAN PRESENSI RELAWAN SPPG KOTA SERANG SERANG SERANG 2", 40, 40);
+        doc.setFontSize(10);
+        doc.text(`Periode: ${document.getElementById('filterStartDate').value} s/d ${document.getElementById('filterEndDate').value}`, 40, 55);
+
+        doc.autoTable({
+            html: '#tableHistory',
+            startY: 70,
+            theme: 'grid',
+            headStyles: { fillColor: [128, 203, 211], textColor: [0, 77, 64] },
+            styles: { fontSize: 8 }
+        });
+
+        doc.save(`Presensi_SPPG_SERANG_2_${document.getElementById('filterStartDate').value}.pdf`);
+    }
+
+    function exportPNG() {
+        const element = document.getElementById("exportArea");
+        html2canvas(element).then((canvas) => {
+            const link = document.createElement('a');
+            link.download = `Presensi_SPPG_SERANG_2_${document.getElementById('filterStartDate').value}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+</script>
+
+</body>
+</html>
