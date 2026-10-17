@@ -113,6 +113,24 @@
                 </div>
             </div>
 
+            <!-- SPANDUK PERINGATAN UPLOAD -->
+            <div id="upload-reminder-banner" class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl shadow-sm hidden">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xl mt-0.5"></i>
+                    </div>
+                    <div class="ml-3 w-full">
+                        <h3 class="text-sm font-bold text-amber-800">PERINGATAN DOKUMENTASI YANG BELUM LAPORKAN!</h3>
+                        <p id="reminder-text" class="text-xs text-amber-700 mt-1 leading-relaxed">
+                            Mohon periksa dan unggah foto dokumentasi yang masih belum diunggah untuk hari ini.
+                        </p>
+                        <div id="missing-categories-tags" class="mt-2 flex flex-wrap gap-1.5">
+                            <!-- Tag kategori yang belum diupload dimasukkan via Javascript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- TAB CONTAINER UNTUK USER & ADMIN -->
             <div id="user-panel" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Form Upload User / Admin -->
@@ -135,22 +153,14 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nama Jenis Foto Dokumentasi</label>
-                            <select id="input-kategori" required onchange="handleCategoryChange()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                            <select id="input-kategori" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none">
                                 <option value="">-- Pilih Jenis Dokumentasi --</option>
                             </select>
                         </div>
 
-                        <!-- Bagian Khusus Input Relawan (Khusus Divisi Persiapan) -->
-                        <div id="relawan-container" class="hidden space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                            <label class="block text-xs font-semibold text-slate-700 uppercase">Pilih / Ganti Nama Relawan Hadir:</label>
-                            <div id="relawan-checkboxes" class="space-y-1.5 text-xs text-slate-600 max-h-40 overflow-y-auto">
-                                <!-- Dibuat dinamis via JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Bagian Khusus Kolom Upload Foto -->
+                        <!-- Bagian Khusus Kolom Upload Foto (Dinamis per User) -->
                         <div id="dynamic-upload-container" class="space-y-3">
-                            <!-- Diisi secara dinamis via JS -->
+                            <!-- Diisi secara dinamis via JS berdasarkan user yang login -->
                         </div>
 
                         <button type="submit" id="btn-upload" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed">
@@ -177,39 +187,58 @@
                                 <label class="block text-[10px] font-semibold text-slate-500 uppercase">Jenis Dokumentasi</label>
                                 <select id="user-filter-kategori" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                                     <option value="">Semua Jenis</option>
-                                    <option value="FOTO SERAH TERIMA SCURITY">FOTO SERAH TERIMA SCURITY</option>
-                                    <option value="FOTO ABSENSI RELAWAN">FOTO ABSENSI RELAWAN</option>
-                                    <option value="FOTO PENERIMAAN BAHAN BAKU">FOTO PENERIMAAN BAHAN BAKU</option>
-                                    <option value="FOTO BAHAN BAKU">FOTO BAHAN BAKU</option>
-                                    <option value="FOTO LIMBAH RIJEK PERSIAPAN">FOTO LIMBAH RIJEK PERSIAPAN</option>
-                                    <option value="FOTO TIMBANGAN LIMBAH B3">FOTO TIMBANGAN LIMBAH B3</option>
-                                    <option value="FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN">FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN</option>
-                                    <option value="FOTO AREA PARKIRAN / DEPAN DAPUR">FOTO AREA PARKIRAN / DEPAN DAPUR</option>
-                                    <option value="FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN">FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN</option>
-                                    <option value="FOTO CLEANING SERVICE SIANG">FOTO CLEANING SERVICE SIANG</option>
-                                    <option value="FOTO CLEANING SERVICE MALAM">FOTO CLEANING SERVICE MALAM</option>
-                                    <option value="SERAH TERIMA PERSIAPAN - PENGOLAHAN">SERAH TERIMA PERSIAPAN - PENGOLAHAN</option>
-                                    <option value="SERAH TERIMA PENGOLAHAN - PEMORSIAN">SERAH TERIMA PENGOLAHAN - PEMORSIAN</option>
-                                    <option value="SERAH TERIMA PEMORSIAN - DISTRIBUSI">SERAH TERIMA PEMORSIAN - DISTRIBUSI</option>
-                                    <option value="SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY">SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY</option>
-                                    <option value="SERAH TERIMA PENCUCI FOODTRAY - ASLAP">SERAH TERIMA PENCUCI FOODTRAY - ASLAP</option>
-                                    <option value="FOTO CUCI KENDARAAN">FOTO CUCI KENDARAAN</option>
-                                    <option value="FOTO KENDARAAN">FOTO KENDARAAN</option>
-                                    <option value="KERJA TIM PERSIAPAN">KERJA TIM PERSIAPAN</option>
-                                    <option value="KERJA TIM PENGOLAHAN">KERJA TIM PENGOLAHAN</option>
-                                    <option value="KERJA TIM PEMORSIAN">KERJA TIM PEMORSIAN</option>
-                                    <option value="KERJA TIM PENCUCI FOODTRAY">KERJA TIM PENCUCI FOODTRAY</option>
-                                    <option value="FOTO ISI GALON">FOTO ISI GALON</option>
-                                    <option value="FOTO ISI TABUNG GAS">FOTO ISI TABUNG GAS</option>
-                                    <option value="FOTO DATANG/TERIMA PAKET">FOTO DATANG/TERIMA PAKET</option>
-                                    <option value="FOTO SISA MAKANAN PEMORSIAN">FOTO SISA MAKANAN PEMORSIAN</option>
-                                    <option value="FOTO SISA MAKANAN FOODTRAY">FOTO SISA MAKANAN FOODTRAY</option>
-                                    <option value="FOTO SAAT PENGAMBILAN TUKANG SAMPAH">FOTO SAAT PENGAMBILAN TUKANG SAMPAH</option>
-                                    <option value="FOTO SAAT SO BAHAN BAKU">FOTO SAAT SO BAHAN BAKU</option>
-                                    <option value="FOTO GENERAL CLEANING">FOTO GENERAL CLEANING</option>
-                                    <option value="FOTO PERALATAN YANG BARU">FOTO PERALATAN YANG BARU</option>
-                                    <option value="FOTO PERALATAN YANG RUSAK">FOTO PERALATAN YANG RUSAK</option>
-                                    <option value="FOTO PERBAIKAN DAPUR/LAINNYA JIKA">FOTO PERBAIKAN DAPUR/LAINNYA JIKA</option>
+                                    <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
+                                    <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
+                                    <option value="PERSIAPAN (Limbah Rijek)">PERSIAPAN (Limbah Rijek)</option>
+                                    <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
+                                    <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
+                                    <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
+                                    <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
+                                    <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
+                                    <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
+                                    <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
+                                    <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
+                                    <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
+                                    <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
+                                    <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
+                                    <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
+                                    <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
+                                    <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
+                                    <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
+                                    <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
+                                    <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
+                                    <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
+                                    <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
+                                    <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
+                                    <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
+                                    <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
+                                    <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
+                                    <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
+                                    <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
+                                    <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
+                                    <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
+                                    <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
+                                    <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
+                                    <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
+                                    <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
+                                    <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
+                                    <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
+                                    <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
+                                    <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
+                                    <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
+                                    <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
+                                    <option value="WH (Foto SO Per Bahan Baku)">WH (Foto SO Per Bahan Baku)</option>
+                                    <option value="WH (Isi Galon)">WH (Isi Galon)</option>
                                 </select>
                             </div>
                             <div class="flex items-end space-x-1 pt-3">
@@ -242,39 +271,58 @@
                             <label class="block text-[10px] font-semibold text-slate-500 uppercase">Jenis Dokumentasi</label>
                             <select id="filter-kategori" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                                 <option value="">Semua Jenis Dokumentasi</option>
-                                <option value="FOTO SERAH TERIMA SCURITY">FOTO SERAH TERIMA SCURITY</option>
-                                <option value="FOTO ABSENSI RELAWAN">FOTO ABSENSI RELAWAN</option>
-                                <option value="FOTO PENERIMAAN BAHAN BAKU">FOTO PENERIMAAN BAHAN BAKU</option>
-                                <option value="FOTO BAHAN BAKU">FOTO BAHAN BAKU</option>
-                                <option value="FOTO LIMBAH RIJEK PERSIAPAN">FOTO LIMBAH RIJEK PERSIAPAN</option>
-                                <option value="FOTO TIMBANGAN LIMBAH B3">FOTO TIMBANGAN LIMBAH B3</option>
-                                <option value="FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN">FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN</option>
-                                <option value="FOTO AREA PARKIRAN / DEPAN DAPUR">FOTO AREA PARKIRAN / DEPAN DAPUR</option>
-                                <option value="FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN">FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN</option>
-                                <option value="FOTO CLEANING SERVICE SIANG">FOTO CLEANING SERVICE SIANG</option>
-                                <option value="FOTO CLEANING SERVICE MALAM">FOTO CLEANING SERVICE MALAM</option>
-                                <option value="SERAH TERIMA PERSIAPAN - PENGOLAHAN">SERAH TERIMA PERSIAPAN - PENGOLAHAN</option>
-                                <option value="SERAH TERIMA PENGOLAHAN - PEMORSIAN">SERAH TERIMA PENGOLAHAN - PEMORSIAN</option>
-                                <option value="SERAH TERIMA PEMORSIAN - DISTRIBUSI">SERAH TERIMA PEMORSIAN - DISTRIBUSI</option>
-                                <option value="SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY">SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY</option>
-                                <option value="SERAH TERIMA PENCUCI FOODTRAY - ASLAP">SERAH TERIMA PENCUCI FOODTRAY - ASLAP</option>
-                                <option value="FOTO CUCI KENDARAAN">FOTO CUCI KENDARAAN</option>
-                                <option value="FOTO KENDARAAN">FOTO KENDARAAN</option>
-                                <option value="KERJA TIM PERSIAPAN">KERJA TIM PERSIAPAN</option>
-                                <option value="KERJA TIM PENGOLAHAN">KERJA TIM PENGOLAHAN</option>
-                                <option value="KERJA TIM PEMORSIAN">KERJA TIM PEMORSIAN</option>
-                                <option value="KERJA TIM PENCUCI FOODTRAY">KERJA TIM PENCUCI FOODTRAY</option>
-                                <option value="FOTO ISI GALON">FOTO ISI GALON</option>
-                                <option value="FOTO ISI TABUNG GAS">FOTO ISI TABUNG GAS</option>
-                                <option value="FOTO DATANG/TERIMA PAKET">FOTO DATANG/TERIMA PAKET</option>
-                                <option value="FOTO SISA MAKANAN PEMORSIAN">FOTO SISA MAKANAN PEMORSIAN</option>
-                                <option value="FOTO SISA MAKANAN FOODTRAY">FOTO SISA MAKANAN FOODTRAY</option>
-                                <option value="FOTO SAAT PENGAMBILAN TUKANG SAMPAH">FOTO SAAT PENGAMBILAN TUKANG SAMPAH</option>
-                                <option value="FOTO SAAT SO BAHAN BAKU">FOTO SAAT SO BAHAN BAKU</option>
-                                <option value="FOTO GENERAL CLEANING">FOTO GENERAL CLEANING</option>
-                                <option value="FOTO PERALATAN YANG BARU">FOTO PERALATAN YANG BARU</option>
-                                <option value="FOTO PERALATAN YANG RUSAK">FOTO PERALATAN YANG RUSAK</option>
-                                <option value="FOTO PERBAIKAN DAPUR/LAINNYA JIKA">FOTO PERBAIKAN DAPUR/LAINNYA JIKA</option>
+                                <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
+                                    <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
+                                    <option value="PERSIAPAN (Limbah Rijek)">PERSIAPAN (Limbah Rijek)</option>
+                                    <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
+                                    <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
+                                    <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
+                                    <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
+                                    <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
+                                    <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
+                                    <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
+                                    <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
+                                    <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
+                                    <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
+                                    <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
+                                    <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
+                                    <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
+                                    <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
+                                    <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
+                                    <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
+                                    <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
+                                    <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
+                                    <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
+                                    <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
+                                    <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
+                                    <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
+                                    <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
+                                    <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
+                                    <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
+                                    <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
+                                    <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
+                                    <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
+                                    <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
+                                    <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
+                                    <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
+                                    <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
+                                    <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
+                                    <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
+                                    <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
+                                    <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
+                                    <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
+                                    <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
+                                    <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
+                                    <option value="WH (Foto SO Per Bahan Baku)">WH (Foto SO Per Bahan Baku)</option>
+                                    <option value="WH (Isi Galon)">WH (Isi Galon)</option>
                             </select>
                         </div>
                         <div class="flex items-end space-x-2">
@@ -373,75 +421,21 @@
         const FONNTE_TARGET = "6283111399112";
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-tiExkycqhueEVFrhgNYuT02mIBLz-fL2uWnqW6J7YX__H8WVau6dDUFhfUsqBPO3/exec";
 
-        // DATABASE AKUN LENGKAP DENGAN DIVISI & HAK AKSESNYA
         const usersDB = {
-            "Serang": { pass: "Mandiri02srg", role: "admin", name: "Admin", division: "ADMIN" },
-            "Muamar": { pass: "Muamar2", role: "user", name: "Muamar", division: "SECURITY", allowed: [
-                "FOTO SERAH TERIMA SCURITY", "FOTO PENERIMAAN BAHAN BAKU", "FOTO TIMBANGAN LIMBAH B3", 
-                "FOTO AREA PARKIRAN / DEPAN DAPUR", "FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN", "FOTO ISI TABUNG GAS", 
-                "FOTO DATANG/TERIMA PAKET", "FOTO SAAT PENGAMBILAN TUKANG SAMPAH", "FOTO GENERAL CLEANING", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK", "FOTO PERBAIKAN DAPUR/LAINNYA JIKA"
-            ], cameraOnly: ["FOTO SERAH TERIMA SCURITY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
-            
-            "Lili": { pass: "Lili2", role: "user", name: "Lili", division: "SECURITY", allowed: [
-                "FOTO SERAH TERIMA SCURITY", "FOTO PENERIMAAN BAHAN BAKU", "FOTO TIMBANGAN LIMBAH B3", 
-                "FOTO AREA PARKIRAN / DEPAN DAPUR", "FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN", "FOTO ISI TABUNG GAS", 
-                "FOTO DATANG/TERIMA PAKET", "FOTO SAAT PENGAMBILAN TUKANG SAMPAH", "FOTO GENERAL CLEANING", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK", "FOTO PERBAIKAN DAPUR/LAINNYA JIKA"
-            ], cameraOnly: ["FOTO SERAH TERIMA SCURITY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
-
-            "Nurhayati": { pass: "Nurhayati2", role: "user", name: "Nurhayati", division: "PERSIAPAN", allowed: [
-                "FOTO ABSENSI RELAWAN", "FOTO LIMBAH RIJEK PERSIAPAN", "FOTO TIMBANGAN LIMBAH B3", 
-                "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PERSIAPAN - PENGOLAHAN", 
-                "KERJA TIM PERSIAPAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PERSIAPAN - PENGOLAHAN", "KERJA TIM PERSIAPAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PERSIAPAN": 3 } },
-
-            "Sopiyan": { pass: "Sopiyan2", role: "user", name: "Sopiyan", division: "PENGOLAHAN", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
-                "SERAH TERIMA PENGOLAHAN - PEMORSIAN", "KERJA TIM PENGOLAHAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PENGOLAHAN - PEMORSIAN", "KERJA TIM PENGOLAHAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PENGOLAHAN": 3 } },
-
-            "Anisa": { pass: "Anisa2", role: "user", name: "Anisa Hayatun Nufus", division: "PEMORSIAN", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
-                "SERAH TERIMA PEMORSIAN - DISTRIBUSI", "KERJA TIM PEMORSIAN", "FOTO SISA MAKANAN PEMORSIAN", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PEMORSIAN - DISTRIBUSI", "KERJA TIM PEMORSIAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PEMORSIAN": 3 } },
-
-            "Jimi": { pass: "A1403DV", role: "user", name: "Jimi Kurniawan", division: "DISTRIBUSI", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "FOTO CUCI KENDARAAN", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
-
-            "Galuh": { pass: "A1274KV", role: "user", name: "Wiranto Galuh Saputra", division: "DISTRIBUSI", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "FOTO CUCI KENDARAAN", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
-
-            "Suryati": { pass: "Suryati2", role: "user", name: "Suryati", division: "KEBERSIHAN", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
-                "FOTO CLEANING SERVICE SIANG", "FOTO CLEANING SERVICE MALAM", "FOTO GENERAL CLEANING", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
-
-            "Munyadi": { pass: "Munyadi2", role: "user", name: "Munyadi", division: "KEBERSIHAN", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
-                "FOTO CLEANING SERVICE SIANG", "FOTO CLEANING SERVICE MALAM", "FOTO GENERAL CLEANING", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"] },
-
-            "Herman": { pass: "Herman2", role: "user", name: "Herman Sawiran", division: "FOODTRAY", allowed: [
-                "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
-                "SERAH TERIMA PENCUCI FOODTRAY - ASLAP", "KERJA TIM PENCUCI FOODTRAY", "FOTO SISA MAKANAN FOODTRAY", 
-                "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"
-            ], cameraOnly: ["FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", "SERAH TERIMA PENCUCI FOODTRAY - ASLAP", "KERJA TIM PENCUCI FOODTRAY", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK"], minPhotos: { "KERJA TIM PENCUCI FOODTRAY": 3 } },
-
-            "Fajar": { pass: "Aslap123", role: "user", name: "Fajar Rizki Ramadhan", division: "ASLAP", allowed: [
-                "FOTO BAHAN BAKU", "FOTO TIMBANGAN LIMBAH B3", "SERAH TERIMA PENCUCI FOODTRAY - ASLAP"
-            ], cameraOnly: ["SERAH TERIMA PENCUCI FOODTRAY - ASLAP"] },
-
-            "AdminSo": { pass: "Admin123", role: "user", name: "Admin Gudang", division: "WAREHOUSE", allowed: [
-                "FOTO SAAT SO BAHAN BAKU"
-            ], cameraOnly: ["FOTO SAAT SO BAHAN BAKU"], minPhotos: { "FOTO SAAT SO BAHAN BAKU": 3 } }
+            "Serang": { pass: "Mandiri02srg", role: "admin", name: "Admin" },
+            "Muamar": { pass: "Muamar2", role: "user", name: "Muamar" },
+            "Lili": { pass: "Lili2", role: "user", name: "Lili" },
+            "Nurhayati": { pass: "Nurhayati2", role: "user", name: "Nurhayati" },
+            "Sopiyan": { pass: "Sopiyan2", role: "user", name: "Sopiyan" },
+            "Anisa": { pass: "Anisa2", role: "user", name: "Anisa Hayatun Nufus" },
+            "Jimi": { pass: "A1403DV", role: "user", name: "Jimi Kurniawan" },
+            "Galuh": { pass: "A1274KV", role: "user", name: "Wiranto Galuh Saputra" },
+            "Herman": { pass: "Herman2", role: "user", name: "Herman Sawiran" },
+            "Suryati": { pass: "Suryati2", role: "user", name: "Suryati" },
+            "Munyadi": { pass: "Munyadi2", role: "user", name: "Munyadi" },
+            "Fajar": { pass: "Aslap123", role: "user", name: "Fajar Riki Ramadhan" },
+            "Warehouse": { pass: "Warehouse2", role: "user", name: "Warehouse" },
+            "KSPPG": { pass: "Serang2", role: "viewer", name: "Mohamad Fahrurozi" }
         };
 
         let currentUser = null;
@@ -449,167 +443,122 @@
         let isDateManuallyModified = false; 
         let allGlobalReports = []; 
 
-        const DEFAULT_RELAWAN_LIST = [
-            "Nurhayati", "Erni Sumarni", "Rani Juwita", "Firman Tata Alaita", 
-            "Meliawati", "Muhamad Alam Ramadhan", "Lia Tresna Mulia"
-        ];
-
         const ALL_CATEGORIES = [
-            "FOTO SERAH TERIMA SCURITY", "FOTO ABSENSI RELAWAN", "FOTO PENERIMAAN BAHAN BAKU", "FOTO BAHAN BAKU", 
-            "FOTO LIMBAH RIJEK PERSIAPAN", "FOTO TIMBANGAN LIMBAH B3", "FOTO RUANGAN / AREA DAPUR SETELAH SELESAI PEKERJAAN", 
-            "FOTO AREA PARKIRAN / DEPAN DAPUR", "FOTO DISTRIBUSI PAGI SAAT PENGIRIMAN", "FOTO CLEANING SERVICE SIANG", 
-            "FOTO CLEANING SERVICE MALAM", "SERAH TERIMA PERSIAPAN - PENGOLAHAN", "SERAH TERIMA PENGOLAHAN - PEMORSIAN", 
-            "SERAH TERIMA PEMORSIAN - DISTRIBUSI", "SERAH TERIMA DISTRIBUSI - PENCUCI FOODTRAY", "SERAH TERIMA PENCUCI FOODTRAY - ASLAP", 
-            "FOTO CUCI KENDARAAN", "FOTO KENDARAAN", "KERJA TIM PERSIAPAN", "KERJA TIM PENGOLAHAN", "KERJA TIM PEMORSIAN", 
-            "KERJA TIM PENCUCI FOODTRAY", "FOTO ISI GALON", "FOTO ISI TABUNG GAS", "FOTO DATANG/TERIMA PAKET", 
-            "FOTO SISA MAKANAN PEMORSIAN", "FOTO SISA MAKANAN FOODTRAY", "FOTO SAAT PENGAMBILAN TUKANG SAMPAH", 
-            "FOTO SAAT SO BAHAN BAKU", "FOTO GENERAL CLEANING", "FOTO PERALATAN YANG BARU", "FOTO PERALATAN YANG RUSAK", "FOTO PERBAIKAN DAPUR/LAINNYA JIKA"
+            "PERSIAPAN (Absensi Relawan)",
+            "PERSIAPAN (Kegiatan Tim Persiapan)",
+            "PERSIAPAN (Limbah Rijek)",
+            "PERSIAPAN (Limbah B3)",
+            "PERSIAPAN (Foto Ruangan Selesai Pekerjaan)",
+            "PERSIAPAN (Peralatan Rusak/Baru (jika ada))",
+            "PERSIAPAN (Serah Terima Persiapan - Pengolahan)",
+            "PENGOLAHAN (Absensi Relawan)",
+            "PENGOLAHAN (Kegiatan Tim Pengolahan)",
+            "PENGOLAHAN (Limbah B3)",
+            "PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)",
+            "PENGOLAHAN (Peralatan Rusak/Baru (jika ada))",
+            "PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)",
+            "PEMORSIAN (Absensi Relawan)",
+            "PEMORSIAN (Kegiatan Tim Pemorsian)",
+            "PEMORSIAN (Foto Sisa Makanan Pemorsian)",
+            "PEMORSIAN (Limbah B3)",
+            "PEMORSIAN (Foto Ruangan Selesai Pekerjaan)",
+            "PEMORSIAN (Peralatan Baru/Rusak (jika ada))",
+            "PEMORSIAN (Serah Terima Pemorsian - Distribusi)",
+            "DISTRIBUSI (Absensi Relawan)",
+            "DISTRIBUSI (Limbah B3 (jika ada))",
+            "DISTRIBUSI (Cuci Kendaraan)",
+            "DISTRIBUSI (Foto Kendaraan)",
+            "DISTRIBUSI (Service Kendaraan jika ada)",
+            "DISTRIBUSI (Peralatan Baru/Rusak (jika ada))",
+            "DISTRIBUSI (Serah Terima Distribusi - Pencuci Foodtray)",
+            "FOODTRAY (Absensi Relawan)",
+            "FOODTRAY (Kegiatan Tim Pencuci Ompreng)",
+            "FOODTRAY (Sisa Makanan Ompreng)",
+            "FOODTRAY (Limbah B3)",
+            "FOODTRAY (Foto Ruangan Selesai Pekerjaan)",
+            "FOODTRAY (Peralatan Baru/Rusak (jika ada))",
+            "FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)",
+            "CLEANING SERVICE (Absensi)",
+            "CLEANING SERVICE (Kegiatan Saat Kebersihan)",
+            "CLEANING SERVICE (Limbah B3)",
+            "CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)",
+            "CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))",
+            "CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)",
+            "SCURITY (Absensi)",
+            "SCURITY (Area Depan Dapur/Parkiran)",
+            "SCURITY (Bahan Baku Datang)",
+            "SCURITY (Limbah B3 (jika ada))",
+            "SCURITY (Saat Pengambilan Sampah/Limbah)",
+            "SCURITY (Isi Tabung Gas (Jika ada))",
+            "SCURITY (Terima Paket indomaret/Shope)",
+            "SCURITY (Peralatan Baru/Rusak (jika ada))",
+            "SCURITY (Perbaikan Dapur/Lainnya)",
+            "SCURITY (Serah Terima Scurity - Cleaning Service)",
+            "ASLAP (Foto Per Bahan Baku)",
+            "WH (Foto SO Per Bahan Baku)",
+            "WH (Isi Galon)",
+
+
         ];
 
+        // FUNGSI MEMPERBARUI DROPDOWN & STATUS PERINGATAN KATEGORI
         function updateCategoryDropdownOptions() {
             const selectEl = document.getElementById('input-kategori');
-            if (!selectEl) return;
+            const selectedDateInput = document.getElementById('input-tanggal-laporan');
+            if (!selectedDateInput) return;
 
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentDay = now.getDay(); 
+            const chosenDate = selectedDateInput.value;
+            const currentSelectedVal = selectEl ? selectEl.value : "";
 
-            let allowedList = ALL_CATEGORIES;
-            if (currentUser && currentUser.role !== 'admin' && currentUser.allowed) {
-                allowedList = currentUser.allowed;
-            }
-
-            let optionsHtml = `<option value="">-- Pilih Jenis Dokumentasi --</option>`;
-            allowedList.forEach(cat => {
-                if (cat === "FOTO CLEANING SERVICE SIANG" && (currentHour < 6 || currentHour >= 18)) return;
-                if (cat === "FOTO CLEANING SERVICE MALAM" && (currentHour >= 6 && currentHour < 18)) return;
-                if (cat === "FOTO GENERAL CLEANING" && currentDay !== 6) return;
-
-                optionsHtml += `<option value="${cat}">${cat}</option>`;
-            });
-
-            selectEl.innerHTML = optionsHtml;
-            handleCategoryChange();
-        }
-
-        function handleCategoryChange() {
-            const selectEl = document.getElementById('input-kategori');
-            const relawanContainer = document.getElementById('relawan-container');
-            const dynamicContainer = document.getElementById('dynamic-upload-container');
-            if (!selectEl || !dynamicContainer) return;
-
-            const selectedCat = selectEl.value;
-
-            if (selectedCat === "FOTO ABSENSI RELAWAN") {
-                relawanContainer.classList.remove('hidden');
-                renderRelawanCheckboxes();
-            } else {
-                relawanContainer.classList.add('hidden');
-            }
-
-            let isCameraRequired = false;
-            if (currentUser && currentUser.cameraOnly && currentUser.cameraOnly.includes(selectedCat)) {
-                isCameraRequired = true;
-            }
-
-            let html = "";
-            if (isCameraRequired) {
-                html += `
-                    <div class="space-y-2">
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1 flex justify-between items-center">
-                            <span><i class="fa-solid fa-camera text-blue-600 mr-1"></i> Ambil Foto Kamera:</span>
-                            <span class="text-[10px] text-blue-600 font-normal">Pastikan foto terlihat jelas</span>
-                        </label>
-                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2" id="camera-slots-container">
-                `;
-                for (let i = 1; i <= 5; i++) {
-                    html += `
-                        <div class="border border-slate-200 rounded-xl p-2.5 bg-slate-50 flex flex-col items-center text-center shadow-sm relative group" id="slot-box-${i}">
-                            <span class="text-[11px] font-bold text-slate-700 mb-1.5 bg-white px-2 py-0.5 rounded border border-slate-100">Foto ${i}</span>
-                            
-                            <div id="preview-wrapper-${i}" class="hidden w-full flex flex-col items-center space-y-1">
-                                <div class="relative w-full h-24 rounded-lg overflow-hidden border border-slate-300 bg-black/5">
-                                    <img id="img-preview-${i}" src="" alt="Pratinjau Foto ${i}" class="w-full h-full object-cover">
-                                    <button type="button" onclick="openPhotoModal(document.getElementById('img-preview-${i}').src, 'Foto_${i}.jpg')" class="absolute bottom-1 right-1 bg-black/60 text-white rounded p-1 text-[10px] hover:bg-black">
-                                        <i class="fa-solid fa-expand"></i>
-                                    </button>
-                                </div>
-                                <button type="button" onclick="clearCameraSlot(${i})" class="w-full bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 py-1 rounded-lg text-[10px] font-semibold transition flex items-center justify-center">
-                                    <i class="fa-solid fa-trash-can mr-1"></i> Foto Ulang
-                                </button>
-                            </div>
-
-                            <div id="input-wrapper-${i}" class="w-full">
-                                <input type="file" id="input-file-${i}" accept="image/*" capture="environment" ${i === 1 ? 'required' : ''} onchange="previewCameraPhoto(this, ${i})" 
-                                    class="w-full text-[10px] text-slate-500 file:w-full file:py-1.5 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                            </div>
-                        </div>
-                    `;
+            const uploadedCategoriesToday = new Set();
+            allGlobalReports.forEach(rep => {
+                const repDate = rep.tanggal ? (rep.tanggal.includes('T') ? rep.tanggal.split('T')[0] : rep.tanggal) : '';
+                if (repDate === chosenDate) {
+                    uploadedCategoriesToday.add(rep.kategori);
                 }
-                html += `</div></div>`;
-            } else {
-                html += `
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih File Foto</label>
-                    <input type="file" id="input-files" accept="image/*" multiple required 
-                        class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                `;
-            }
-
-            dynamicContainer.innerHTML = html;
-        }
-
-        function previewCameraPhoto(input, slotIndex) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imgPreview = document.getElementById(`img-preview-${slotIndex}`);
-                    const previewWrapper = document.getElementById(`preview-wrapper-${slotIndex}`);
-                    const inputWrapper = document.getElementById(`input-wrapper-${slotIndex}`);
-
-                    if (imgPreview && previewWrapper && inputWrapper) {
-                        imgPreview.src = e.target.result;
-                        previewWrapper.classList.remove('hidden');
-                        inputWrapper.classList.add('hidden');
-                    }
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function clearCameraSlot(slotIndex) {
-            const input = document.getElementById(`input-file-${slotIndex}`);
-            const previewWrapper = document.getElementById(`preview-wrapper-${slotIndex}`);
-            const inputWrapper = document.getElementById(`input-wrapper-${slotIndex}`);
-            const imgPreview = document.getElementById(`img-preview-${slotIndex}`);
-
-            if (input) input.value = '';
-            if (imgPreview) imgPreview.src = '';
-            if (previewWrapper) previewWrapper.classList.add('hidden');
-            if (inputWrapper) inputWrapper.classList.remove('hidden');
-        }
-
-        function renderRelawanCheckboxes() {
-            const container = document.getElementById('relawan-checkboxes');
-            if (!container) return;
-
-            let html = "";
-            DEFAULT_RELAWAN_LIST.forEach((name, index) => {
-                html += `
-                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
-                        <label class="flex items-center space-x-2 cursor-pointer flex-grow">
-                            <input type="checkbox" name="relawan_hadir" value="${name}" checked class="rounded text-blue-600 focus:ring-blue-500">
-                            <span class="font-medium text-slate-700">${name}</span>
-                        </label>
-                        <input type="text" placeholder="Ganti nama..." onchange="updateRelawanName(${index}, this.value)" class="text-[11px] px-2 py-1 bg-slate-50 border border-slate-200 rounded w-28 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    </div>
-                `;
             });
-            container.innerHTML = html;
+
+            // Opsi jenis dokumentasi TIDAK DIHILANGKAN meskipun sudah pernah diupload
+            if (selectEl) {
+                let optionsHtml = `<option value="">-- Pilih Jenis Dokumentasi --</option>`;
+                ALL_CATEGORIES.forEach(cat => {
+                    const isDone = uploadedCategoriesToday.has(cat);
+                    const labelStr = isDone ? `${cat} (Sudah Diupload)` : cat;
+                    optionsHtml += `<option value="${cat}">${labelStr}</option>`;
+                });
+
+                selectEl.innerHTML = optionsHtml;
+                if (currentSelectedVal) {
+                    selectEl.value = currentSelectedVal;
+                }
+            }
+
+            // CEK DAN TAMPILKAN PERINGATAN JIKA ADA KATEGORI BELUM DIUPLOAD
+            checkAndShowUploadReminder(chosenDate, uploadedCategoriesToday);
         }
 
-        function updateRelawanName(index, newName) {
-            if (newName.trim() !== "") {
-                DEFAULT_RELAWAN_LIST[index] = newName.trim();
+        function checkAndShowUploadReminder(chosenDate, uploadedSet) {
+            const banner = document.getElementById('upload-reminder-banner');
+            const missingContainer = document.getElementById('missing-categories-tags');
+            const reminderText = document.getElementById('reminder-text');
+            if (!banner || !missingContainer) return;
+
+            const missingCategories = ALL_CATEGORIES.filter(cat => !uploadedSet.has(cat));
+
+            if (missingCategories.length > 0) {
+                reminderText.innerText = `Ada ${missingCategories.length} jenis foto dokumentasi yang BELUM diunggah untuk tanggal (${chosenDate}). Mohon segera lengkapi! Setiap Koordinator Divisi`;
+                
+                let tagsHtml = "";
+                missingCategories.forEach(cat => {
+                    tagsHtml += `<span class="bg-amber-200/80 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-clock text-amber-700"></i> ${cat}
+                    </span>`;
+                });
+                
+                missingContainer.innerHTML = tagsHtml;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
             }
         }
 
@@ -621,6 +570,7 @@
             const today = `${year}-${month}-${day}`;
 
             const inputTanggal = document.getElementById('input-tanggal-laporan');
+            
             if (inputTanggal && !isDateManuallyModified) {
                 if (inputTanggal.value !== today) {
                     inputTanggal.value = today;
@@ -694,7 +644,7 @@
                 const now = new Date();
                 const item = {
                     user: currentUser,
-                    expiry: now.getTime() + (90 * 24 * 60 * 60 * 1000)
+                    expiry: now.getTime() + (7 * 24 * 60 * 60 * 1000)
                 };
                 localStorage.setItem('currentUserSession', JSON.stringify(item));
 
@@ -724,6 +674,35 @@
             }
         }
 
+        function renderDynamicUploadInputs() {
+            const container = document.getElementById('dynamic-upload-container');
+            if (!container) return;
+
+            const isLili = currentUser && (currentUser.username.toLowerCase() === 'lili' || currentUser.name.toLowerCase() === 'lili');
+
+            if (isLili) {
+                let html = `<label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Upload Foto</label>`;
+                for (let i = 1; i <= 10; i++) {
+                    html += `
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                            <span class="block text-[11px] font-bold text-blue-700">Kolom Foto ${i}</span>
+                            <input type="file" id="input-file-lili-${i}" accept="image/*" multiple
+                                class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih Foto</label>
+                        <input type="file" id="input-files" multiple accept="image/*" required 
+                            class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                    </div>
+                `;
+            }
+        }
+
         function loadDashboard() {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('header-nav').classList.remove('hidden');
@@ -731,7 +710,7 @@
             document.getElementById('display-username').innerText = currentUser.name;
 
             setTodayDate();
-            updateCategoryDropdownOptions();
+            renderDynamicUploadInputs();
 
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -746,13 +725,29 @@
                 
                 document.getElementById('filter-date').value = todayStr;
                 initRealtimeListener();
-            } else {
-                document.getElementById('user-role-badge').innerText = `Divisi ${currentUser.division} - ${currentUser.name}`;
+            } else if (currentUser.role === 'viewer') {
+                document.getElementById('user-role-badge').innerText = `Viewer - ${currentUser.name}`;
                 document.getElementById('welcome-message').innerText = `Selamat Datang ${currentUser.name}`;
                 document.getElementById('user-panel').classList.remove('hidden');
                 document.getElementById('admin-panel').classList.add('hidden');
                 
-                document.getElementById('upload-form-container').classList.remove('hidden');
+                document.getElementById('upload-form-container').classList.add('hidden');
+                const userArchiveContainer = document.getElementById('user-archive-container');
+                userArchiveContainer.classList.remove('hidden');
+                userArchiveContainer.classList.remove('lg:col-span-2');
+                userArchiveContainer.classList.add('lg:col-span-3');
+
+                document.getElementById('user-filter-date').value = todayStr;
+                initRealtimeListener();
+            } else {
+                document.getElementById('user-role-badge').innerText = `User - ${currentUser.name}`;
+                document.getElementById('welcome-message').innerText = `Selamat Datang ${currentUser.name}`;
+                document.getElementById('user-panel').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+                
+                const uploadFormContainer = document.getElementById('upload-form-container');
+                uploadFormContainer.classList.remove('hidden');
+                
                 const userArchiveContainer = document.getElementById('user-archive-container');
                 userArchiveContainer.classList.remove('hidden');
                 userArchiveContainer.classList.remove('lg:col-span-3');
@@ -776,6 +771,8 @@
                 });
                 allGlobalReports = list;
 
+                updateCategoryDropdownOptions();
+
                 if (currentUser && currentUser.role === 'admin') {
                     const dateFilter = document.getElementById('filter-date').value;
                     const kategoriFilter = document.getElementById('filter-kategori').value;
@@ -788,106 +785,149 @@
             });
         }
 
-        // PERBAIKAN KOMPRESI LEBIH RINGAN (MAX 700PX & KUALITAS 0.45)
-        async function applyWatermarkAndCompress(file, category, uploaderName) {
+        // FUNGSI KOMPRESI FOTO AMAN LINTAS PERANGKAT (Android 5+ Safe)
+        async function compressImageAndGetBase64(file, maxWidth = 800, quality = 0.5) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onerror = () => resolve(null);
                 reader.onload = (event) => {
                     const img = new Image();
-                    img.onerror = () => resolve(event.target.result);
                     img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        const maxWidth = 700; // Dikurangi agar ukuran Base64 sangat kecil & ringan
+                        try {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
 
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
+                            if (!width || !height) {
+                                resolve(event.target.result); // Fallback ke data asli jika ukuran nol
+                                return;
+                            }
+
+                            if (width > maxWidth) {
+                                height = Math.round((height * maxWidth) / width);
+                                width = maxWidth;
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+
+                            const ctx = canvas.getContext('2d');
+                            if (!ctx) {
+                                resolve(event.target.result);
+                                return;
+                            }
+
+                            ctx.drawImage(img, 0, 0, width, height);
+                            const base64String = canvas.toDataURL('image/jpeg', quality);
+                            resolve(base64String);
+                        } catch (err) {
+                            console.warn("Gagal kompres canvas, menggunakan file mentah:", err);
+                            resolve(event.target.result);
                         }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        const now = new Date();
-                        const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID');
-                        const locationStr = "Jl. Kolonel Tubagus Suwandi Kav. BRI 2 No.19, Serang, Banten";
-                        const brandStr = "SPPG KOTA SERANG SERANG SERANG 2 - Uploader: " + uploaderName;
-
-                        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-                        ctx.fillRect(10, height - 70, width - 20, 60);
-
-                        ctx.fillStyle = "#ffffff";
-                        ctx.font = "bold 11px sans-serif";
-                        ctx.fillText(timeStr, 15, height - 50);
-                        ctx.font = "10px sans-serif";
-                        ctx.fillText(locationStr, 15, height - 33);
-                        ctx.fillStyle = "#38bdf8";
-                        ctx.fillText(brandStr, 15, height - 16);
-
-                        resolve(canvas.toDataURL('image/jpeg', 0.45)); // Kompresi ringan anti error payload Firestore
+                    };
+                    img.onerror = () => {
+                        resolve(event.target.result); // Fallback aman jika gambar gagal dimuat decoder lama
                     };
                     img.src = event.target.result;
+                };
+                reader.onerror = () => {
+                    resolve(""); 
                 };
                 reader.readAsDataURL(file);
             });
         }
 
+        function checkGlobalSyncStatus(groupedData) {
+            const btnUpload = document.getElementById('btn-upload');
+            if (!btnUpload) return;
+
+            const now = Date.now();
+            let hasUnsynced = false;
+
+            for (const item of groupedData) {
+                if (item.syncedToDrive !== true && item.syncFailed !== true) {
+                    const startTime = item.syncStartTime || (item.createdAt ? new Date(item.createdAt).getTime() : now);
+                    if (now - startTime < 35000) {
+                        hasUnsynced = true;
+                        break;
+                    }
+                }
+            }
+
+            isSyncingActive = hasUnsynced;
+
+            if (isSyncingActive) {
+                btnUpload.disabled = true;
+                btnUpload.classList.add('opacity-50', 'cursor-not-allowed');
+                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Tunggu Sebentar...`;
+            } else {
+                btnUpload.disabled = false;
+                btnUpload.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
+            }
+        }
+
         async function handleUpload(e) {
             e.preventDefault();
+
+            if (isSyncingActive) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Proses sedang Berjalan',
+                    text: 'Mohon tunggu! Ada data laporan sebelumnya yang belum selesai dikirim ke sistem.',
+                    confirmButtonColor: '#2563eb'
+                });
+                return;
+            }
 
             const tanggalPilih = document.getElementById('input-tanggal-laporan').value;
             const instansi = document.getElementById('input-instansi').value;
             const kategori = document.getElementById('input-kategori').value;
             const btnUpload = document.getElementById('btn-upload');
 
-            let selectedFiles = [];
-            const isCameraRequired = currentUser && currentUser.cameraOnly && currentUser.cameraOnly.includes(kategori);
-
-            if (isCameraRequired) {
-                for (let i = 1; i <= 5; i++) {
-                    const slotInput = document.getElementById(`input-file-${i}`);
-                    if (slotInput && slotInput.files && slotInput.files.length > 0) {
-                        selectedFiles.push(slotInput.files[0]);
-                    }
-                }
-            } else {
-                const fileInput = document.getElementById('input-files');
-                if (fileInput && fileInput.files.length > 0) {
-                    for (let i = 0; i < fileInput.files.length; i++) {
-                        selectedFiles.push(fileInput.files[i]);
-                    }
-                }
-            }
-
-            if (!tanggalPilih || !kategori || selectedFiles.length === 0) {
-                Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Silakan lengkapi form dan ambil minimal 1 foto dari kolom yang tersedia!', confirmButtonColor: '#2563eb' });
+            if (!tanggalPilih || !kategori) {
+                Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Silakan lengkapi tanggal dan pilih jenis dokumentasi!', confirmButtonColor: '#2563eb' });
                 return;
             }
 
-            if (currentUser && currentUser.minPhotos && currentUser.minPhotos[kategori]) {
-                const minReq = currentUser.minPhotos[kategori];
-                if (selectedFiles.length < minReq) {
-                    Swal.fire({ icon: 'warning', title: 'Jumlah Foto Kurang', text: `Untuk kategori ini, Anda wajib mengunggah minimal ${minReq} foto!`, confirmButtonColor: '#2563eb' });
+            const isLiliUser = currentUser && (currentUser.username.toLowerCase() === 'lili' || currentUser.name.toLowerCase() === 'lili');
+            let rawFilesArray = [];
+
+            if (isLiliUser) {
+                for (let i = 1; i <= 10; i++) {
+                    const fileInputRow = document.getElementById(`input-file-lili-${i}`);
+                    if (fileInputRow && fileInputRow.files.length > 0) {
+                        for (let f = 0; f < fileInputRow.files.length; f++) {
+                            rawFilesArray.push(fileInputRow.files[f]);
+                        }
+                    }
+                }
+
+                if (rawFilesArray.length === 0) {
+                    Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Pilih minimal 1 foto dari kolom yang tersedia untuk melanjutkan!', confirmButtonColor: '#2563eb' });
                     return;
+                }
+            } else {
+                const fileInput = document.getElementById('input-files');
+                if (!fileInput || fileInput.files.length < 1) {
+                    Swal.fire({ icon: 'warning', title: 'Peringatan', text: 'Pilih minimal 1 foto untuk melanjutkan!', confirmButtonColor: '#2563eb' });
+                    return;
+                }
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    rawFilesArray.push(fileInput.files[i]);
                 }
             }
 
             btnUpload.disabled = true;
-            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses & Mengirim...`;
+            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses Foto...`;
 
             try {
-                let relawanHadirArr = [];
-                if (kategori === "FOTO ABSENSI RELAWAN") {
-                    const checkboxes = document.querySelectorAll('input[name="relawan_hadir"]:checked');
-                    checkboxes.forEach(cb => relawanHadirArr.push(cb.value));
-                }
-
+                // Penanganan Tanggal Aman Lintas Zona Waktu
                 const parts = tanggalPilih.split('-');
                 let dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                if (isNaN(dateObj.getTime())) {
+                    dateObj = new Date();
+                }
+
                 const day = String(dateObj.getDate()).padStart(2, '0');
                 const monthNames = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
                 const month = monthNames[dateObj.getMonth()];
@@ -895,103 +935,191 @@
                 const formattedDateFolder = `${day} ${month} ${year}`;
 
                 let allCompressedFiles = [];
-                for (let i = 0; i < selectedFiles.length; i++) {
-                    const base64Watermarked = await applyWatermarkAndCompress(selectedFiles[i], kategori, currentUser.name);
-                    if (base64Watermarked) {
+
+                for (let i = 0; i < rawFilesArray.length; i++) {
+                    const file = rawFilesArray[i];
+                    const base64 = await compressImageAndGetBase64(file);
+                    
+                    if (base64) {
                         allCompressedFiles.push({
                             fileName: `${kategori}_${Date.now()}_${i + 1}.jpg`,
-                            fileData: base64Watermarked,
+                            fileData: base64,
                             category: kategori,
                             dateFolder: formattedDateFolder
                         });
                     }
                 }
 
+                if (allCompressedFiles.length === 0) {
+                    throw new Error("Gagal memproses file foto yang dipilih.");
+                }
+
+                const CHUNK_SIZE = 8; // Dikurangi agar aman untuk memori perangkat kecil
+                const batchGroups = [];
+                for (let i = 0; i < allCompressedFiles.length; i += CHUNK_SIZE) {
+                    batchGroups.push(allCompressedFiles.slice(i, i + CHUNK_SIZE));
+                }
+
                 const uploadBatchGroupId = Date.now().toString();
                 const syncStartTime = Date.now();
+                let createdDocIds = [];
 
-                // PERBAIKAN: Kirim foto satu per satu ke dokumen terpisah jika ukuran besar, atau simpan ringan
-                // Bagi foto jika lebih dari 2 foto untuk mencegah batas 1MB Firestore
-                for (let i = 0; i < allCompressedFiles.length; i += 2) {
-                    const fileChunk = allCompressedFiles.slice(i, i + 2);
+                for (let i = 0; i < batchGroups.length; i++) {
                     const reportPayload = {
                         uploader: currentUser.name,
-                        division: currentUser.division,
                         instansi: instansi,
                         kategori: kategori,
                         tanggal: tanggalPilih,
-                        relawanHadir: relawanHadirArr,
-                        files: fileChunk,
+                        files: batchGroups[i],
                         syncedToDrive: false,
                         syncFailed: false,
                         syncStartTime: syncStartTime,
-                        batchGroupId: uploadBatchGroupId
+                        batchGroupId: uploadBatchGroupId,
+                        batchIndex: i + 1,
+                        totalBatches: batchGroups.length
                     };
 
                     const docRef = await window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
                         ...reportPayload,
                         createdAt: window.serverTimestamp()
                     });
-
-                    // Background sync ke Drive
-                    syncToDriveInBackground(docRef.id, reportPayload, formattedDateFolder);
+                    createdDocIds.push({ id: docRef.id, payload: reportPayload });
                 }
 
                 document.getElementById('upload-form').reset();
                 document.getElementById('input-instansi').value = "SPPG KOTA SERANG SERANG SERANG 2";
                 isDateManuallyModified = false;
                 setTodayDate();
-                updateCategoryDropdownOptions();
+                renderDynamicUploadInputs();
 
-                // NOTIFIKASI SUKSES INSTAN
                 Swal.fire({
-                    icon: 'success',
-                    title: 'BERHASIL DIKIRIM!',
-                    text: `Laporan berhasil terkirim atas nama ${currentUser.name}.`,
+                    html: `
+                        <div class="py-4">
+                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner animate-bounce">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">BERHASIL!</h2>
+                            <p class="text-sm text-slate-600">Silahkan Klik OK untuk melanjutkan</p>
+                            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-left text-xs text-blue-800 flex items-center gap-3">
+                                <i class="fa-solid fa-sync fa-spin text-lg text-blue-600"></i>
+                                <span>Sedang Dikirim ke Server</span>
+                            </div>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    confirmButtonText: '<i class="fa-solid fa-check mr-1"></i> Oke',
                     confirmButtonColor: '#2563eb',
-                    timer: 2000,
-                    showConfirmButton: false
+                    customClass: { popup: 'rounded-3xl shadow-2xl border border-slate-100' }
                 });
 
-                sendWhatsAppNotification(currentUser.name, currentUser.division, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
+                createdDocIds.forEach(item => {
+                    syncToDriveInBackground(item.id, item.payload, formattedDateFolder, item.payload.files.length);
+                });
+
+                sendWhatsAppNotification(currentUser.name, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
 
             } catch (error) {
-                console.error("Gagal Upload:", error);
-                Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Terjadi kendala koneksi saat mengirim foto. Silakan coba lagi.', confirmButtonColor: '#2563eb' });
+                console.error("Gagal Dikirim:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Upload',
+                    text: 'Terjadi kesalahan saat memproses atau menyimpan foto. Pastikan ukuran file tidak melebihi batas memori perangkat.',
+                    confirmButtonColor: '#2563eb'
+                });
             } finally {
                 btnUpload.disabled = false;
-                btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Kirim Laporan`;
+                btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
             }
         }
 
-        async function syncToDriveInBackground(docId, reportPayload, formattedDateFolder) {
+        async function syncToDriveInBackground(docId, reportPayload, formattedDateFolder, totalFoto) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 40000);
+
             try {
                 fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reportPayload)
+                    body: JSON.stringify(reportPayload),
+                    signal: controller.signal
                 }).then(async () => {
+                    clearTimeout(timeoutId);
                     const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                    await window.updateDoc(targetRef, { syncedToDrive: true, syncFailed: false });
+                    await window.updateDoc(targetRef, { 
+                        syncedToDrive: true,
+                        syncFailed: false 
+                    });
                 }).catch(async () => {
+                    clearTimeout(timeoutId);
                     const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                    await window.updateDoc(targetRef, { syncedToDrive: false, syncFailed: true });
+                    await window.updateDoc(targetRef, { 
+                        syncedToDrive: false,
+                        syncFailed: true 
+                    });
                 });
-            } catch (err) {
+            } catch (syncErr) {
+                clearTimeout(timeoutId);
                 const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                await window.updateDoc(targetRef, { syncedToDrive: false, syncFailed: true });
+                await window.updateDoc(targetRef, { 
+                    syncedToDrive: false,
+                    syncFailed: true 
+                });
             }
         }
 
-        function sendWhatsAppNotification(uploader, division, instansi, kategori, totalFoto, formattedDateFolder) {
+        async function retrySyncGroup(encodedDocIds) {
+            try {
+                const docIds = JSON.parse(decodeURIComponent(encodedDocIds));
+                Swal.fire({
+                    title: 'Mengirim Ulang...',
+                    text: 'Sedang dikirim ulang ke sistem.',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const now = Date.now();
+
+                for (const docId of docIds) {
+                    const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
+                    await window.updateDoc(targetRef, { 
+                        syncedToDrive: false,
+                        syncFailed: false,
+                        syncStartTime: now 
+                    });
+
+                    const targetRep = allGlobalReports.find(r => r.id === docId);
+                    if (targetRep) {
+                        const rawDatePart = targetRep.tanggal ? (targetRep.tanggal.includes('T') ? targetRep.tanggal.split('T')[0] : targetRep.tanggal) : '';
+                        const parts = rawDatePart ? rawDatePart.split('-') : [];
+                        let dateObj = parts.length === 3 ? new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])) : new Date();
+                        
+                        const day = String(dateObj.getDate()).padStart(2, '0');
+                        const monthNames = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
+                        const month = monthNames[dateObj.getMonth()];
+                        const year = dateObj.getFullYear();
+                        const formattedDateFolder = `${day} ${month} ${year}`;
+                        
+                        syncToDriveInBackground(docId, targetRep, formattedDateFolder, targetRep.files ? targetRep.files.length : 0);
+                    }
+                }
+
+                Swal.close();
+            } catch (e) {
+                console.error("Gagal Upload Ulang:", e);
+                Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal memulai proses ulang.', confirmButtonColor: '#2563eb' });
+            }
+        }
+
+        function sendWhatsAppNotification(uploader, instansi, kategori, totalFoto, formattedDateFolder) {
             const message = `*LAPORAN DOKUMENTASI KERJA BARU*\n\n` +
-                            `Pengguna: *${uploader}* (Divisi: ${division})\n` +
+                            `Uploader: *${uploader}*\n` +
                             `Instansi: *${instansi}*\n` +
                             `Kategori: *${kategori}*\n` +
-                            `Tanggal: *${formattedDateFolder}*\n` +
-                            `Jumlah Foto: *${totalFoto} File*\n\n` +
-                            `Laporan berhasil masuk ke sistem database.`;
+                            `Tanggal Laporan: *${formattedDateFolder}*\n` +
+                            `Jumlah Foto: *${totalFoto} File*\n` +
+                            `Waktu Input: *${new Date().toLocaleString('id-ID')}*\n\n` +
+                            `Silakan cek dashboard admin untuk melihat rincian arsip foto.`;
 
             const formdata = new FormData();
             formdata.append("target", FONNTE_TARGET);
@@ -1003,33 +1131,49 @@
                 headers: { "Authorization": FONNTE_TOKEN },
                 body: formdata,
                 redirect: "follow"
-            }).catch(error => console.error("WA Error:", error));
+            }).catch(error => console.error("Gagal Kirim WA:", error));
         }
 
         function groupReports(docsList) {
             const grouped = {};
+
             docsList.forEach(item => {
                 const rawDatePart = item.tanggal ? (item.tanggal.includes('T') ? item.tanggal.split('T')[0] : item.tanggal) : 'no-date';
-                const key = `${rawDatePart}_${item.uploader}_${item.kategori}`;
+                
+                const isSynced = item.syncedToDrive === true;
+                const isFailed = item.syncFailed === true;
+                const statusTag = isSynced ? 'synced' : (isFailed ? 'failed' : 'pending');
+                const batchKey = isSynced ? 'synced_combined' : (item.batchGroupId || item.syncStartTime || (item.createdAt ? new Date(item.createdAt).getTime() : 'single'));
+
+                const key = `${rawDatePart}_${item.uploader}_${item.instansi}_${item.kategori}_${statusTag}_${batchKey}`;
 
                 if (!grouped[key]) {
                     grouped[key] = {
                         docIds: [item.id],
                         uploader: item.uploader,
-                        division: item.division || '-',
                         instansi: item.instansi,
                         kategori: item.kategori,
                         tanggal: rawDatePart,
-                        relawanHadir: item.relawanHadir || [],
+                        createdAt: item.createdAt,
+                        syncStartTime: item.syncStartTime,
                         files: item.files ? [...item.files] : [],
                         syncedToDrive: item.syncedToDrive === true,
                         syncFailed: item.syncFailed === true
                     };
                 } else {
                     grouped[key].docIds.push(item.id);
-                    if (item.files) grouped[key].files = grouped[key].files.concat(item.files);
+                    if (item.files) {
+                        grouped[key].files = grouped[key].files.concat(item.files);
+                    }
+                    if (!item.syncedToDrive) {
+                        grouped[key].syncedToDrive = false;
+                    }
+                    if (item.syncFailed) {
+                        grouped[key].syncFailed = true;
+                    }
                 }
             });
+
             return Object.values(grouped);
         }
 
@@ -1039,9 +1183,8 @@
 
             let rawList = [];
             allGlobalReports.forEach(data => {
-                if (currentUser.role !== 'admin' && data.uploader !== currentUser.name) return;
-
                 const itemDatePart = data.tanggal ? (data.tanggal.includes('T') ? data.tanggal.split('T')[0] : data.tanggal) : '';
+                
                 if (filter.date && itemDatePart !== filter.date) return;
                 if (filter.kategori && data.kategori !== filter.kategori) return;
 
@@ -1049,37 +1192,59 @@
             });
 
             const groupedData = groupReports(rawList);
+            
+            if (currentUser && currentUser.role === 'user') {
+                checkGlobalSyncStatus(groupedData);
+            }
+
             let html = "";
             groupedData.forEach(item => {
-                let photosHtml = `<div class="flex space-x-1 overflow-x-auto py-1">`;
-                item.files.forEach(f => {
-                    photosHtml += `<img src="${f.fileData}" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border cursor-pointer hover:scale-105">`;
-                });
-                photosHtml += `</div>`;
+                const parts = item.tanggal ? item.tanggal.split('-') : [];
+                let dateStr = '-';
+                if (parts.length === 3) {
+                    const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    dateStr = dObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+                
+                let syncStatusHtml = "";
+                if (item.syncedToDrive === true) {
+                    syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Terkirim</span>`;
+                } else if (item.syncFailed === true) {
+                    syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-circle-xmark text-rose-500 mr-1"></i> Gagal</span>`;
+                } else {
+                    syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-sync fa-spin text-amber-500 mr-1"></i> Mengirim...</span>`;
+                }
 
                 html += `
-                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2 shadow-sm">
-                        <div class="flex justify-between items-start">
-                            <span class="text-xs font-bold uppercase text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg">${item.kategori}</span>
-                            <span class="text-[10px] text-slate-500">${item.tanggal}</span>
+                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm hover:border-blue-300 transition">
+                        <div>
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wide text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg">${item.kategori}</span>
+                                ${syncStatusHtml}
+                            </div>
+                            <p class="text-xs text-slate-500"><i class="fa-regular fa-calendar mr-1"></i> ${dateStr} &bull; Diunggah oleh: <b class="text-slate-700">${item.uploader}</b> (${item.files.length} Foto)</p>
                         </div>
-                        ${photosHtml}
                     </div>
                 `;
             });
 
             document.getElementById('user-count-badge').innerText = `${groupedData.length} Laporan`;
-            archiveList.innerHTML = html || `<p class="text-center text-slate-400 py-10 text-sm">Belum ada riwayat laporan ditemukan.</p>`;
+            archiveList.innerHTML = html || `<p class="text-center text-slate-400 py-10 text-sm">Belum ada riwayat dokumen diunggah untuk tanggal tersebut.</p>`;
         }
 
         function applyUserFilter() {
-            renderUserArchiveView({ date: document.getElementById('user-filter-date').value, kategori: document.getElementById('user-filter-kategori').value });
+            const dateFilter = document.getElementById('user-filter-date').value;
+            const kategori = document.getElementById('user-filter-kategori').value;
+            renderUserArchiveView({ date: dateFilter, kategori: kategori });
         }
 
         function resetUserFilter() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            
             document.getElementById('user-filter-date').value = todayStr;
             document.getElementById('user-filter-kategori').value = '';
+            
             renderUserArchiveView({ date: todayStr });
         }
 
@@ -1090,39 +1255,73 @@
             let rawList = [];
             allGlobalReports.forEach(data => {
                 const itemDatePart = data.tanggal ? (data.tanggal.includes('T') ? data.tanggal.split('T')[0] : data.tanggal) : '';
+
                 if (filter.date && itemDatePart !== filter.date) return;
                 if (filter.kategori && data.kategori !== filter.kategori) return;
+
                 rawList.push(data);
             });
 
             const groupedData = groupReports(rawList);
-            let rows = "";
+            checkGlobalSyncStatus(groupedData);
 
+            let rows = "";
             groupedData.forEach(data => {
+                const parts = data.tanggal ? data.tanggal.split('-') : [];
+                let dateFormatted = '-';
+                if (parts.length === 3) {
+                    const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                    dateFormatted = dObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+                
                 let photosHtml = `<div class="flex space-x-1 overflow-x-auto py-1 max-w-xs">`;
-                data.files.forEach(f => {
-                    photosHtml += `<img src="${f.fileData}" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border cursor-pointer hover:scale-105">`;
-                });
+                if (data.files && data.files.length > 0) {
+                    data.files.forEach(f => {
+                        photosHtml += `<img src="${f.fileData}" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border hover:scale-105 transition cursor-pointer shadow-sm" title="Klik untuk lihat pratinjau jernih">`;
+                    });
+                }
                 photosHtml += `</div>`;
 
-                let relawanInfo = data.relawanHadir && data.relawanHadir.length > 0 ? `<br><span class="text-[11px] text-emerald-600 font-medium">Hadir: ${data.relawanHadir.join(', ')}</span>` : '';
                 const safeDocIds = encodeURIComponent(JSON.stringify(data.docIds));
 
+                const now = Date.now();
+                const startTime = data.syncStartTime || (data.createdAt ? new Date(data.createdAt).getTime() : now);
+                const isTimedOut = (now - startTime > 40000) && (data.syncedToDrive !== true);
+
+                let syncBadge = "";
+                if (data.syncedToDrive === true) {
+                    syncBadge = `<span class="inline-flex items-center text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-medium" title="Berhasil dikirim ke sistem">
+                        <i class="fa-solid fa-circle-check mr-1.5 text-emerald-500"></i> Terkirim
+                     </span>`;
+                } else if (data.syncFailed === true || isTimedOut) {
+                    syncBadge = `<div class="flex flex-col items-center gap-1">
+                        <span class="inline-flex items-center text-xs text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full font-semibold" title="Gagal tersimpan">
+                            <i class="fa-solid fa-circle-xmark mr-1.5 text-rose-500"></i> Gagal Dikirim
+                        </span>
+                        <button onclick="retrySyncGroup('${safeDocIds}')" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 rounded shadow transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Kirim Ulang
+                        </button>
+                     </div>`;
+                } else {
+                    syncBadge = `<span class="inline-flex items-center text-xs text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full font-medium" title="Sedang diproses ke Sistem">
+                        <i class="fa-solid fa-spinner fa-spin mr-1.5 text-amber-500"></i> Sedang Dikirim...
+                     </span>`;
+                }
+
+                const safeFileNames = data.files ? encodeURIComponent(JSON.stringify(data.files.map(f => f.fileName))) : encodeURIComponent(JSON.stringify([]));
+
                 rows += `
-                    <tr class="hover:bg-slate-50/80 transition border-b border-slate-100">
-                        <td class="py-3 px-4 text-xs text-slate-600">${data.tanggal}</td>
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3 px-4 text-xs text-slate-600">${dateFormatted}</td>
                         <td class="py-3 px-4 font-semibold text-slate-800">
-                            <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs">${data.uploader}</span>
-                            <span class="block text-[10px] text-slate-400">Divisi: ${data.division}</span>
+                            <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full text-xs">${data.uploader}</span>
                         </td>
-                        <td class="py-3 px-4 text-slate-700 text-xs">${data.instansi}</td>
-                        <td class="py-3 px-4 text-slate-700 font-medium text-xs">${data.kategori} ${relawanInfo}</td>
+                        <td class="py-3 px-4 text-slate-700">${data.instansi}</td>
+                        <td class="py-3 px-4 text-slate-700 font-medium text-xs">${data.kategori}</td>
                         <td class="py-3 px-4">${photosHtml}</td>
+                        <td class="py-3 px-4 text-center">${syncBadge}</td>
                         <td class="py-3 px-4 text-center">
-                            <span class="text-xs text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-medium">Terkirim</span>
-                        </td>
-                        <td class="py-3 px-4 text-center">
-                            <button onclick="deleteReportGroup('${safeDocIds}')" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 transition" title="Hapus">
+                            <button onclick="deleteReportGroup('${safeDocIds}', '${data.kategori}', '${safeFileNames}')" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 transition" title="Hapus Laporan & Foto">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
@@ -1130,10 +1329,10 @@
                 `;
             });
 
-            tbody.innerHTML = rows || `<tr><td colspan="7" class="text-center text-slate-400 py-8">Tidak ada data arsip ditemukan.</td></tr>`;
+            tbody.innerHTML = rows || `<tr><td colspan="7" class="text-center text-slate-400 py-8">Tidak ada data arsip yang ditemukan untuk tanggal tersebut.</td></tr>`;
         }
 
-        function openPhotoModal(imgSrc, fileName) {
+        function openPhotoModal(imgSrc, fileName = 'dokumentasi.jpg') {
             document.getElementById('modal-image-element').src = imgSrc;
             const downloadBtn = document.getElementById('modal-download-btn');
             downloadBtn.href = imgSrc;
@@ -1145,33 +1344,78 @@
             document.getElementById('photo-modal').classList.add('hidden');
         }
 
-        async function deleteReportGroup(encodedDocIds) {
+        async function deleteReportGroup(encodedDocIds, kategori, encodedFileNames) {
             Swal.fire({
-                title: 'Hapus Laporan?',
-                text: "Data akan dihapus permanen dari sistem!",
+                title: 'Apakah Anda yakin?',
+                text: "Laporan dan file foto di Sistem akan terhapus permanen!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e11d48',
-                confirmButtonText: 'Ya, Hapus!'
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const docIds = JSON.parse(decodeURIComponent(encodedDocIds));
-                    for (const id of docIds) {
-                        await window.deleteDoc(window.doc(window.db, "laporan_dokumentasi", id));
+                    try {
+                        let docIds = [];
+                        let fileNames = [];
+                        try {
+                            docIds = JSON.parse(decodeURIComponent(encodedDocIds));
+                            fileNames = JSON.parse(decodeURIComponent(encodedFileNames));
+                        } catch(e) {
+                            docIds = [];
+                            fileNames = [];
+                        }
+
+                        for (const id of docIds) {
+                            await window.deleteDoc(window.doc(window.db, "laporan_dokumentasi", id));
+                        }
+
+                        fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: "delete",
+                                kategori: kategori,
+                                fileNames: fileNames
+                            })
+                        });
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Terhapus!',
+                            text: 'Laporan berhasil dihapus dari sistem.',
+                            confirmButtonColor: '#2563eb',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } catch (err) {
+                        console.error("Gagal hapus:", err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Terjadi kesalahan saat menghapus laporan.',
+                            confirmButtonColor: '#2563eb'
+                        });
                     }
-                    Swal.fire({ icon: 'success', title: 'Terhapus!', timer: 1500, showConfirmButton: false });
                 }
             });
         }
 
         function applyAdminFilter() {
-            renderAdminArchiveView({ date: document.getElementById('filter-date').value, kategori: document.getElementById('filter-kategori').value });
+            const dateFilter = document.getElementById('filter-date').value;
+            const kategori = document.getElementById('filter-kategori').value;
+            renderAdminArchiveView({ date: dateFilter, kategori: kategori });
         }
 
         function resetAdminFilter() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            
             document.getElementById('filter-date').value = todayStr;
             document.getElementById('filter-kategori').value = '';
+            
             renderAdminArchiveView({ date: todayStr });
         }
     </script>
