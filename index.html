@@ -278,6 +278,39 @@
                         </div>
                     </div>
 
+                      <!-- 9. ADMIN (SEMUA APLIKASI) -->
+                    <div onclick="openDivisionModal('ADMIN', [
+                        { name: 'MENU HARIAN', url: 'menu.html', icon: 'fa-calendar-days', desc: '' },
+                        { name: 'CATATAN LIMBAH DAPUR', url: 'limbah2.html', icon: 'fa-recycle', desc: '' },
+                        { name: 'APLIKASI DOKUMENTASI', url: 'dok.html', icon: 'fa-camera-retro', desc: '' },
+                        { name: 'APLIKASI DISTRIBUSI', url: 'Distribusi.html', icon: 'fa-truck-fast', desc: '' },
+                        { name: 'SISA PANGAN PERSIAPAN', url: 'persiapan.html', icon: 'fa-seedling', desc: '' },
+                        { name: 'SISA MAKANAN PEMORSIAN', url: 'pemorsian.html', icon: 'fa-scale-balanced', desc: '' },
+                        { name: 'SISA MAKANAN FOODTRAY', url: 'foodtray.html', icon: 'fa-bowl-food', desc: '' },
+                        { name: 'PENERIMAAN BAHAN BAKU', url: 'from.html', icon: 'fa-truck-ramp-box', desc: '' },
+                        { name: 'SO BAHAN BAKU', url: 'so.html', icon: 'fa-clipboard-check', desc: '' },
+                        { name: 'KELUAR MASUK OPR DAPUR', url: 'soopr.html', icon: 'fa-right-left', desc: '' },
+                        { name: 'UPLOAD MENU HARIAN', url: 'upload.html', icon: 'fa-cloud-arrow-up', desc: '' },
+                        { name: 'KEHADIRAN RELAWAN', url: 'absen.html', icon: 'fa-user-check', desc: '' }
+                    ])" class="glass-card p-5 rounded-2xl shadow-xl glow-hover cursor-pointer border-2 border-[#0288D1] bg-gradient-to-br from-white via-[#E0F7FA] to-[#0288D1]/10 flex flex-col justify-between transition-all group">
+                        <div>
+                            <div class="flex items-center justify-between mb-3.5">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#01579B] to-[#03A9F4] text-white flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-laptop-code"></i>
+                                </div>
+                                <span class="text-[10px] bg-[#0288D1] text-white px-3 py-1 rounded-full font-extrabold shadow-md">Semua Akses (12)</span>
+                            </div>
+                            <h3 class="font-extrabold text-base text-slate-900 mb-1 group-hover:text-[#0288D1] transition-colors">ADMIN</h3>
+                            <p class="text-xs text-slate-600 mb-4">Pusat kendali penuh & akses lengkap ke seluruh modul aplikasi.</p>
+                        </div>
+                        <div class="border-t border-sky-200 pt-3 flex items-center justify-between text-xs font-bold text-[#0288D1]">
+                            <span>Buka Semua Aplikasi</span>
+                            <div class="w-7 h-7 rounded-full bg-[#0288D1] text-white flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- KOKI/CHEF -->
                     <div onclick="openDivisionModal('KOKI/CHEF', [
                         { name: 'CATATAN PEMAKAIAN BAHAN BAKU', url: 'perbaikan.html', icon: 'fa-camera-retro', desc: 'Segera Hadir' },
@@ -491,38 +524,6 @@
                         </div>
                     </div>
 
-                    <!-- 9. ADMIN (SEMUA APLIKASI) -->
-                    <div onclick="openDivisionModal('ADMIN', [
-                        { name: 'MENU HARIAN', url: 'menu.html', icon: 'fa-calendar-days', desc: '' },
-                        { name: 'CATATAN LIMBAH DAPUR', url: 'limbah2.html', icon: 'fa-recycle', desc: '' },
-                        { name: 'APLIKASI DOKUMENTASI', url: 'dok.html', icon: 'fa-camera-retro', desc: '' },
-                        { name: 'APLIKASI DISTRIBUSI', url: 'Distribusi.html', icon: 'fa-truck-fast', desc: '' },
-                        { name: 'SISA PANGAN PERSIAPAN', url: 'persiapan.html', icon: 'fa-seedling', desc: '' },
-                        { name: 'SISA MAKANAN PEMORSIAN', url: 'pemorsian.html', icon: 'fa-scale-balanced', desc: '' },
-                        { name: 'SISA MAKANAN FOODTRAY', url: 'foodtray.html', icon: 'fa-bowl-food', desc: '' },
-                        { name: 'PENERIMAAN BAHAN BAKU', url: 'from.html', icon: 'fa-truck-ramp-box', desc: '' },
-                        { name: 'SO BAHAN BAKU', url: 'so.html', icon: 'fa-clipboard-check', desc: '' },
-                        { name: 'KELUAR MASUK OPR DAPUR', url: 'soopr.html', icon: 'fa-right-left', desc: '' },
-                        { name: 'UPLOAD MENU HARIAN', url: 'upload.html', icon: 'fa-cloud-arrow-up', desc: '' },
-                        { name: 'KEHADIRAN RELAWAN', url: 'absen.html', icon: 'fa-user-check', desc: '' }
-                    ])" class="glass-card p-5 rounded-2xl shadow-xl glow-hover cursor-pointer border-2 border-[#0288D1] bg-gradient-to-br from-white via-[#E0F7FA] to-[#0288D1]/10 flex flex-col justify-between transition-all group">
-                        <div>
-                            <div class="flex items-center justify-between mb-3.5">
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#01579B] to-[#03A9F4] text-white flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition-transform">
-                                    <i class="fa-solid fa-laptop-code"></i>
-                                </div>
-                                <span class="text-[10px] bg-[#0288D1] text-white px-3 py-1 rounded-full font-extrabold shadow-md">Semua Akses (12)</span>
-                            </div>
-                            <h3 class="font-extrabold text-base text-slate-900 mb-1 group-hover:text-[#0288D1] transition-colors">ADMIN</h3>
-                            <p class="text-xs text-slate-600 mb-4">Pusat kendali penuh & akses lengkap ke seluruh modul aplikasi.</p>
-                        </div>
-                        <div class="border-t border-sky-200 pt-3 flex items-center justify-between text-xs font-bold text-[#0288D1]">
-                            <span>Buka Semua Aplikasi</span>
-                            <div class="w-7 h-7 rounded-full bg-[#0288D1] text-white flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                                <i class="fa-solid fa-arrow-right text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- 10. WAREHOUSE -->
                     <div onclick="openDivisionModal('WAREHOUSE', [
