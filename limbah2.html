@@ -52,7 +52,7 @@
             </div>
             <form onsubmit="handleTransferSaldoPembelian(event)" class="space-y-4">
                 <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Uang akan dipindahkan dari <strong>UANG DI PEGANG PAK JIMI KURNIAWAN</strong> Di Kasih Ke <strong>Aslap buat kebutuhan</strong>.
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Uang akan dipindahkan dari <strong>UANG DI PEGANG PAK JIMI KURNIAWAN</strong> Ke <strong>Simpanan buat kebutuhan</strong>.
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nominal Saldo (Rp)</label>
@@ -78,7 +78,7 @@
             </div>
             <form onsubmit="handleTransferSaldoKePenjualan(event)" class="space-y-4">
                 <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs text-emerald-800">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Saldo akan dipindahkan dari <strong>Uang yang di pegang Pak ASLAP</strong> Di kembalikan ke <strong>Uang yang di pegang Pak Jimi Kurniawan</strong>.
+                    <i class="fa-solid fa-circle-info mr-1"></i> Saldo akan dipindahkan dari <strong>Uang Simpanan</strong> Di kembalikan ke <strong>Uang yang di pegang Pak Jimi Kurniawan</strong>.
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nominal Transfer (Rp)</label>
@@ -264,13 +264,24 @@
             </div>
 
             <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <!-- KONTEN SALDO PUBLIK (Hanya menampilkan Uang di Pak Jimi Kurniawan) -->
+                <!-- KONTEN SALDO PUBLIK -->
                 <div id="pub-content-saldo" class="pub-tab-content hidden space-y-6">
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-5 text-white shadow">
-                            <p class="text-xs uppercase tracking-wider text-emerald-100 font-semibold mb-1">UANG DI PAK JIMI KURNIAWAN</p>
-                            <h2 id="pub_saldoGlobalDisplay" class="text-2xl font-bold">Rp 0</h2>
-                            <p class="text-[11px] text-emerald-200 mt-2">Penjualan dikurangi Pembagian, Saldo Khusus Pembelian, & Pembelian</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-4 text-white shadow">
+                            <p class="text-[11px] uppercase tracking-wider text-emerald-100 font-semibold mb-1">UANG DI PAK JIMI KURNIAWAN</p>
+                            <h2 id="pub_saldoGlobalDisplay" class="text-lg font-bold">Rp 0</h2>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+                            <p class="text-[11px] uppercase tracking-wider text-amber-600 font-semibold mb-1">Total Pemasukan</p>
+                            <h2 id="pub_saldoPemasukanDisplay" class="text-lg font-bold text-amber-600">Rp 0</h2>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+                            <p class="text-[11px] uppercase tracking-wider text-blue-600 font-semibold mb-1">Uang Di Simpanan Darurat</p>
+                            <h2 id="pub_saldoPembelianDisplay" class="text-lg font-bold text-blue-600">Rp 0</h2>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+                            <p class="text-[11px] uppercase tracking-wider text-red-600 font-semibold mb-1">Total Pembagian</p>
+                            <h2 id="pub_saldoPengeluaranDisplay" class="text-lg font-bold text-red-600">Rp 0</h2>
                         </div>
                     </div>
                     <div id="pubTableContainer_saldo" class="overflow-x-auto"></div>
@@ -540,7 +551,7 @@
                     <div class="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-5 text-white shadow-lg">
                         <p class="text-xs uppercase tracking-wider text-purple-100 font-semibold mb-1">Saldo Global</p>
                         <h2 id="saldoGlobalKotorDisplay" class="text-xl font-bold">Rp 0</h2>
-                        <p class="text-[10px] text-purple-200 mt-2">Uang Dari Pak Jimi Kurniawan + Uang Dari Pak Aslap</p>
+                        <p class="text-[10px] text-purple-200 mt-2">Uang Dari Pak Jimi Kurniawan + simpanan</p>
                     </div>
                     <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm relative overflow-hidden">
                         <p class="text-xs uppercase tracking-wider text-amber-600 font-semibold mb-1">Semua Uang Masuk Dari Hasil Penjualan</p>
@@ -919,6 +930,7 @@
                 if(endEl) endEl.value = todayStr;
             });
 
+            // Tarik data dasar untuk keperluan viewer publik saat halaman dibuka
             fetchAllDataSilent();
 
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -968,6 +980,7 @@
             loadPublicTableData();
         };
 
+        // FUNGSI PORTAL LIHAT DATA (PUBLIC VIEWER)
         window.openPublicViewerModal = async function() {
             showToast('Memuat', 'Mengambil data terbaru dari sistem...', 'info');
             await fetchAllDataSilent();
@@ -1081,8 +1094,10 @@
             
             let saldoGlobalBersih = totalPemasukan - totalPembagian - window.saldoPembelianKhusus - totalPembelianBarang;
 
-            // Hanya menampilkan Uang di Pak Jimi Kurniawan, menyembunyikan yang lainnya
             document.getElementById('pub_saldoGlobalDisplay').innerText = formatRupiah(saldoGlobalBersih);
+            document.getElementById('pub_saldoPemasukanDisplay').innerText = formatRupiah(totalPemasukan);
+            document.getElementById('pub_saldoPembelianDisplay').innerText = formatRupiah(window.saldoPembelianKhusus);
+            document.getElementById('pub_saldoPengeluaranDisplay').innerText = formatRupiah(totalPembagian);
 
             const startDate = document.getElementById('pub_start_date').value;
             const endDate = document.getElementById('pub_end_date').value;
@@ -1565,7 +1580,7 @@
                 showToast('Gagal', 'Gagal mengirim pesan WhatsApp.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Kirim Pesan Sekarang';
+                btn.innerHTML = `<i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Kirim Pesan Sekarang`;
             }
         };
 
@@ -1687,7 +1702,7 @@
                 showToast('Gagal Menyimpan', 'Terjadi kesalahan saat menyimpan data.', 'error');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Simpan';
+                submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i>Simpan`;
             }
         };
 
