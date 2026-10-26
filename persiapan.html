@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendataan Sisa Pangan dari Persiapan Produksi</title>
+    <title>Pendataan Sisa Makanan Dari Tahap Persiapan</title>
     <!-- Tailwind CSS untuk Desain Responsif & Modern -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -77,8 +77,8 @@
                     <div class="inline-flex items-center justify-center w-24 h-24 bg-biruTelurAsin rounded-full mb-4 shadow-inner overflow-hidden">
                         <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-bowl-food text-4xl text-biruAsinDark\'></i>';">
                     </div>
-                    <h2 class="text-2xl font-bold text-slate-900">Pendataan Sisa Pangan</h2>
-                    <h2 class="text-2xl font-bold text-slate-900">Persiapan Produksi</h2>
+                    <h2 class="text-2xl font-bold text-slate-900">Pendataan Sisa Makanan</h2>
+                    <h2 class="text-2xl font-bold text-slate-900">Persiapan</h2>
                     <p class="text-xs text-slate-500 mt-2 font-medium">SISTEM SPPG KOTA SERANG SERANG SERANG 2</p>
                 </div>
 
@@ -178,7 +178,17 @@
                                 <button type="button" onclick="addAdminTaskRow('buah')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Menu</button>
                             </div>
                             <div id="adminBuahContainer" class="space-y-3"></div>
+                        </div>    
+
+                        <!-- Lainnya Admin Task -->
+                        <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-plate-whole text-orange-500 text-lg"></i><span>Lainnya</span></h4>
+                                <button type="button" onclick="addAdminTaskRow('lainnya')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Menu</button>
+                            </div>
+                            <div id="adminLainnyaContainer" class="space-y-3"></div>
                         </div>
+                        
                     </div>
 
                     <button type="submit" id="saveTaskBtn" class="py-3.5 px-8 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg transition duration-200 text-sm flex items-center space-x-2">
@@ -192,7 +202,7 @@
             <div id="inputCardWrapper" class="bg-white p-6 sm:p-10 rounded-3xl card-glow border border-sky-100 space-y-6">
                 <div class="border-b border-slate-100 pb-5 flex flex-wrap justify-between items-center gap-3">
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900">Form Pendataan Sisa Pangan</h3>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900">Form Pendataan Sisa Pangan Dari Tahap Persiapan</h3>
                         <p class="text-sm text-slate-600 mt-1">Masukkan jumlah berat (Kg), keterangan tambahan (opsional), dan foto bukti.</p>
                     </div>
                     <span id="uploaderBadge" class="bg-sky-100 text-biruAsinDark text-sm px-4 py-1.5 rounded-full font-bold shadow-sm"></span>
@@ -241,6 +251,14 @@
                             </h4>
                             <div id="userBuahContainer" class="space-y-4"></div>
                         </div>
+
+                        <div class="p-6 bg-slate-50/80 border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <h4 class="text-base font-extrabold text-slate-800 flex items-center space-x-2.5">
+                                <i class="fa-solid fa-plate-whole text-orange-500 text-xl"></i>
+                                <span>Lainnya</span>
+                            </h4>
+                            <div id="userLainnyaContainer" class="space-y-4"></div>
+                        </div>
                     </div>
 
                     <div class="bg-biruTelurAsin p-6 rounded-2xl flex items-center justify-between border-2 border-sky-300 shadow-sm">
@@ -250,7 +268,7 @@
 
                     <button type="submit" id="submitBtn" class="w-full py-4 bg-biruAsinDark hover:bg-biruAsinHover text-white font-bold rounded-2xl shadow-xl transition duration-200 text-base sm:text-lg flex items-center justify-center space-x-3">
                         <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
-                        <span>Kirim Laporan Sisa Pangan</span>
+                        <span>Kirim Laporan</span>
                     </button>
                 </form>
             </div>
@@ -304,6 +322,7 @@
                                 <th class="p-3.5">Protein</th>
                                 <th class="p-3.5">Sayur</th>
                                 <th class="p-3.5">Buah</th>
+                                <th class="p-3.5">Lainnya</th>
                                 <th class="p-3.5">Total (Kg)</th>
                                 <th class="p-3.5 rounded-r-xl text-center action-col">Aksi</th>
                             </tr>
@@ -326,7 +345,7 @@
             <button onclick="closeEditModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-2xl font-bold">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="font-bold text-slate-900 text-xl mb-1.5">Edit Laporan Sisa Pangan</h3>
+            <h3 class="font-bold text-slate-900 text-xl mb-1.5">Edit Laporan</h3>
             <p class="text-xs text-slate-500 mb-6 font-medium">Ubah berat, keterangan, hapus foto lama, atau tambahkan foto baru.</p>
 
             <form id="editForm" onsubmit="submitEditReport(event)" class="space-y-5">
@@ -380,7 +399,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT APLIKASI -->
+     <!-- SCRIPT APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -571,6 +590,7 @@
                 protein: getValues('protein'),
                 sayur: getValues('sayur'),
                 buah: getValues('buah'),
+                lainnya: getValues('lainnya'),
                 updatedAt: new Date().toISOString()
             };
 
@@ -595,7 +615,7 @@
 
         window.loadAdminTaskForDate = async function() {
             const tgl = document.getElementById('taskTanggal').value;
-            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+            ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                 document.getElementById(`admin${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`).innerHTML = '';
             });
 
@@ -603,7 +623,7 @@
                 const docSnap = await getDoc(doc(db, "menu_tugas", tgl));
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                    ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                         if (data[cat] && Array.isArray(data[cat])) {
                             data[cat].forEach(val => addAdminTaskRow(cat, val));
                         }
@@ -622,7 +642,7 @@
             const noticeBox = document.getElementById('taskNoticeBox');
             const noticeText = document.getElementById('taskNoticeText');
 
-            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+            ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                 document.getElementById(`user${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`).innerHTML = '';
             });
 
@@ -632,7 +652,7 @@
                     currentLoadedTask = docSnap.data();
                     noticeBox.classList.add('hidden');
 
-                    ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                    ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                         const items = currentLoadedTask[cat] || [];
                         const container = document.getElementById(`user${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`);
 
@@ -654,7 +674,7 @@
                                     
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Keterangan Spesifik (Opsional):</label>
-                                        <input type="text" name="user_${cat}_ket_${idx}"" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
+                                        <input type="text" name="user_${cat}_ket_${idx}" placeholder="Misal: Porsi Lebih, dll..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
                                     </div>
 
                                     <div>
@@ -687,7 +707,7 @@
 
         window.calculateTotal = function() {
             let total = 0;
-            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+            ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                 const kgInputs = document.querySelectorAll(`input[name^="user_${cat}_kg_"]`);
                 kgInputs.forEach(inp => {
                     total += parseFloat(inp.value) || 0;
@@ -744,7 +764,6 @@
             });
         }
 
-        /* FUNGSI SINKRONISASI LATAR BELAKANG KE GOOGLE DRIVE */
         async function syncPhotoToDriveInBackground(docId, categoryKey, itemIdx, photoIndex, compressedBase64, fileName, dateStr) {
             const folderDateName = getIndonesianDateName(dateStr);
             try {
@@ -785,7 +804,6 @@
                 const baseMenuName = items[idx];
                 const customKet = document.querySelector(`input[name="user_${categoryName}_ket_${idx}"]`)?.value.trim() || '';
                 
-                // Gabungkan nama menu admin dengan keterangan tambahan user jika ada
                 const finalKet = customKet ? `${baseMenuName} (${customKet})` : baseMenuName;
 
                 const kgVal = document.querySelector(`input[name="user_${categoryName}_kg_${idx}"]`)?.value || '0';
@@ -801,7 +819,6 @@
                     const compressed = await compressImage(files[fIdx], 800, 800, 0.6);
                     if (!compressed) continue;
 
-                    // Masukkan ke array dengan data base64 lokal agar langsung tampil cepat tanpa menunggu Drive
                     photosArray.push({
                         fileId: "",
                         fileUrl: "",
@@ -809,7 +826,6 @@
                         data: compressed.dataUrl
                     });
 
-                    // Jalankan upload Google Drive di latar belakang (background sync)
                     syncPhotoToDriveInBackground(docId, categoryName, idx, fIdx, compressed.base64, compressed.name, dateStr);
                 }
 
@@ -837,7 +853,6 @@
             try {
                 const tgl = document.getElementById('inputTanggal').value;
                 
-                // Buat dokumen sementara di Firestore untuk mendapatkan ID dokumen asli dengan cepat
                 const reportDataTemp = {
                     tanggal: tgl,
                     uploader: currentUser.name,
@@ -846,6 +861,7 @@
                     protein: [],
                     sayur: [],
                     buah: [],
+                    lainnya: [],
                     totalKg: document.getElementById('totalKg').value,
                     createdAt: new Date().toISOString()
                 };
@@ -853,21 +869,21 @@
                 const docRef = await addDoc(collection(db, "sisa_makanan"), reportDataTemp);
                 const docId = docRef.id;
 
-                // Proses item dan jalankan sinkronisasi foto di latar belakang
                 const karboItems = await processCategoryItemsFast('karbo', tgl, docId);
                 const proteinItems = await processCategoryItemsFast('protein', tgl, docId);
                 const sayurItems = await processCategoryItemsFast('sayur', tgl, docId);
                 const buahItems = await processCategoryItemsFast('buah', tgl, docId);
+                const lainnyaItems = await processCategoryItemsFast('lainnya', tgl, docId);
 
-                // Perbarui dokumen Firestore dengan data lengkap beserta foto lokal
                 await updateDoc(docRef, {
                     karbo: karboItems,
                     protein: proteinItems,
                     sayur: sayurItems,
-                    buah: buahItems
+                    buah: buahItems,
+                    lainnya: lainnyaItems
                 });
 
-                const waMessage = `*LAPORAN PENDATAAN SISA PANGAN PERSIAPAN PRODUKSI*\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
+                const waMessage = `*LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PERSIAPAN*\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
                 fetch('https://api.fonnte.com/send', {
                     method: 'POST',
                     headers: { 'Authorization': FONNTE_TOKEN, 'Content-Type': 'application/json' },
@@ -885,7 +901,7 @@
                 showModalAlert('Gagal', error.message || 'Gagal menyimpan data.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan Sisa Pangan`;
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan`;
             }
         }
 
@@ -893,7 +909,7 @@
             const tableArsipGabungan = document.getElementById('tableArsipGabungan');
             const emptyDiv = document.getElementById('emptyArchive');
 
-            tableArsipGabungan.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner animate-spin"></i> Memuat...</td></tr>`;
+            tableArsipGabungan.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner animate-spin"></i> Memuat...</td></tr>`;
 
             try {
                 const querySnapshot = await getDocs(collection(db, "sisa_makanan"));
@@ -987,6 +1003,7 @@
                 <td class="p-3.5">${formatCategoryCell(record.protein)}</td>
                 <td class="p-3.5">${formatCategoryCell(record.sayur)}</td>
                 <td class="p-3.5">${formatCategoryCell(record.buah)}</td>
+                <td class="p-3.5">${formatCategoryCell(record.lainnya)}</td>
                 <td class="p-3.5 font-extrabold text-slate-800 whitespace-nowrap">${record.totalKg || '0 Kg'}</td>
                 ${actionTd}
             `;
@@ -1014,7 +1031,8 @@
                     { key: 'karbo', label: 'Karbohidrat', icon: 'fa-wheat-awn text-amber-500' },
                     { key: 'protein', label: 'Protein', icon: 'fa-drumstick-bite text-rose-500' },
                     { key: 'sayur', label: 'Sayur', icon: 'fa-carrot text-emerald-500' },
-                    { key: 'buah', label: 'Buah', icon: 'fa-apple-whole text-orange-500' }
+                    { key: 'buah', label: 'Buah', icon: 'fa-apple-whole text-orange-500' },
+                    { key: 'lainnya', label: 'Lainnya', icon: 'fa-plate-whole text-orange-500' }
                 ];
 
                 categories.forEach(cat => {
@@ -1065,7 +1083,7 @@
 
         window.calculateEditTotal = function() {
             let total = 0;
-            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+            ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                 const kgInputs = document.querySelectorAll(`input[name^="edit_${cat}_kg_"]`);
                 kgInputs.forEach(inp => {
                     total += parseFloat(inp.value) || 0;
@@ -1136,6 +1154,7 @@
                 const proteinVal = await buildEditedCategory('protein');
                 const sayurVal = await buildEditedCategory('sayur');
                 const buahVal = await buildEditedCategory('buah');
+                const lainnyaVal = await buildEditedCategory('lainnya');
 
                 if (fileIdsToDelete.length > 0) {
                     await fetch(APPS_SCRIPT_URL, {
@@ -1150,6 +1169,7 @@
                     protein: proteinVal,
                     sayur: sayurVal,
                     buah: buahVal,
+                    lainnya: lainnyaVal,
                     totalKg: document.getElementById('editTotalKg').value
                 };
 
@@ -1194,6 +1214,7 @@
                     "Protein": formatCatString(r.protein) || "-",
                     "Sayur": formatCatString(r.sayur) || "-",
                     "Buah": formatCatString(r.buah) || "-",
+                    "Lainnya": formatCatString(r.lainnya) || "-",
                     "Total Sisa (Kg)": r.totalKg || "0 Kg",
                     "Diunggah Oleh": r.uploader || '-'
                 });
@@ -1215,7 +1236,7 @@
             const doc = new jsPDF('landscape', 'mm', 'a4');
 
             doc.setFontSize(14);
-            doc.text("LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PERSIAPAN PRODUKSI", 14, 15);
+            doc.text("LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PRODUKSI", 14, 15);
             doc.setFontSize(10);
             doc.text("SPPG KOTA SERANG SERANG SERANG 2", 14, 21);
 
@@ -1229,13 +1250,14 @@
                     formatCatString(r.protein) || "-",
                     formatCatString(r.sayur) || "-",
                     formatCatString(r.buah) || "-",
+                    formatCatString(r.lainnya) || "-",
                     r.totalKg || "0 Kg"
                 ]);
             });
 
             doc.autoTable({
                 startY: 26,
-                head: [['No', 'Tanggal', 'Karbohidrat', 'Protein', 'Sayur', 'Buah', 'Total (Kg)']],
+                head: [['No', 'Tanggal', 'Karbohidrat', 'Protein', 'Sayur', 'Buah', 'Lainnya', 'Total (Kg)']],
                 body: bodyData,
                 theme: 'grid',
                 styles: { fontSize: 8, cellPadding: 2 },
@@ -1271,6 +1293,7 @@
                         <td style="padding: 10px; color: #334155;">${formatCatString(r.protein) || "-"}</td>
                         <td style="padding: 10px; color: #334155;">${formatCatString(r.sayur) || "-"}</td>
                         <td style="padding: 10px; color: #334155;">${formatCatString(r.buah) || "-"}</td>
+                        <td style="padding: 10px; color: #334155;">${formatCatString(r.lainnya) || "-"}</td>
                         <td style="padding: 10px; font-weight: 700; color: #0f172a; white-space: nowrap;">${r.totalKg || '0 Kg'}</td>
                     </tr>
                 `;
@@ -1278,7 +1301,7 @@
 
             container.innerHTML = `
                 <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 18px; font-weight: bold; color: #0f172a; margin: 0 0 5px 0;">LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PERSIAPAN PRODUKSI</h2>
+                    <h2 style="font-size: 18px; font-weight: bold; color: #0f172a; margin: 0 0 5px 0;">LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PERSIAPAN</h2>
                     <p style="font-size: 12px; color: #64748b; margin: 0;">SPPG KOTA SERANG SERANG SERANG 2</p>
                 </div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #cbd5e1;">
@@ -1290,6 +1313,7 @@
                             <th style="padding: 10px; text-align: left; border: 1px solid #cbd5e1;">Protein</th>
                             <th style="padding: 10px; text-align: left; border: 1px solid #cbd5e1;">Sayur</th>
                             <th style="padding: 10px; text-align: left; border: 1px solid #cbd5e1;">Buah</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #cbd5e1;">Lainnya</th>
                             <th style="padding: 10px; text-align: left; border: 1px solid #cbd5e1;">Total (Kg)</th>
                         </tr>
                     </thead>
@@ -1322,7 +1346,7 @@
 
                     if (docSnap.exists()) {
                         const targetDoc = docSnap.data();
-                        ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                        ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                             if (targetDoc[cat] && Array.isArray(targetDoc[cat])) {
                                 targetDoc[cat].forEach(item => {
                                     if(item.fotos) {
