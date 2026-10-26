@@ -41,9 +41,9 @@
 
     <!-- HEADER NAVBAR -->
     <header id="appHeader" class="bg-gradient-custom text-white shadow-md hidden">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-2">
             <div class="flex items-center space-x-3">
-                <div class="bg-white p-2 rounded-full shadow">
+                <div class="bg-white p-2.5 rounded-full shadow">
                     <i class="fa-solid fa-utensils text-biruAsinDark text-xl"></i>
                 </div>
                 <div>
@@ -54,12 +54,12 @@
             
             <div class="flex items-center space-x-4">
                 <!-- Indikator Jaringan -->
-                <div id="netSpeedIndicator" class="hidden sm:flex items-center space-x-1.5 bg-black/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                <div id="netSpeedIndicator" class="hidden sm:flex items-center space-x-1.5 bg-black/20 px-3.5 py-1.5 rounded-full text-xs font-medium">
                     <span id="netDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span id="netText">Memeriksa Jaringan...</span>
                 </div>
                 <!-- Tombol Logout -->
-                <button onclick="handleLogout()" class="bg-rose-500 hover:bg-rose-600 text-white text-xs sm:text-sm px-3.5 py-2 rounded-lg font-medium shadow transition flex items-center space-x-1.5">
+                <button onclick="handleLogout()" class="bg-rose-500 hover:bg-rose-600 text-white text-sm px-4 py-2 rounded-xl font-semibold shadow transition flex items-center space-x-2">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Keluar</span>
                 </button>
@@ -68,47 +68,47 @@
     </header>
 
     <!-- KONTEN UTAMA -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
 
         <!-- HALAMAN LOGIN -->
         <section id="loginSection" class="flex justify-center items-center min-h-[85vh]">
-            <div class="bg-white w-full max-w-md p-6 sm:p-8 rounded-2xl card-glow border border-sky-100">
-                <div class="text-center mb-6">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-biruTelurAsin rounded-full mb-3 shadow-inner overflow-hidden">
-                        <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-bowl-food text-3xl text-biruAsinDark\'></i>';">
+            <div class="bg-white w-full max-w-md p-8 sm:p-10 rounded-3xl card-glow border border-sky-100">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-biruTelurAsin rounded-full mb-4 shadow-inner overflow-hidden">
+                        <img src="logo.png" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-bowl-food text-4xl text-biruAsinDark\'></i>';">
                     </div>
                     <h2 class="text-2xl font-bold text-slate-900">Pendataan Sisa Pangan</h2>
                     <h2 class="text-2xl font-bold text-slate-900">Persiapan Produksi</h2>
-                    <p class="text-xs text-slate-500 mt-1">SISTEM SPPG KOTA SERANG SERANG SERANG 2</p>
+                    <p class="text-xs text-slate-500 mt-2 font-medium">SISTEM SPPG KOTA SERANG SERANG SERANG 2</p>
                 </div>
 
-                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Username</label>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">Username</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                                 <i class="fa-solid fa-user"></i>
                             </span>
-                            <input type="text" id="loginUser" required placeholder="Masukkan username" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
+                            <input type="text" id="loginUser" required placeholder="Masukkan username" class="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">Password</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                                 <i class="fa-solid fa-lock"></i>
                             </span>
-                            <input type="password" id="loginPass" required placeholder="Masukkan password" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
-                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
-                                <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                            <input type="password" id="loginPass" required placeholder="Masukkan password" class="w-full pl-11 pr-12 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-600">
+                                <i id="eyeIcon" class="fa-solid fa-eye text-lg"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div id="loginError" class="hidden text-xs text-rose-500 font-medium text-center"></div>
+                    <div id="loginError" class="hidden text-sm text-rose-500 font-bold text-center"></div>
 
-                    <button type="submit" class="w-full py-3 bg-biruAsinDark hover:bg-biruAsinHover text-white font-semibold rounded-xl shadow-md transition duration-200 text-sm">
+                    <button type="submit" class="w-full py-3.5 bg-biruAsinDark hover:bg-biruAsinHover text-white font-bold rounded-xl shadow-lg transition duration-200 text-base">
                         Masuk Aplikasi
                     </button>
                 </form>
@@ -119,183 +119,196 @@
         <section id="dashboardSection" class="hidden space-y-6">
             
             <!-- Status Jaringan (Mobile) -->
-            <div class="sm:hidden flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-200 text-xs shadow-sm">
-                <span class="text-slate-500 font-medium">Status Jaringan:</span>
-                <div class="flex items-center space-x-1.5">
-                    <span id="netDotMobile" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="netTextMobile" class="font-semibold text-slate-700">Online</span>
+            <div class="sm:hidden flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-slate-200 text-sm shadow-sm">
+                <span class="text-slate-500 font-semibold">Status Jaringan:</span>
+                <div class="flex items-center space-x-2">
+                    <span id="netDotMobile" class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="netTextMobile" class="font-bold text-slate-700">Online</span>
                 </div>
             </div>
 
-            <!-- FORM INPUT -->
-            <div id="inputCardWrapper" class="bg-white p-5 sm:p-8 rounded-2xl card-glow border border-sky-100">
-                <div class="border-b border-slate-100 pb-4 mb-5 flex justify-between items-center">
+            <!-- PANEL KHUSUS ADMIN: INPUT / KELOLA TUGAS MENU DINAMIS -->
+            <div id="adminTaskCard" class="hidden bg-white p-6 sm:p-8 rounded-3xl card-glow border-2 border-amber-200 space-y-6">
+                <div class="border-b border-slate-100 pb-4 flex flex-wrap justify-between items-center gap-2">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900">Form Pendataan Sisa Pangan Dari Tahap Persiapan Produksi</h3>
-                        <p class="text-xs text-slate-500">Masukkan berat dan unggah foto bukti</p>
+                        <h3 class="text-xl font-bold text-slate-900"><i class="fa-solid fa-list-check text-amber-500 mr-2"></i>Kelola & Edit Tugas Menu (Admin)</h3>
+                        <p class="text-sm text-slate-500">Pilih tanggal untuk melihat, menambah, mengubah, atau menghapus daftar menu tugas.</p>
                     </div>
-                    <span id="uploaderBadge" class="bg-sky-100 text-biruAsinDark text-xs px-2.5 py-1 rounded-full font-semibold"></span>
+                    <span class="bg-amber-100 text-amber-800 text-xs px-3 py-1.5 rounded-full font-bold">Panel Admin</span>
                 </div>
 
-                <form id="persiapanForm" onsubmit="submitReport(event)" class="space-y-6">
+                <form id="adminTaskForm" onsubmit="saveAdminTask(event)" class="space-y-6">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tanggal Pendataan</label>
-                        <input type="date" id="inputTanggal" required readonly class="w-full sm:w-1/2 px-3.5 py-2 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600 focus:outline-none cursor-not-allowed">
+                        <label class="block text-sm font-bold text-slate-700 uppercase mb-2">Pilih Tanggal Tugas Menu</label>
+                        <input type="date" id="taskTanggal" required onchange="loadAdminTaskForDate()" class="w-full sm:w-1/3 px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-base font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
 
-                    <!-- Kategori Input -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Karbohidrat -->
-                        <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-3">
-                            <h4 class="text-sm font-bold text-slate-700 flex items-center space-x-2">
-                                <i class="fa-solid fa-wheat-awn text-amber-500"></i>
+                        <!-- Karbohidrat Admin Task -->
+                        <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-wheat-awn text-amber-500 text-lg"></i><span>Karbohidrat</span></h4>
+                                <button type="button" onclick="addAdminTaskRow('karbo')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Menu</button>
+                            </div>
+                            <div id="adminKarboContainer" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Protein Admin Task -->
+                        <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-drumstick-bite text-rose-500 text-lg"></i><span>Protein</span></h4>
+                                <button type="button" onclick="addAdminTaskRow('protein')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Menu</button>
+                            </div>
+                            <div id="adminProteinContainer" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Sayur Admin Task -->
+                        <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-carrot text-emerald-500 text-lg"></i><span>Sayur (Bisa Banyak)</span></h4>
+                                <button type="button" onclick="addAdminTaskRow('sayur')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Sayur</button>
+                            </div>
+                            <div id="adminSayurContainer" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Buah Admin Task -->
+                        <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-apple-whole text-orange-500 text-lg"></i><span>Buah</span></h4>
+                                <button type="button" onclick="addAdminTaskRow('buah')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow transition"><i class="fa-solid fa-plus mr-1"></i> Tambah Menu</button>
+                            </div>
+                            <div id="adminBuahContainer" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="saveTaskBtn" class="py-3.5 px-8 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg transition duration-200 text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-floppy-disk text-base"></i>
+                        <span>Simpan / Perbarui Tugas Menu</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- FORM INPUT USER & ADMIN -->
+            <div id="inputCardWrapper" class="bg-white p-6 sm:p-10 rounded-3xl card-glow border border-sky-100 space-y-6">
+                <div class="border-b border-slate-100 pb-5 flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900">Form Pendataan Sisa Pangan</h3>
+                        <p class="text-sm text-slate-600 mt-1">Masukkan jumlah berat (Kg), keterangan tambahan (opsional), dan foto bukti.</p>
+                    </div>
+                    <span id="uploaderBadge" class="bg-sky-100 text-biruAsinDark text-sm px-4 py-1.5 rounded-full font-bold shadow-sm"></span>
+                </div>
+
+                <div id="taskNoticeBox" class="hidden mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-sm font-bold text-amber-900 flex items-center space-x-3">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 text-xl"></i>
+                    <span id="taskNoticeText">Admin belum menentukan tugas menu untuk tanggal ini.</span>
+                </div>
+
+                <form id="persiapanForm" onsubmit="submitReport(event)" class="space-y-8">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 uppercase mb-2">Tanggal Pendataan</label>
+                        <input type="date" id="inputTanggal" required onchange="onInputDateChange()" class="w-full sm:w-1/2 px-4 py-3 bg-slate-100 border-2 border-slate-200 rounded-2xl text-base font-bold text-slate-700 focus:outline-none cursor-pointer">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 bg-slate-50/80 border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <h4 class="text-base font-extrabold text-slate-800 flex items-center space-x-2.5">
+                                <i class="fa-solid fa-wheat-awn text-amber-500 text-xl"></i>
                                 <span>Sumber Karbohidrat</span>
                             </h4>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Berat Karbohidrat (Kg)</label>
-                                <input type="number" step="0.01" id="karboKg" oninput="calculateTotal()" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Keterangan Menu Karbohidrat</label>
-                                <input type="text" id="karboKet" placeholder="Keterangan..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Foto Bukti</label>
-                                <input type="file" id="karboFoto" multiple accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-100 file:text-biruAsinDark hover:file:bg-sky-200">
-                            </div>
+                            <div id="userKarboContainer" class="space-y-4"></div>
                         </div>
 
-                        <!-- Protein -->
-                        <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-3">
-                            <h4 class="text-sm font-bold text-slate-700 flex items-center space-x-2">
-                                <i class="fa-solid fa-drumstick-bite text-rose-500"></i>
+                        <div class="p-6 bg-slate-50/80 border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <h4 class="text-base font-extrabold text-slate-800 flex items-center space-x-2.5">
+                                <i class="fa-solid fa-drumstick-bite text-rose-500 text-xl"></i>
                                 <span>Sumber Protein</span>
                             </h4>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Berat Protein (Kg)</label>
-                                <input type="number" step="0.01" id="proteinKg" oninput="calculateTotal()" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Keterangan Menu Protein</label>
-                                <input type="text" id="proteinKet" placeholder="Keterangan..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Foto Bukti</label>
-                                <input type="file" id="proteinFoto" multiple accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-100 file:text-biruAsinDark hover:file:bg-sky-200">
-                            </div>
+                            <div id="userProteinContainer" class="space-y-4"></div>
                         </div>
 
-                        <!-- Sayur -->
-                        <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-3">
-                            <h4 class="text-sm font-bold text-slate-700 flex items-center space-x-2">
-                                <i class="fa-solid fa-carrot text-emerald-500"></i>
+                        <div class="p-6 bg-slate-50/80 border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <h4 class="text-base font-extrabold text-slate-800 flex items-center space-x-2.5">
+                                <i class="fa-solid fa-carrot text-emerald-500 text-xl"></i>
                                 <span>Sayur</span>
                             </h4>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Berat Sayur (Kg)</label>
-                                <input type="number" step="0.01" id="sayurKg" oninput="calculateTotal()" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Keterangan Menu Sayur</label>
-                                <input type="text" id="sayurKet" placeholder="Keterangan..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Foto Bukti</label>
-                                <input type="file" id="sayurFoto" multiple accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-100 file:text-biruAsinDark hover:file:bg-sky-200">
-                            </div>
+                            <div id="userSayurContainer" class="space-y-4"></div>
                         </div>
 
-                        <!-- Buah -->
-                        <div class="p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl space-y-3">
-                            <h4 class="text-sm font-bold text-slate-700 flex items-center space-x-2">
-                                <i class="fa-solid fa-apple-whole text-orange-500"></i>
+                        <div class="p-6 bg-slate-50/80 border-2 border-slate-200 rounded-2xl space-y-4 shadow-sm">
+                            <h4 class="text-base font-extrabold text-slate-800 flex items-center space-x-2.5">
+                                <i class="fa-solid fa-apple-whole text-orange-500 text-xl"></i>
                                 <span>Buah</span>
                             </h4>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Berat Buah (Kg)</label>
-                                <input type="number" step="0.01" id="buahKg" oninput="calculateTotal()" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Keterangan Menu Buah</label>
-                                <input type="text" id="buahKet" placeholder="Keterangan..." class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-500 mb-1">Foto Bukti</label>
-                                <input type="file" id="buahFoto" multiple accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-100 file:text-biruAsinDark hover:file:bg-sky-200">
-                            </div>
+                            <div id="userBuahContainer" class="space-y-4"></div>
                         </div>
                     </div>
 
-                    <!-- Total -->
-                    <div class="bg-biruTelurAsin/50 p-4 rounded-xl flex items-center justify-between border border-sky-200">
-                        <span class="font-bold text-slate-700 text-sm">Total Keseluruhan (Kg):</span>
-                        <input type="text" id="totalKg" readonly value="0.00" class="bg-transparent font-extrabold text-lg text-biruAsinDark w-32 text-right focus:outline-none">
+                    <div class="bg-biruTelurAsin p-6 rounded-2xl flex items-center justify-between border-2 border-sky-300 shadow-sm">
+                        <span class="font-extrabold text-slate-800 text-base sm:text-lg">Total Keseluruhan (Kg):</span>
+                        <input type="text" id="totalKg" readonly value="0.00" class="bg-transparent font-black text-xl sm:text-2xl text-biruAsinDark w-40 text-right focus:outline-none">
                     </div>
 
-                    <button type="submit" id="submitBtn" class="w-full py-3 bg-biruAsinDark hover:bg-biruAsinHover text-white font-bold rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Kirim Laporan</span>
+                    <button type="submit" id="submitBtn" class="w-full py-4 bg-biruAsinDark hover:bg-biruAsinHover text-white font-bold rounded-2xl shadow-xl transition duration-200 text-base sm:text-lg flex items-center justify-center space-x-3">
+                        <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                        <span>Kirim Laporan Sisa Pangan</span>
                     </button>
                 </form>
             </div>
 
             <!-- BAGIAN ARSIP -->
-            <div id="archiveContainer" class="bg-white p-5 sm:p-8 rounded-2xl card-glow border border-sky-100 space-y-6">
+            <div id="archiveContainer" class="bg-white p-6 sm:p-8 rounded-3xl card-glow border border-sky-100 space-y-6">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-slate-100 pb-4">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900">Daftar Riwayat Data</h3>
-                        <p class="text-xs text-slate-500">Daftar arsip tersimpan lengkap mencakup Karbohidrat, Protein, Sayur, dan Buah per tanggal.</p>
+                        <h3 class="text-xl font-bold text-slate-900">Daftar Riwayat Data</h3>
+                        <p class="text-sm text-slate-500">Daftar arsip tersimpan lengkap per tanggal.</p>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                        <!-- PANEL TOMBOL EKSPOR -->
-                        <div class="flex items-center space-x-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
-                            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1" title="Ekspor ke Excel">
+                    <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+                        <div class="flex items-center space-x-2 bg-slate-100 p-2 rounded-2xl border border-slate-200 text-sm">
+                            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center space-x-1.5 shadow-sm" title="Ekspor ke Excel">
                                 <i class="fa-solid fa-file-excel"></i>
                                 <span>Excel</span>
                             </button>
-                            <button onclick="exportToPDF()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1" title="Ekspor ke PDF">
+                            <button onclick="exportToPDF()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center space-x-1.5 shadow-sm" title="Ekspor ke PDF">
                                 <i class="fa-solid fa-file-pdf"></i>
                                 <span>PDF</span>
                             </button>
-                            <button onclick="exportToPNG()" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1" title="Ekspor ke Gambar PNG">
+                            <button onclick="exportToPNG()" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl font-bold transition flex items-center space-x-1.5 shadow-sm" title="Ekspor ke Gambar PNG">
                                 <i class="fa-solid fa-image"></i>
                                 <span>PNG</span>
                             </button>
                         </div>
 
-                        <!-- Filter Admin -->
                         <div id="adminFilterContainer" class="hidden flex flex-wrap items-center gap-2">
-                            <input type="date" id="filterStart" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
-                            <span class="text-xs text-slate-400">s/d</span>
-                            <input type="date" id="filterEnd" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
-                            <button onclick="applyFilter()" class="bg-biruAsinDark text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-biruAsinHover transition">
-                                <i class="fa-solid fa-filter"></i> Filter
+                            <input type="date" id="filterStart" class="px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-semibold">
+                            <span class="text-sm font-bold text-slate-400">s/d</span>
+                            <input type="date" id="filterEnd" class="px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-semibold">
+                            <button onclick="applyFilter()" class="bg-biruAsinDark text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-biruAsinHover transition shadow-sm">
+                                <i class="fa-solid fa-filter mr-1"></i> Filter
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div id="emptyArchive" class="hidden text-center py-8 text-slate-400 text-xs">
+                <div id="emptyArchive" class="hidden text-center py-10 text-slate-400 text-sm font-medium">
                     Belum ada arsip data.
                 </div>
 
-                <!-- TABEL UTUH GABUNGAN -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-sky-50 text-slate-700 uppercase text-[11px] tracking-wider">
-                                <th class="p-3 rounded-l-lg text-center">No</th>
-                                <th class="p-3">Tanggal</th>
-                                <th class="p-3">Karbohidrat</th>
-                                <th class="p-3">Protein</th>
-                                <th class="p-3">Sayur</th>
-                                <th class="p-3">Buah</th>
-                                <th class="p-3">Total (Kg)</th>
-                                <th class="p-3 rounded-r-lg text-center action-col">Aksi</th>
+                            <tr class="bg-sky-50 text-slate-700 uppercase text-xs tracking-wider">
+                                <th class="p-3.5 rounded-l-xl text-center">No</th>
+                                <th class="p-3.5">Tanggal</th>
+                                <th class="p-3.5">Karbohidrat</th>
+                                <th class="p-3.5">Protein</th>
+                                <th class="p-3.5">Sayur</th>
+                                <th class="p-3.5">Buah</th>
+                                <th class="p-3.5">Total (Kg)</th>
+                                <th class="p-3.5 rounded-r-xl text-center action-col">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="tableArsipGabungan" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="tableArsipGabungan" class="divide-y divide-slate-100 text-sm"></tbody>
                     </table>
                 </div>
 
@@ -303,151 +316,66 @@
         </section>
     </main>
 
-    <footer class="text-center py-4 text-xs text-slate-400 mt-auto">
+    <footer class="text-center py-6 text-xs text-slate-400 mt-auto font-medium">
         &copy; 2026 SPPG KOTA SERANG SERANG SERANG 2. All Rights Reserved.
     </footer>
 
-    <!-- MODAL EDIT DATA (KHUSUS ADMIN) -->
+    <!-- MODAL EDIT DATA -->
     <div id="editModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 relative shadow-2xl border border-sky-100 my-8">
-            <button onclick="closeEditModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-8 relative shadow-2xl border border-sky-100 my-8">
+            <button onclick="closeEditModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-2xl font-bold">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="font-bold text-slate-900 text-lg mb-1">Edit Laporan Sisa Pangan</h3>
-            <p class="text-xs text-slate-500 mb-4">Ubah berat, keterangan, hapus foto lama, atau tambahkan foto baru.</p>
+            <h3 class="font-bold text-slate-900 text-xl mb-1.5">Edit Laporan Sisa Pangan</h3>
+            <p class="text-xs text-slate-500 mb-6 font-medium">Ubah berat, keterangan, hapus foto lama, atau tambahkan foto baru.</p>
 
-            <form id="editForm" onsubmit="submitEditReport(event)" class="space-y-4">
+            <form id="editForm" onsubmit="submitEditReport(event)" class="space-y-5">
                 <input type="hidden" id="editDocId">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tanggal Pendataan</label>
-                    <input type="date" id="editTanggal" required class="w-full sm:w-1/2 px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Tanggal Pendataan</label>
+                    <input type="date" id="editTanggal" required class="w-full sm:w-1/2 px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pr-1">
-                    <!-- Karbohidrat Edit -->
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                        <h4 class="text-xs font-bold text-slate-700 flex items-center space-x-1.5"><i class="fa-solid fa-wheat-awn text-amber-500"></i><span>Karbohidrat</span></h4>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Berat (Kg)</label>
-                            <input type="number" step="0.01" id="editKarboKg" oninput="calculateEditTotal()" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Keterangan</label>
-                            <input type="text" id="editKarboKet" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Foto Saat Ini (Centang untuk Hapus)</label>
-                            <div id="editKarboCurrentPhotos" class="flex flex-wrap gap-2 mb-2"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Tambah Foto Baru</label>
-                            <input type="file" id="editKarboFoto" multiple accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-sky-100 file:text-biruAsinDark">
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pr-1" id="editCategoriesContainer"></div>
 
-                    <!-- Protein Edit -->
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                        <h4 class="text-xs font-bold text-slate-700 flex items-center space-x-1.5"><i class="fa-solid fa-drumstick-bite text-rose-500"></i><span>Protein</span></h4>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Berat (Kg)</label>
-                            <input type="number" step="0.01" id="editProteinKg" oninput="calculateEditTotal()" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Keterangan</label>
-                            <input type="text" id="editProteinKet" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Foto Saat Ini (Centang untuk Hapus)</label>
-                            <div id="editProteinCurrentPhotos" class="flex flex-wrap gap-2 mb-2"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Tambah Foto Baru</label>
-                            <input type="file" id="editProteinFoto" multiple accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-sky-100 file:text-biruAsinDark">
-                        </div>
-                    </div>
-
-                    <!-- Sayur Edit -->
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                        <h4 class="text-xs font-bold text-slate-700 flex items-center space-x-1.5"><i class="fa-solid fa-carrot text-emerald-500"></i><span>Sayur</span></h4>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Berat (Kg)</label>
-                            <input type="number" step="0.01" id="editSayurKg" oninput="calculateEditTotal()" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Keterangan</label>
-                            <input type="text" id="editSayurKet" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Foto Saat Ini (Centang untuk Hapus)</label>
-                            <div id="editSayurCurrentPhotos" class="flex flex-wrap gap-2 mb-2"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Tambah Foto Baru</label>
-                            <input type="file" id="editSayurFoto" multiple accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-sky-100 file:text-biruAsinDark">
-                        </div>
-                    </div>
-
-                    <!-- Buah Edit -->
-                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                        <h4 class="text-xs font-bold text-slate-700 flex items-center space-x-1.5"><i class="fa-solid fa-apple-whole text-orange-500"></i><span>Buah</span></h4>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Berat (Kg)</label>
-                            <input type="number" step="0.01" id="editBuahKg" oninput="calculateEditTotal()" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Keterangan</label>
-                            <input type="text" id="editBuahKet" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-biruAsinDark focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Foto Saat Ini (Centang untuk Hapus)</label>
-                            <div id="editBuahCurrentPhotos" class="flex flex-wrap gap-2 mb-2"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-slate-500 mb-0.5">Tambah Foto Baru</label>
-                            <input type="file" id="editBuahFoto" multiple accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[11px] file:font-semibold file:bg-sky-100 file:text-biruAsinDark">
-                        </div>
-                    </div>
+                <div class="bg-biruTelurAsin/60 p-4 rounded-2xl flex items-center justify-between border-2 border-sky-200">
+                    <span class="font-bold text-slate-800 text-sm">Total Keseluruhan (Kg):</span>
+                    <input type="text" id="editTotalKg" readonly value="0.00" class="bg-transparent font-black text-base text-biruAsinDark w-36 text-right focus:outline-none">
                 </div>
 
-                <!-- Total Edit -->
-                <div class="bg-biruTelurAsin/50 p-3 rounded-xl flex items-center justify-between border border-sky-200">
-                    <span class="font-bold text-slate-700 text-xs">Total Keseluruhan (Kg):</span>
-                    <input type="text" id="editTotalKg" readonly value="0.00" class="bg-transparent font-extrabold text-sm text-biruAsinDark w-32 text-right focus:outline-none">
-                </div>
-
-                <div class="flex space-x-2 pt-2">
-                    <button type="button" onclick="closeEditModal()" class="w-1/2 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">Batal</button>
-                    <button type="submit" id="editSubmitBtn" class="w-1/2 py-2.5 bg-biruAsinDark hover:bg-biruAsinHover text-white text-xs font-semibold rounded-xl shadow transition">Simpan Perubahan</button>
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="w-1/2 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-bold rounded-xl transition">Batal</button>
+                    <button type="submit" id="editSubmitBtn" class="w-1/2 py-3 bg-biruAsinDark hover:bg-biruAsinHover text-white text-sm font-bold rounded-xl shadow-lg transition">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL PREVIEW FOTO JELAS -->
+    <!-- MODAL PREVIEW FOTO -->
     <div id="photoModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-4 relative flex flex-col items-center">
-            <button onclick="closePhotoModal()" class="absolute top-3 right-3 text-slate-500 hover:text-slate-800 text-xl font-bold">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 relative flex flex-col items-center shadow-2xl">
+            <button onclick="closePhotoModal()" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-2xl font-bold">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="font-bold text-slate-800 mb-3 text-sm">Pratinjau Foto Bukti</h3>
-            <img id="modalImg" src="" class="max-h-[70vh] object-contain rounded-lg border mb-4">
-            <a id="modalDownloadBtn" href="" download="bukti_sisa_makanan.jpg" class="bg-biruAsinDark hover:bg-biruAsinHover text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition">
+            <h3 class="font-bold text-slate-800 mb-4 text-base">Pratinjau Foto Bukti</h3>
+            <img id="modalImg" src="" class="max-h-[70vh] object-contain rounded-xl border mb-6 shadow-md">
+            <a id="modalDownloadBtn" href="" download="bukti_sisa_makanan.jpg" class="bg-biruAsinDark hover:bg-biruAsinHover text-white px-6 py-3 rounded-xl text-sm font-bold flex items-center space-x-2 transition shadow-lg">
                 <i class="fa-solid fa-download"></i>
                 <span>Unduh Foto</span>
             </a>
         </div>
     </div>
 
-    <!-- MODAL NOTIFIKASI PROFESIONAL -->
+    <!-- MODAL NOTIFIKASI -->
     <div id="profModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl border border-sky-100 transform transition-all">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-8 text-center shadow-2xl border border-sky-100 transform transition-all">
             <div id="profModalIconWrapper" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 <i id="profModalIcon" class="fa-solid fa-check"></i>
             </div>
-            <h3 id="profModalTitle" class="font-bold text-slate-900 text-lg mb-1">Informasi</h3>
-            <p id="profModalMessage" class="text-xs text-slate-500 mb-6 leading-relaxed"></p>
+            <h3 id="profModalTitle" class="font-bold text-slate-900 text-lg mb-1.5">Informasi</h3>
+            <p id="profModalMessage" class="text-sm text-slate-600 mb-6 leading-relaxed font-medium"></p>
             <div id="profModalButtons" class="flex justify-center space-x-2">
-                <button id="profModalOkBtn" onclick="closeProfModal()" class="w-full py-2.5 bg-biruAsinDark hover:bg-biruAsinHover text-white text-xs font-semibold rounded-xl shadow transition">OK</button>
+                <button id="profModalOkBtn" onclick="closeProfModal()" class="w-full py-3 bg-biruAsinDark hover:bg-biruAsinHover text-white text-sm font-bold rounded-xl shadow-lg transition">OK</button>
             </div>
         </div>
     </div>
@@ -455,7 +383,7 @@
     <!-- SCRIPT APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD_1aa3viH2qB5gM8VrYmU8e5zEorgZZRg",
@@ -472,7 +400,7 @@
 
         const FONNTE_TOKEN = "N1L5tFSqGg2BJQVD42SC";
         const FONNTE_TARGET = "6283111399112";
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoWRAtNEULoj1tdXPotYPURMeWno1VvzRZWZYsmSC05ZXjHy7w-QSe5uKdKwYuOwQi/exec"; 
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTMbZNqHRvbOfRvctkM26WMI6OA5zsDdPcINMQVw_UZOBcPpM-3g_ZM9eUXMqM9fSm/exec"; 
 
         const accounts = {
             "Serang": { pass: "Mandiri02srg", name: "Admin", role: "admin" },
@@ -481,6 +409,7 @@
 
         let currentUser = null;
         let archiveRowsData = [];
+        let currentLoadedTask = null;
 
         window.showModalAlert = function(title, message, type = 'success', onConfirm = null) {
             const modal = document.getElementById('profModal');
@@ -506,15 +435,15 @@
 
             if (onConfirm) {
                 btnContainer.innerHTML = `
-                    <button onclick="closeProfModal()" class="flex-1 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition">Batal</button>
-                    <button id="profConfirmYes" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow transition">Ya, Hapus</button>
+                    <button onclick="closeProfModal()" class="flex-1 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-bold rounded-xl transition">Batal</button>
+                    <button id="profConfirmYes" class="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl shadow-lg transition">Ya, Hapus</button>
                 `;
                 document.getElementById('profConfirmYes').onclick = function() {
                     closeProfModal();
                     onConfirm();
                 };
             } else {
-                btnContainer.innerHTML = `<button onclick="closeProfModal()" class="w-full py-2.5 bg-biruAsinDark hover:bg-biruAsinHover text-white text-xs font-semibold rounded-xl shadow transition">OK</button>`;
+                btnContainer.innerHTML = `<button onclick="closeProfModal()" class="w-full py-3 bg-biruAsinDark hover:bg-biruAsinHover text-white text-sm font-bold rounded-xl shadow-lg transition">OK</button>`;
             }
 
             modal.classList.remove('hidden');
@@ -585,42 +514,186 @@
             const welcomeText = document.getElementById('welcomeText');
             const uploaderBadge = document.getElementById('uploaderBadge');
             const adminFilterContainer = document.getElementById('adminFilterContainer');
-
-            if (currentUser.role === 'admin') {
-                welcomeText.innerText = "Selamat Datang Admin";
-                uploaderBadge.innerText = "Admin";
-                adminFilterContainer.classList.remove('hidden');
-            } else {
-                welcomeText.innerText = `Selamat Datang ${currentUser.name}`;
-                uploaderBadge.innerText = `Koordinator Persiapan & Bahan Baku : ${currentUser.name}`;
-                adminFilterContainer.classList.add('hidden');
-            }
+            const adminTaskCard = document.getElementById('adminTaskCard');
 
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('inputTanggal').value = todayStr;
+            document.getElementById('taskTanggal').value = todayStr;
             
             const filterStart = document.getElementById('filterStart');
             const filterEnd = document.getElementById('filterEnd');
             if (filterStart) filterStart.value = todayStr;
             if (filterEnd) filterEnd.value = todayStr;
 
+            if (currentUser.role === 'admin') {
+                welcomeText.innerText = "Selamat Datang Admin";
+                uploaderBadge.innerText = "Admin (Pembuat & Pengedit Tugas)";
+                adminFilterContainer.classList.remove('hidden');
+                adminTaskCard.classList.remove('hidden');
+            } else {
+                welcomeText.innerText = `Selamat Datang ${currentUser.name}`;
+                uploaderBadge.innerText = `Koordinator: ${currentUser.name}`;
+                adminFilterContainer.classList.add('hidden');
+                adminTaskCard.classList.add('hidden');
+            }
+
+            loadAdminTaskForDate();
             loadArchives();
         }
 
-        window.calculateTotal = function() {
-            const k = parseFloat(document.getElementById('karboKg').value) || 0;
-            const p = parseFloat(document.getElementById('proteinKg').value) || 0;
-            const s = parseFloat(document.getElementById('sayurKg').value) || 0;
-            const b = parseFloat(document.getElementById('buahKg').value) || 0;
-            document.getElementById('totalKg').value = (k + p + s + b).toFixed(2) + " Kg";
+        window.addAdminTaskRow = function(category, value = '') {
+            const container = document.getElementById(`admin${category.charAt(0).toUpperCase() + category.slice(1)}Container`);
+            const div = document.createElement('div');
+            div.className = "flex items-center space-x-2.5";
+            div.innerHTML = `
+                <input type="text" name="task_${category}" value="${value}" placeholder="Masukkan nama menu..." required class="flex-grow px-3.5 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <button type="button" onclick="this.parentElement.remove()" class="bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-2.5 rounded-xl text-sm font-bold transition shadow-sm" title="Hapus Menu"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
         }
 
-        window.calculateEditTotal = function() {
-            const k = parseFloat(document.getElementById('editKarboKg').value) || 0;
-            const p = parseFloat(document.getElementById('editProteinKg').value) || 0;
-            const s = parseFloat(document.getElementById('editSayurKg').value) || 0;
-            const b = parseFloat(document.getElementById('editBuahKg').value) || 0;
-            document.getElementById('editTotalKg').value = (k + p + s + b).toFixed(2) + " Kg";
+        window.saveAdminTask = async function(e) {
+            e.preventDefault();
+            const tgl = document.getElementById('taskTanggal').value;
+
+            const getValues = (cat) => {
+                const inputs = document.querySelectorAll(`input[name="task_${cat}"]`);
+                let arr = [];
+                inputs.forEach(input => {
+                    if(input.value.trim() !== '') arr.push(input.value.trim());
+                });
+                return arr;
+            };
+
+            const taskData = {
+                tanggal: tgl,
+                karbo: getValues('karbo'),
+                protein: getValues('protein'),
+                sayur: getValues('sayur'),
+                buah: getValues('buah'),
+                updatedAt: new Date().toISOString()
+            };
+
+            const btn = document.getElementById('saveTaskBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan Tugas...`;
+
+            try {
+                await setDoc(doc(db, "menu_tugas", tgl), taskData);
+                showModalAlert('Berhasil', `Tugas menu untuk tanggal ${tgl} berhasil disimpan & diperbarui!`, 'success');
+                if (document.getElementById('inputTanggal').value === tgl) {
+                    loadTaskForCurrentDate();
+                }
+            } catch (err) {
+                console.error(err);
+                showModalAlert('Gagal', 'Gagal menyimpan tugas menu.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan / Perbarui Tugas Menu`;
+            }
+        }
+
+        window.loadAdminTaskForDate = async function() {
+            const tgl = document.getElementById('taskTanggal').value;
+            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                document.getElementById(`admin${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`).innerHTML = '';
+            });
+
+            try {
+                const docSnap = await getDoc(doc(db, "menu_tugas", tgl));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                        if (data[cat] && Array.isArray(data[cat])) {
+                            data[cat].forEach(val => addAdminTaskRow(cat, val));
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+            if(currentUser && currentUser.role === 'user') {
+                loadTaskForCurrentDate();
+            }
+        }
+
+        window.loadTaskForCurrentDate = async function() {
+            const tgl = document.getElementById('inputTanggal').value;
+            const noticeBox = document.getElementById('taskNoticeBox');
+            const noticeText = document.getElementById('taskNoticeText');
+
+            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                document.getElementById(`user${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`).innerHTML = '';
+            });
+
+            try {
+                const docSnap = await getDoc(doc(db, "menu_tugas", tgl));
+                if (docSnap.exists()) {
+                    currentLoadedTask = docSnap.data();
+                    noticeBox.classList.add('hidden');
+
+                    ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                        const items = currentLoadedTask[cat] || [];
+                        const container = document.getElementById(`user${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`);
+
+                        if(items.length === 0) {
+                            container.innerHTML = '<span class="text-xs text-slate-400 italic">Tidak ada menu untuk kategori ini</span>';
+                        } else {
+                            items.forEach((menuName, idx) => {
+                                const itemDiv = document.createElement('div');
+                                itemDiv.className = "p-4 bg-white border-2 border-sky-100 rounded-2xl space-y-3 shadow-sm";
+                                itemDiv.innerHTML = `
+                                    <div class="font-extrabold text-base text-biruAsinDark flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <i class="fa-solid fa-utensils mr-2.5 text-lg"></i> 
+                                            <span>${menuName}</span>
+                                        </div>
+                                        <span class="text-[11px] bg-sky-100 text-biruAsinDark px-2.5 py-0.5 rounded-full font-bold">Menu Utama</span>
+                                    </div>
+                                    <input type="hidden" name="user_${cat}_base_${idx}" value="${menuName}">
+                                    
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Keterangan Spesifik (Opsional):</label>
+                                        <input type="text" name="user_${cat}_ket_${idx}"" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Jumlah Berat (Kg):</label>
+                                        <input type="number" step="0.01" name="user_${cat}_kg_${idx}" oninput="calculateTotal()" placeholder="Contoh: 1.5" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-base font-bold text-slate-800 focus:ring-2 focus:ring-biruAsinDark focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Foto Bukti <span class="text-rose-500">*</span>:</label>
+                                        <input type="file" name="user_${cat}_foto_${idx}" multiple accept="image/*" class="w-full text-sm text-slate-700 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-sky-100 file:text-biruAsinDark hover:file:bg-sky-200 cursor-pointer">
+                                    </div>
+                                `;
+                                container.appendChild(itemDiv);
+                            });
+                        }
+                    });
+                } else {
+                    currentLoadedTask = null;
+                    noticeText.innerText = `Admin belum menentukan tugas menu untuk tanggal ${tgl}. Silakan hubungi admin.`;
+                    noticeBox.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+            calculateTotal();
+        }
+
+        window.onInputDateChange = function() {
+            loadTaskForCurrentDate();
+        }
+
+        window.calculateTotal = function() {
+            let total = 0;
+            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                const kgInputs = document.querySelectorAll(`input[name^="user_${cat}_kg_"]`);
+                kgInputs.forEach(inp => {
+                    total += parseFloat(inp.value) || 0;
+                });
+            });
+            document.getElementById('totalKg').value = total.toFixed(2) + " Kg";
         }
 
         function getIndonesianDateName(dateString) {
@@ -629,7 +702,6 @@
             return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
         }
 
-        /* KOMPRESI RINGAN & AMAN UNTUK SEMUA PERANGKAT */
         function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.6) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -672,8 +744,8 @@
             });
         }
 
-        /* FUNGSI BACKGROUND SYNC KE DRIVE & UPDATE FILE ID */
-        async function syncPhotoToDrive(docId, categoryKey, photoIndex, compressedBase64, fileName, dateStr) {
+        /* FUNGSI SINKRONISASI LATAR BELAKANG KE GOOGLE DRIVE */
+        async function syncPhotoToDriveInBackground(docId, categoryKey, itemIdx, photoIndex, compressedBase64, fileName, dateStr) {
             const folderDateName = getIndonesianDateName(dateStr);
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
@@ -693,9 +765,9 @@
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         let data = docSnap.data();
-                        if (data[categoryKey] && data[categoryKey].fotos && data[categoryKey].fotos[photoIndex]) {
-                            data[categoryKey].fotos[photoIndex].fileId = resJson.fileId;
-                            data[categoryKey].fotos[photoIndex].fileUrl = resJson.fileUrl;
+                        if (data[categoryKey] && data[categoryKey][itemIdx] && data[categoryKey][itemIdx].fotos && data[categoryKey][itemIdx].fotos[photoIndex]) {
+                            data[categoryKey][itemIdx].fotos[photoIndex].fileId = resJson.fileId;
+                            data[categoryKey][itemIdx].fotos[photoIndex].fileUrl = resJson.fileUrl;
                             await updateDoc(docRef, { [categoryKey]: data[categoryKey] });
                         }
                     }
@@ -705,102 +777,115 @@
             }
         }
 
-        async function processCategoryFiles(fileInputId, categoryName, dateStr, docId) {
-            const files = document.getElementById(fileInputId).files;
-            let photosArray = [];
+        async function processCategoryItemsFast(categoryName, dateStr, docId) {
+            const items = currentLoadedTask[categoryName] || [];
+            let categoryItemsArray = [];
 
-            for (let i = 0; i < files.length; i++) {
-                const compressed = await compressImage(files[i], 800, 800, 0.6);
-                if (!compressed) continue;
+            for (let idx = 0; idx < items.length; idx++) {
+                const baseMenuName = items[idx];
+                const customKet = document.querySelector(`input[name="user_${categoryName}_ket_${idx}"]`)?.value.trim() || '';
+                
+                // Gabungkan nama menu admin dengan keterangan tambahan user jika ada
+                const finalKet = customKet ? `${baseMenuName} (${customKet})` : baseMenuName;
 
-                photosArray.push({
-                    fileId: "",
-                    fileUrl: "",
-                    name: compressed.name,
-                    data: compressed.dataUrl
+                const kgVal = document.querySelector(`input[name="user_${categoryName}_kg_${idx}"]`)?.value || '0';
+                const fileInput = document.querySelector(`input[name="user_${categoryName}_foto_${idx}"]`);
+                const files = fileInput ? fileInput.files : [];
+
+                if (parseFloat(kgVal) > 0 && files.length === 0) {
+                    throw new Error(`Menu "${baseMenuName}" (${categoryName}) diisi beratnya, wajib menyertakan foto bukti!`);
+                }
+
+                let photosArray = [];
+                for (let fIdx = 0; fIdx < files.length; fIdx++) {
+                    const compressed = await compressImage(files[fIdx], 800, 800, 0.6);
+                    if (!compressed) continue;
+
+                    // Masukkan ke array dengan data base64 lokal agar langsung tampil cepat tanpa menunggu Drive
+                    photosArray.push({
+                        fileId: "",
+                        fileUrl: "",
+                        name: compressed.name,
+                        data: compressed.dataUrl
+                    });
+
+                    // Jalankan upload Google Drive di latar belakang (background sync)
+                    syncPhotoToDriveInBackground(docId, categoryName, idx, fIdx, compressed.base64, compressed.name, dateStr);
+                }
+
+                categoryItemsArray.push({
+                    ket: finalKet,
+                    kg: kgVal,
+                    fotos: photosArray
                 });
-
-                syncPhotoToDrive(docId, categoryName, i, compressed.base64, compressed.name, dateStr);
             }
-            return photosArray;
+            return categoryItemsArray;
         }
 
         window.submitReport = async function(e) {
             e.preventDefault();
 
-            const categories = [
-                { kgId: 'karboKg', ketId: 'karboKet', fotoId: 'karboFoto', name: 'Karbohidrat' },
-                { kgId: 'proteinKg', ketId: 'proteinKet', fotoId: 'proteinFoto', name: 'Protein' },
-                { kgId: 'sayurKg', ketId: 'sayurKet', fotoId: 'sayurFoto', name: 'Sayur' },
-                { kgId: 'buahKg', ketId: 'buahKet', fotoId: 'buahFoto', name: 'Buah' }
-            ];
-
-            for (let cat of categories) {
-                const kgVal = document.getElementById(cat.kgId).value.trim();
-                const ketVal = document.getElementById(cat.ketId).value.trim();
-                const fotoFiles = document.getElementById(cat.fotoId).files;
-
-                const isFilled = (kgVal !== "" && parseFloat(kgVal) > 0) || (ketVal !== "");
-                if (isFilled && fotoFiles.length === 0) {
-                    showModalAlert('Peringatan', `Kategori ${cat.name} diisi, wajib menyertakan foto bukti!`, 'error');
-                    return;
-                }
+            if (!currentLoadedTask) {
+                showModalAlert('Peringatan', 'Belum ada tugas menu dari admin untuk tanggal ini!', 'error');
+                return;
             }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Sedang Di Proses...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan Laporan...`;
 
             try {
                 const tgl = document.getElementById('inputTanggal').value;
                 
-                const reportData = {
+                // Buat dokumen sementara di Firestore untuk mendapatkan ID dokumen asli dengan cepat
+                const reportDataTemp = {
                     tanggal: tgl,
                     uploader: currentUser.name,
                     username: currentUser.username,
-                    karbo: { kg: document.getElementById('karboKg').value, ket: document.getElementById('karboKet').value, fotos: [] },
-                    protein: { kg: document.getElementById('proteinKg').value, ket: document.getElementById('proteinKet').value, fotos: [] },
-                    sayur: { kg: document.getElementById('sayurKg').value, ket: document.getElementById('sayurKet').value, fotos: [] },
-                    buah: { kg: document.getElementById('buahKg').value, ket: document.getElementById('buahKet').value, fotos: [] },
+                    karbo: [],
+                    protein: [],
+                    sayur: [],
+                    buah: [],
                     totalKg: document.getElementById('totalKg').value,
                     createdAt: new Date().toISOString()
                 };
 
-                const docRef = await addDoc(collection(db, "sisa_makanan"), reportData);
-                const newDocId = docRef.id;
+                const docRef = await addDoc(collection(db, "sisa_makanan"), reportDataTemp);
+                const docId = docRef.id;
 
-                const karboPhotos = await processCategoryFiles('karboFoto', 'karbo', tgl, newDocId);
-                const proteinPhotos = await processCategoryFiles('proteinFoto', 'protein', tgl, newDocId);
-                const sayurPhotos = await processCategoryFiles('sayurFoto', 'sayur', tgl, newDocId);
-                const buahPhotos = await processCategoryFiles('buahFoto', 'buah', tgl, newDocId);
+                // Proses item dan jalankan sinkronisasi foto di latar belakang
+                const karboItems = await processCategoryItemsFast('karbo', tgl, docId);
+                const proteinItems = await processCategoryItemsFast('protein', tgl, docId);
+                const sayurItems = await processCategoryItemsFast('sayur', tgl, docId);
+                const buahItems = await processCategoryItemsFast('buah', tgl, docId);
 
-                if (karboPhotos.length || proteinPhotos.length || sayurPhotos.length || buahPhotos.length) {
-                    await updateDoc(doc(db, "sisa_makanan", newDocId), {
-                        "karbo.fotos": karboPhotos,
-                        "protein.fotos": proteinPhotos,
-                        "sayur.fotos": sayurPhotos,
-                        "buah.fotos": buahPhotos
-                    });
-                }
+                // Perbarui dokumen Firestore dengan data lengkap beserta foto lokal
+                await updateDoc(docRef, {
+                    karbo: karboItems,
+                    protein: proteinItems,
+                    sayur: sayurItems,
+                    buah: buahItems
+                });
 
-                const waMessage = `*LAPORAN PENDATAAN SISA PANGAN PERSIAPAN PRODUKSI*\n\nTanggal: ${reportData.tanggal}\nOleh: ${currentUser.name}\nTotal: ${reportData.totalKg}\n\nData berhasil disimpan.`;
+                const waMessage = `*LAPORAN PENDATAAN SISA PANGAN PERSIAPAN PRODUKSI*\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
                 fetch('https://api.fonnte.com/send', {
                     method: 'POST',
                     headers: { 'Authorization': FONNTE_TOKEN, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ target: FONNTE_TARGET, message: waMessage })
                 }).catch(err => console.log('WA Error:', err));
 
-                showModalAlert('Berhasil', 'Laporan berhasil dikirim!', 'success');
+                showModalAlert('Berhasil', 'Laporan berhasil disimpan!', 'success');
                 document.getElementById('persiapanForm').reset();
                 document.getElementById('inputTanggal').value = new Date().toISOString().split('T')[0];
+                loadTaskForCurrentDate();
                 calculateTotal();
                 loadArchives();
             } catch (error) {
                 console.error(error);
-                showModalAlert('Gagal', 'Gagal menyimpan data.', 'error');
+                showModalAlert('Gagal', error.message || 'Gagal menyimpan data.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan`;
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan Sisa Pangan`;
             }
         }
 
@@ -808,7 +893,7 @@
             const tableArsipGabungan = document.getElementById('tableArsipGabungan');
             const emptyDiv = document.getElementById('emptyArchive');
 
-            tableArsipGabungan.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-slate-400"><i class="fa-solid fa-spinner animate-spin"></i> Memuat...</td></tr>`;
+            tableArsipGabungan.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner animate-spin"></i> Memuat...</td></tr>`;
 
             try {
                 const querySnapshot = await getDocs(collection(db, "sisa_makanan"));
@@ -855,39 +940,33 @@
             }
         }
 
-        function formatCategoryCell(catData) {
-            if (!catData || (!catData.kg && !catData.ket && (!catData.fotos || catData.fotos.length === 0))) {
+        function formatCategoryCell(itemsArray) {
+            if (!itemsArray || !Array.isArray(itemsArray) || itemsArray.length === 0) {
                 return '<span class="text-slate-400">-</span>';
             }
-            const kgVal = parseFloat(catData.kg);
-            const kgDisplay = (!isNaN(kgVal) && kgVal > 0) ? `${kgVal} Kg` : '';
-            const ketDisplay = catData.ket ? `${catData.ket}` : '';
-            
-            let textPart = '';
-            if (kgDisplay && ketDisplay) {
-                textPart = `<div class="font-semibold text-biruAsinDark">${kgDisplay}</div><div class="text-slate-600 text-[11px]">(${ketDisplay})</div>`;
-            } else if (kgDisplay) {
-                textPart = `<div class="font-semibold text-biruAsinDark">${kgDisplay}</div>`;
-            } else if (ketDisplay) {
-                textPart = `<div class="text-slate-600 text-[11px]">(${ketDisplay})</div>`;
-            } else {
-                textPart = '<span class="text-slate-400">-</span>';
-            }
 
-            let photoHtml = '';
-            let photos = catData.fotos || [];
-            photoHtml = photos.length > 0 ? `<div class="flex flex-wrap gap-1 mt-1">` + photos.map(p => `
-                <div class="inline-flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-slate-200">
-                    <img src="${p.data || p.fileUrl}" onclick="openPhotoModal('${p.data || p.fileUrl}')" class="w-8 h-8 object-cover rounded cursor-pointer hover:opacity-80 transition" title="Klik untuk lihat foto">
-                </div>
-            `).join('') + `</div>` : '';
+            return itemsArray.map(item => {
+                const kgVal = parseFloat(item.kg);
+                const kgDisplay = (!isNaN(kgVal) && kgVal > 0) ? `${kgVal} Kg` : '0 Kg';
+                const ketDisplay = item.ket || '';
 
-            return `
-                <div class="space-y-0.5">
-                    ${textPart}
-                    ${photoHtml}
-                </div>
-            `;
+                let photoHtml = '';
+                let photos = item.fotos || [];
+                if (photos.length > 0) {
+                    photoHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + photos.map(p => `
+                        <div class="inline-flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-slate-200">
+                            <img src="${p.data || p.fileUrl}" onclick="openPhotoModal('${p.data || p.fileUrl}')" class="w-8 h-8 object-cover rounded cursor-pointer hover:opacity-80 transition">
+                        </div>
+                    `).join('') + `</div>`;
+                }
+
+                return `
+                    <div class="mb-2.5 pb-2 border-b border-slate-100 last:border-none last:mb-0 last:pb-0">
+                        <div class="font-bold text-slate-800 text-sm">${ketDisplay}: <span class="text-biruAsinDark">${kgDisplay}</span></div>
+                        ${photoHtml}
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderCombinedRow(record, no) {
@@ -895,26 +974,25 @@
             tr.className = "hover:bg-slate-50/80 transition";
             
             let actionTd = currentUser.role === 'admin' ? `
-                <td class="p-3 text-center action-col space-x-1 whitespace-nowrap">
-                    <button onclick="openEditModal('${record.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-2 py-1.5 rounded-lg text-xs font-medium transition" title="Edit Laporan"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <button onclick="deleteRecord('${record.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-600 px-2 py-1.5 rounded-lg text-xs font-medium transition" title="Hapus Laporan"><i class="fa-solid fa-trash"></i></button>
+                <td class="p-3.5 text-center action-col space-x-1.5 whitespace-nowrap">
+                    <button onclick="openEditModal('${record.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm" title="Edit Laporan"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button onclick="deleteRecord('${record.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-600 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm" title="Hapus Laporan"><i class="fa-solid fa-trash"></i></button>
                 </td>
-            ` : `<td class="p-3 text-center action-col" style="display:none;"></td>`;
+            ` : `<td class="p-3.5 text-center action-col" style="display:none;"></td>`;
 
             tr.innerHTML = `
-                <td class="p-3 text-center font-medium text-slate-500">${no}</td>
-                <td class="p-3 font-medium text-slate-900 whitespace-nowrap">${record.tanggal}</td>
-                <td class="p-3">${formatCategoryCell(record.karbo)}</td>
-                <td class="p-3">${formatCategoryCell(record.protein)}</td>
-                <td class="p-3">${formatCategoryCell(record.sayur)}</td>
-                <td class="p-3">${formatCategoryCell(record.buah)}</td>
-                <td class="p-3 font-bold text-slate-800 whitespace-nowrap">${record.totalKg || '0 Kg'}</td>
+                <td class="p-3.5 text-center font-bold text-slate-500">${no}</td>
+                <td class="p-3.5 font-bold text-slate-900 whitespace-nowrap">${record.tanggal}</td>
+                <td class="p-3.5">${formatCategoryCell(record.karbo)}</td>
+                <td class="p-3.5">${formatCategoryCell(record.protein)}</td>
+                <td class="p-3.5">${formatCategoryCell(record.sayur)}</td>
+                <td class="p-3.5">${formatCategoryCell(record.buah)}</td>
+                <td class="p-3.5 font-extrabold text-slate-800 whitespace-nowrap">${record.totalKg || '0 Kg'}</td>
                 ${actionTd}
             `;
             return tr;
         }
 
-        /* FUNGSI MODAL EDIT DENGAN PENGELOLAAN FOTO */
         window.openEditModal = async function(id) {
             try {
                 const docRef = doc(db, "sisa_makanan", id);
@@ -927,28 +1005,56 @@
 
                 document.getElementById('editDocId').value = id;
                 document.getElementById('editTanggal').value = data.tanggal || '';
-                
-                document.getElementById('editKarboKg').value = data.karbo?.kg || '';
-                document.getElementById('editKarboKet').value = data.karbo?.ket || '';
-                document.getElementById('editKarboFoto').value = '';
-                renderEditPhotos('editKarboCurrentPhotos', data.karbo?.fotos || [], 'karbo');
-
-                document.getElementById('editProteinKg').value = data.protein?.kg || '';
-                document.getElementById('editProteinKet').value = data.protein?.ket || '';
-                document.getElementById('editProteinFoto').value = '';
-                renderEditPhotos('editProteinCurrentPhotos', data.protein?.fotos || [], 'protein');
-
-                document.getElementById('editSayurKg').value = data.sayur?.kg || '';
-                document.getElementById('editSayurKet').value = data.sayur?.ket || '';
-                document.getElementById('editSayurFoto').value = '';
-                renderEditPhotos('editSayurCurrentPhotos', data.sayur?.fotos || [], 'sayur');
-
-                document.getElementById('editBuahKg').value = data.buah?.kg || '';
-                document.getElementById('editBuahKet').value = data.buah?.ket || '';
-                document.getElementById('editBuahFoto').value = '';
-                renderEditPhotos('editBuahCurrentPhotos', data.buah?.fotos || [], 'buah');
-
                 document.getElementById('editTotalKg').value = data.totalKg || '0.00 Kg';
+
+                const container = document.getElementById('editCategoriesContainer');
+                container.innerHTML = '';
+
+                const categories = [
+                    { key: 'karbo', label: 'Karbohidrat', icon: 'fa-wheat-awn text-amber-500' },
+                    { key: 'protein', label: 'Protein', icon: 'fa-drumstick-bite text-rose-500' },
+                    { key: 'sayur', label: 'Sayur', icon: 'fa-carrot text-emerald-500' },
+                    { key: 'buah', label: 'Buah', icon: 'fa-apple-whole text-orange-500' }
+                ];
+
+                categories.forEach(cat => {
+                    const items = data[cat.key] || [];
+                    let itemHtml = items.map((item, idx) => {
+                        let photosHtml = (item.fotos || []).map((f, fIdx) => `
+                            <div class="relative inline-flex items-center gap-1.5 bg-white p-1 rounded border">
+                                <img src="${f.data || f.fileUrl}" class="w-10 h-10 object-cover rounded">
+                                <label class="text-[10px] text-rose-600 font-bold cursor-pointer"><input type="checkbox" name="delete_${cat.key}_${idx}_photo" value="${fIdx}"> Hapus</label>
+                            </div>
+                        `).join('');
+
+                        return `
+                            <div class="p-3 bg-white border-2 rounded-xl space-y-2 mb-2">
+                                <div class="font-bold text-xs text-slate-800">Menu:</div>
+                                <input type="text" name="edit_${cat.key}_ket_${idx}" value="${item.ket}" class="w-full px-3 py-2 bg-slate-50 border-2 rounded-xl text-xs font-bold text-slate-700">
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-600">Berat (Kg)</label>
+                                    <input type="number" step="0.01" name="edit_${cat.key}_kg_${idx}" value="${item.kg || 0}" oninput="calculateEditTotal()" class="w-full px-3 py-2 bg-slate-50 border-2 rounded-xl text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-600">Foto Saat Ini:</label>
+                                    <div class="flex flex-wrap gap-1.5 mt-1">${photosHtml || '<span class="text-xs text-slate-400">Tidak ada foto</span>'}</div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-600">Tambah Foto Baru</label>
+                                    <input type="file" name="edit_${cat.key}_newfoto_${idx}" multiple accept="image/*" class="w-full text-xs">
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    const block = document.createElement('div');
+                    block.className = "p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-3";
+                    block.innerHTML = `
+                        <h4 class="text-xs font-bold text-slate-700 flex items-center space-x-2"><i class="fa-solid ${cat.icon} text-base"></i><span>${cat.label}</span></h4>
+                        ${itemHtml || '<span class="text-xs text-slate-400">Tidak ada item</span>'}
+                    `;
+                    container.appendChild(block);
+                });
 
                 document.getElementById('editModal').classList.remove('hidden');
             } catch (err) {
@@ -957,21 +1063,15 @@
             }
         }
 
-        function renderEditPhotos(containerId, fotos, categoryKey) {
-            const container = document.getElementById(containerId);
-            if (!fotos || fotos.length === 0) {
-                container.innerHTML = '<span class="text-[11px] text-slate-400">Tidak ada foto</span>';
-                return;
-            }
-            container.innerHTML = fotos.map((f, idx) => `
-                <div class="relative inline-flex items-center gap-1 bg-white p-1 rounded border border-slate-200">
-                    <img src="${f.data || f.fileUrl}" class="w-10 h-10 object-cover rounded">
-                    <label class="flex flex-col items-center text-[10px] text-rose-600 font-medium cursor-pointer px-1" title="Centang untuk menghapus foto ini">
-                        <input type="checkbox" name="delete_${categoryKey}_photo" value="${idx}" class="w-3 h-3 text-rose-600 rounded focus:ring-rose-500">
-                        <span>Hapus</span>
-                    </label>
-                </div>
-            `).join('');
+        window.calculateEditTotal = function() {
+            let total = 0;
+            ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
+                const kgInputs = document.querySelectorAll(`input[name^="edit_${cat}_kg_"]`);
+                kgInputs.forEach(inp => {
+                    total += parseFloat(inp.value) || 0;
+                });
+            });
+            document.getElementById('editTotalKg').value = total.toFixed(2) + " Kg";
         }
 
         window.closeEditModal = function() {
@@ -993,50 +1093,67 @@
 
                 let fileIdsToDelete = [];
 
-                async function processCategoryEdit(catKey, fileInputId, checkboxName) {
-                    let oldFotos = existingData[catKey]?.fotos || [];
-                    let keptFotos = [];
-                    let checkboxes = document.querySelectorAll(`input[name="${checkboxName}"]:checked`);
-                    let indexesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value));
+                async function buildEditedCategory(catKey) {
+                    const oldItems = existingData[catKey] || [];
+                    let newItemsArray = [];
 
-                    oldFotos.forEach((f, idx) => {
-                        if (indexesToDelete.includes(idx)) {
-                            if (f.fileId) fileIdsToDelete.push(f.fileId);
-                        } else {
-                            keptFotos.push(f);
+                    for (let idx = 0; idx < oldItems.length; idx++) {
+                        const ket = document.querySelector(`input[name="edit_${catKey}_ket_${idx}"]`)?.value || oldItems[idx].ket;
+                        const kg = document.querySelector(`input[name="edit_${catKey}_kg_${idx}"]`)?.value || '0';
+                        
+                        let keptFotos = [];
+                        const oldFotos = oldItems[idx].fotos || [];
+                        oldFotos.forEach((f, fIdx) => {
+                            const cb = document.querySelector(`input[name="delete_${catKey}_${idx}_photo"][value="${fIdx}"]`);
+                            if (cb && cb.checked) {
+                                if (f.fileId) fileIdsToDelete.push(f.fileId);
+                            } else {
+                                keptFotos.push(f);
+                            }
+                        });
+
+                        const fileInput = document.querySelector(`input[name="edit_${catKey}_newfoto_${idx}"]`);
+                        const newFiles = fileInput ? fileInput.files : [];
+                        let uploadedNewFotos = [];
+                        for (let nf = 0; nf < newFiles.length; nf++) {
+                            const comp = await compressImage(newFiles[nf], 800, 800, 0.6);
+                            if(comp) {
+                                uploadedNewFotos.push({ fileId: "", fileUrl: "", name: comp.name, data: comp.dataUrl });
+                                syncPhotoToDriveInBackground(id, catKey, idx, keptFotos.length + uploadedNewFotos.length - 1, comp.base64, comp.name, tgl);
+                            }
                         }
-                    });
 
-                    const newUploadedFotos = await processCategoryFiles(fileInputId, catKey, tgl, id);
-                    return [...keptFotos, ...newUploadedFotos];
+                        newItemsArray.push({
+                            ket: ket,
+                            kg: kg,
+                            fotos: [...keptFotos, ...uploadedNewFotos]
+                        });
+                    }
+                    return newItemsArray;
                 }
 
-                const karboFotos = await processCategoryEdit('karbo', 'editKarboFoto', 'delete_karbo_photo');
-                const proteinFotos = await processCategoryEdit('protein', 'editProteinFoto', 'delete_protein_photo');
-                const sayurFotos = await processCategoryEdit('sayur', 'editSayurFoto', 'delete_sayur_photo');
-                const buahFotos = await processCategoryEdit('buah', 'editBuahFoto', 'delete_buah_photo');
+                const karboVal = await buildEditedCategory('karbo');
+                const proteinVal = await buildEditedCategory('protein');
+                const sayurVal = await buildEditedCategory('sayur');
+                const buahVal = await buildEditedCategory('buah');
 
                 if (fileIdsToDelete.length > 0) {
                     await fetch(APPS_SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify({
-                            action: "delete",
-                            fileIds: fileIdsToDelete
-                        })
-                    }).catch(err => console.log('Drive delete warning:', err));
+                        body: JSON.stringify({ action: "delete", fileIds: fileIdsToDelete })
+                    });
                 }
 
                 const updatedData = {
                     tanggal: tgl,
-                    karbo: { kg: document.getElementById('editKarboKg').value, ket: document.getElementById('editKarboKet').value, fotos: karboFotos },
-                    protein: { kg: document.getElementById('editProteinKg').value, ket: document.getElementById('editProteinKet').value, fotos: proteinFotos },
-                    sayur: { kg: document.getElementById('editSayurKg').value, ket: document.getElementById('editSayurKet').value, fotos: sayurFotos },
-                    buah: { kg: document.getElementById('editBuahKg').value, ket: document.getElementById('editBuahKet').value, fotos: buahFotos },
+                    karbo: karboVal,
+                    protein: proteinVal,
+                    sayur: sayurVal,
+                    buah: buahVal,
                     totalKg: document.getElementById('editTotalKg').value
                 };
 
                 await updateDoc(docRef, updatedData);
-
                 showModalAlert('Berhasil', 'Laporan berhasil diperbarui!', 'success');
                 closeEditModal();
                 loadArchives();
@@ -1069,15 +1186,16 @@
 
             let excelData = [];
             archiveRowsData.forEach((r, idx) => {
+                const formatCatString = (arr) => (arr || []).map(i => `${i.ket}: ${i.kg} Kg`).join('; ');
                 excelData.push({
                     "No": idx + 1,
                     "Tanggal Pendataan": r.tanggal,
-                    "Karbohidrat": `${r.karbo?.kg ? r.karbo.kg + ' Kg' : ''} ${r.karbo?.ket ? '(' + r.karbo.ket + ')' : ''}`.trim() || "-",
-                    "Protein": `${r.protein?.kg ? r.protein.kg + ' Kg' : ''} ${r.protein?.ket ? '(' + r.protein.ket + ')' : ''}`.trim() || "-",
-                    "Sayur": `${r.sayur?.kg ? r.sayur.kg + ' Kg' : ''} ${r.sayur?.ket ? '(' + r.sayur.ket + ')' : ''}`.trim() || "-",
-                    "Buah": `${r.buah?.kg ? r.buah.kg + ' Kg' : ''} ${r.buah?.ket ? '(' + r.buah.ket + ')' : ''}`.trim() || "-",
+                    "Karbohidrat": formatCatString(r.karbo) || "-",
+                    "Protein": formatCatString(r.protein) || "-",
+                    "Sayur": formatCatString(r.sayur) || "-",
+                    "Buah": formatCatString(r.buah) || "-",
                     "Total Sisa (Kg)": r.totalKg || "0 Kg",
-                    "Keterangan": `Diunggah oleh ${r.uploader || '-'}`
+                    "Diunggah Oleh": r.uploader || '-'
                 });
             });
 
@@ -1103,13 +1221,14 @@
 
             let bodyData = [];
             archiveRowsData.forEach((r, idx) => {
+                const formatCatString = (arr) => (arr || []).map(i => `${i.ket}: ${i.kg} Kg`).join('\n');
                 bodyData.push([
                     idx + 1,
                     r.tanggal,
-                    `${r.karbo?.kg ? r.karbo.kg + ' Kg' : ''}\n${r.karbo?.ket ? '(' + r.karbo.ket + ')' : ''}`.trim() || "-",
-                    `${r.protein?.kg ? r.protein.kg + ' Kg' : ''}\n${r.protein?.ket ? '(' + r.protein.ket + ')' : ''}`.trim() || "-",
-                    `${r.sayur?.kg ? r.sayur.kg + ' Kg' : ''}\n${r.sayur?.ket ? '(' + r.sayur.ket + ')' : ''}`.trim() || "-",
-                    `${r.buah?.kg ? r.buah.kg + ' Kg' : ''}\n${r.buah?.ket ? '(' + r.buah.ket + ')' : ''}`.trim() || "-",
+                    formatCatString(r.karbo) || "-",
+                    formatCatString(r.protein) || "-",
+                    formatCatString(r.sayur) || "-",
+                    formatCatString(r.buah) || "-",
                     r.totalKg || "0 Kg"
                 ]);
             });
@@ -1143,19 +1262,15 @@
 
             let rowsHtml = '';
             archiveRowsData.forEach((r, idx) => {
-                const karboStr = `${r.karbo?.kg ? r.karbo.kg + ' Kg' : ''} ${r.karbo?.ket ? '(' + r.karbo.ket + ')' : ''}`.trim() || "-";
-                const proteinStr = `${r.protein?.kg ? r.protein.kg + ' Kg' : ''} ${r.protein?.ket ? '(' + r.protein.ket + ')' : ''}`.trim() || "-";
-                const sayurStr = `${r.sayur?.kg ? r.sayur.kg + ' Kg' : ''} ${r.sayur?.ket ? '(' + r.sayur.ket + ')' : ''}`.trim() || "-";
-                const buahStr = `${r.buah?.kg ? r.buah.kg + ' Kg' : ''} ${r.buah?.ket ? '(' + r.buah.ket + ')' : ''}`.trim() || "-";
-                
+                const formatCatString = (arr) => (arr || []).map(i => `${i.ket}: ${i.kg} Kg`).join('<br>');
                 rowsHtml += `
                     <tr style="border-bottom: 1px solid #e2e8f0;">
                         <td style="padding: 10px; text-align: center; color: #475569;">${idx + 1}</td>
                         <td style="padding: 10px; font-weight: 500; color: #0f172a; white-space: nowrap;">${r.tanggal}</td>
-                        <td style="padding: 10px; color: #334155;">${karboStr}</td>
-                        <td style="padding: 10px; color: #334155;">${proteinStr}</td>
-                        <td style="padding: 10px; color: #334155;">${sayurStr}</td>
-                        <td style="padding: 10px; color: #334155;">${buahStr}</td>
+                        <td style="padding: 10px; color: #334155;">${formatCatString(r.karbo) || "-"}</td>
+                        <td style="padding: 10px; color: #334155;">${formatCatString(r.protein) || "-"}</td>
+                        <td style="padding: 10px; color: #334155;">${formatCatString(r.sayur) || "-"}</td>
+                        <td style="padding: 10px; color: #334155;">${formatCatString(r.buah) || "-"}</td>
                         <td style="padding: 10px; font-weight: 700; color: #0f172a; white-space: nowrap;">${r.totalKg || '0 Kg'}</td>
                     </tr>
                 `;
@@ -1208,9 +1323,13 @@
                     if (docSnap.exists()) {
                         const targetDoc = docSnap.data();
                         ['karbo', 'protein', 'sayur', 'buah'].forEach(cat => {
-                            if (targetDoc[cat] && targetDoc[cat].fotos) {
-                                targetDoc[cat].fotos.forEach(f => {
-                                    if (f.fileId) fileIdsToDelete.push(f.fileId);
+                            if (targetDoc[cat] && Array.isArray(targetDoc[cat])) {
+                                targetDoc[cat].forEach(item => {
+                                    if(item.fotos) {
+                                        item.fotos.forEach(f => {
+                                            if (f.fileId) fileIdsToDelete.push(f.fileId);
+                                        });
+                                    }
                                 });
                             }
                         });
@@ -1219,11 +1338,8 @@
                     if (fileIdsToDelete.length > 0) {
                         await fetch(APPS_SCRIPT_URL, {
                             method: 'POST',
-                            body: JSON.stringify({
-                                action: "delete",
-                                fileIds: fileIdsToDelete
-                            })
-                        }).catch(err => console.log('Drive delete warning:', err));
+                            body: JSON.stringify({ action: "delete", fileIds: fileIdsToDelete })
+                        });
                     }
 
                     await deleteDoc(docRef);
