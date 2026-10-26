@@ -1783,7 +1783,7 @@
                         <button class="btn btn-danger-soft" onclick="promptDelete('${key}')" title="Hapus Barang"><i class="fa-solid fa-trash"></i></button>
                     </div>` : `<span style="color: var(--text-muted); font-size: 0.85rem;">Arsip Lock</span>`;
                 
-                let photoDisplay = `<span class="no-photo-badge">Tanpa foto</span>`;
+                let photoDisplay = `<span class="no-photo-badge">-</span>`;
                 const imgSrc = item.fotoDriveDirect || item.fotoBase64;
 
                 if (imgSrc) {
