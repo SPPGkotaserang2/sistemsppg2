@@ -1754,7 +1754,7 @@
 
         const tbody = document.getElementById('tableBody');
         const isToday = (getCurrentSelectedDate() === getFormattedDate());
-        const isEditable = !isGuest && (isToday || (userRole === 'admin') || (sessionStorage.getItem('userName') === 'Serang'));
+        const isEditable = !isGuest && (isToday || (userRole === 'admin') || (sessionStorage.getItem('userName') === 'Riyan'));
 
         tbody.innerHTML = '';
 
@@ -2009,7 +2009,7 @@
         const userRole = sessionStorage.getItem('userRole');
         const userName = sessionStorage.getItem('userName');
 
-        if (selectedDate !== getFormattedDate() && userRole !== 'admin' && userName !== 'Serang') {
+        if (selectedDate !== getFormattedDate() && userRole !== 'admin' && userName !== 'Riyan') {
             showCustomAlert('Akses Terbatas', 'Hanya Admin yang dapat memasukkan data ke tanggal arsip!', 'warning');
             return;
         }
@@ -2179,7 +2179,7 @@
 
     window.verifySecretCode = function() {
         const code = document.getElementById('secretCodeInput').value.trim();
-        if (code === "071001" || sessionStorage.getItem('userName') === "Serang") {
+        if (code === "071001" || sessionStorage.getItem('userName') === "Riyan") {
             closeCodeModal();
             enableInvoicePreviewMode();
         } else {
