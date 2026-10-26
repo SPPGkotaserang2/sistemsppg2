@@ -430,6 +430,14 @@
         let archiveRowsData = [];
         let currentLoadedTask = null;
 
+        // Fungsi bantu mendapatkan tanggal lokal (YYYY-MM-DD) yang akurat sesuai zona waktu perangkat
+        function getLocalDateString(date = new Date()) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         window.showModalAlert = function(title, message, type = 'success', onConfirm = null) {
             const modal = document.getElementById('profModal');
             const iconWrapper = document.getElementById('profModalIconWrapper');
@@ -535,7 +543,7 @@
             const adminFilterContainer = document.getElementById('adminFilterContainer');
             const adminTaskCard = document.getElementById('adminTaskCard');
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalDateString();
             document.getElementById('inputTanggal').value = todayStr;
             document.getElementById('taskTanggal').value = todayStr;
             
@@ -892,7 +900,7 @@
 
                 showModalAlert('Berhasil', 'Laporan berhasil disimpan!', 'success');
                 document.getElementById('persiapanForm').reset();
-                document.getElementById('inputTanggal').value = new Date().toISOString().split('T')[0];
+                document.getElementById('inputTanggal').value = getLocalDateString();
                 loadTaskForCurrentDate();
                 calculateTotal();
                 loadArchives();
@@ -918,7 +926,7 @@
 
                 rows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-                const todayStr = new Date().toISOString().split('T')[0];
+                const todayStr = getLocalDateString();
 
                 if (currentUser.role === 'admin') {
                     const start = document.getElementById('filterStart').value;
@@ -1223,7 +1231,7 @@
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Persiapan");
-            XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_SPPG_${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.xlsx`);
         }
 
         window.exportToPDF = function() {
@@ -1264,7 +1272,7 @@
                 headStyles: { fillColor: [2, 132, 199] }
             });
 
-            doc.save(`Laporan_Sisa_Makanan_SPPG_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.pdf`);
         }
 
         window.exportToPNG = function() {
@@ -1328,7 +1336,7 @@
             html2canvas(container, { scale: 2 }).then(canvas => {
                 document.body.removeChild(container);
                 const link = document.createElement('a');
-                link.download = `Laporan_Sisa_Makanan_SPPG_${new Date().toISOString().split('T')[0]}.png`;
+                link.download = `Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }).catch(err => {
