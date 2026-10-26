@@ -515,6 +515,7 @@ function updateNextNoUrut() {
   if (inputNo) inputNo.value = nextNo;
 }
 
+// PERBAIKAN FORMAT URL DRIVE AGAR SELALU MUNCUL DENGAN JELAS DI SEMUA BROWSER
 function formatPhotoUrl(url) {
   if (!url) return '';
   if (url.startsWith('blob:') || url.startsWith('data:')) return url;
@@ -528,8 +529,11 @@ function formatPhotoUrl(url) {
   } else if (url.includes('lh3.googleusercontent.com/d/')) {
     const idMatch = url.match(/\/d\/([^/?]+)/);
     if (idMatch && idMatch[1]) fileId = idMatch[1];
+  } else if (url.length > 20 && !url.includes('/') && !url.includes('.')) {
+    // Jika tersimpan sebagai fileId murni
+    fileId = url;
   }
-  if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}`;
+  if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}=s800`;
   return url;
 }
 
@@ -537,22 +541,17 @@ window.handleImageError = function(imgElement, originalUrl) {
   if (!imgElement._retryCount) {
     imgElement._retryCount = 1;
     setTimeout(() => {
-      imgElement.src = originalUrl + (originalUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    }, 2000);
-  } else if (imgElement._retryCount === 1) {
-    imgElement._retryCount = 2;
-    setTimeout(() => {
       let fileId = '';
-      const m = originalUrl.match(/\/d\/([^/?]+)/) || originalUrl.match(/id=([^&]+)/);
+      const m = originalUrl.match(/\/d\/([^/?]+)/) || originalUrl.match(/id=([^&]+)/) || originalUrl.match(/\/d\/([^/?]+)/);
       if (m && m[1]) {
-        imgElement.src = `https://drive.google.com/uc?export=view&id=${m[1]}&t=` + Date.now();
+        imgElement.src = `https://drive.google.com/uc?export=view&id=${m[1]}`;
       } else {
-        imgElement.src = originalUrl + '&t=' + Date.now();
+        imgElement.src = originalUrl;
       }
-    }, 3000);
+    }, 1000);
   } else {
     imgElement.onerror = null;
-    imgElement.src = 'https://via.placeholder.com/40?text=IMG';
+    imgElement.src = 'https://via.placeholder.com/80?text=Gagal+Muat';
   }
 };
 
@@ -850,14 +849,13 @@ window.submitSingleInputItem = async function(e) {
       let uploadedFileIds = [];
 
       results.forEach(res => {
-        if (res.status === "success") {
+        if (res.status === "success" && res.downloadUrl) {
           uploadedPhotoUrls.push(res.downloadUrl);
-          // PERBAIKAN UTAMA: Mendukung penangkapan fileId tunggal maupun array fileIds dari Google Apps Script
           uploadedFileIds.push(res.fileId || (res.fileIds ? res.fileIds[0] : ''));
         }
       });
 
-      if (targetRow && document.body.contains(targetRow)) {
+      if (targetRow && document.body.contains(targetRow) && uploadedPhotoUrls.length > 0) {
         let photoDataInput = targetRow.querySelector('.photo-data');
         let fileIdInput = targetRow.querySelector('.drive-file-id');
         
@@ -877,7 +875,7 @@ window.submitSingleInputItem = async function(e) {
           await window.saveDataToFirebase(dateKey, getTableDataArray());
         }
       }
-      showToast('info', 'Foto Terkirim ke sistem!');
+      showToast('info', 'Foto Berhasil Tersinkronisasi ke Drive!');
     } catch (err) {
       console.error("Gagal sinkronisasi latar belakang:", err);
     }
@@ -1193,7 +1191,7 @@ window.saveCurrentData = async function() {
 
         const uploadResults = await Promise.all(batchUploads);
         uploadResults.forEach(res => {
-          if (res.status === "success") {
+          if (res.status === "success" && res.downloadUrl) {
             const blobIndex = photoData.findIndex(url => url.startsWith('blob:'));
             const singleFileId = res.fileId || (res.fileIds ? res.fileIds[0] : '');
             if (blobIndex !== -1) {
