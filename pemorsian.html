@@ -208,6 +208,23 @@
                     <span id="uploaderBadge" class="bg-sky-100 text-biruAsinDark text-sm px-4 py-1.5 rounded-full font-bold shadow-sm"></span>
                 </div>
 
+                <!-- NOTIFIKASI SUDAH LAPORAN / KUNCI FORM -->
+                <div id="alreadyReportedBox" class="hidden p-6 bg-emerald-50 border-2 border-emerald-300 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                    <div class="flex items-center space-x-3 text-center sm:text-left">
+                        <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xl flex-shrink-0">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-emerald-900 text-base">Anda sudah laporan hari ini</h4>
+                            <p class="text-xs text-emerald-700 font-medium">Laporan sisa makanan pada tanggal ini telah berhasil dikirimkan. Anda dapat mengubah data melalui tombol di samping jika diperlukan.</p>
+                        </div>
+                    </div>
+                    <button type="button" id="btnOpenEditFromNotice" onclick="" class="bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow transition flex items-center space-x-2 whitespace-nowrap">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Edit Data Laporan Ini</span>
+                    </button>
+                </div>
+
                 <div id="taskNoticeBox" class="hidden mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-sm font-bold text-amber-900 flex items-center space-x-3">
                     <i class="fa-solid fa-triangle-exclamation text-amber-600 text-xl"></i>
                     <span id="taskNoticeText">Admin belum menentukan tugas menu untuk tanggal ini.</span>
@@ -707,10 +724,65 @@
                 console.error(err);
             }
             calculateTotal();
+            checkIfUserAlreadyReportedForDate(tgl);
         }
 
         window.onInputDateChange = function() {
             loadTaskForCurrentDate();
+        }
+
+        // Cek apakah user sudah melaporkan untuk tanggal yang dipilih
+        async function checkIfUserAlreadyReportedForDate(dateStr) {
+            const alreadyBox = document.getElementById('alreadyReportedBox');
+            const submitBtn = document.getElementById('submitBtn');
+            const editBtnFromNotice = document.getElementById('btnOpenEditFromNotice');
+
+            // Jika admin, tidak perlu mengunci form input umum
+            if (!currentUser || currentUser.role === 'admin') {
+                alreadyBox.classList.add('hidden');
+                if (submitBtn) submitBtn.style.display = '';
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "sisa_makanan"));
+                let foundReportId = null;
+
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.username === currentUser.username && data.tanggal === dateStr) {
+                        foundReportId = docSnap.id;
+                    }
+                });
+
+                if (foundReportId) {
+                    // Sudah laporan -> Tampilkan pesan, sembunyikan tombol kirim, set tombol edit
+                    alreadyBox.classList.remove('hidden');
+                    if (submitBtn) submitBtn.style.display = 'none';
+                    editBtnFromNotice.setAttribute('onclick', `openEditModal('${foundReportId}')`);
+                    
+                    // Nonaktifkan input isian form agar terkunci
+                    disableUserFormInputs(true);
+                } else {
+                    // Belum laporan -> Sembunyikan kotak pemberitahuan, tampilkan tombol kirim
+                    alreadyBox.classList.add('hidden');
+                    if (submitBtn) submitBtn.style.display = '';
+                    disableUserFormInputs(false);
+                }
+            } catch (err) {
+                console.error("Gagal memeriksa status laporan:", err);
+            }
+        }
+
+        function disableUserFormInputs(disable) {
+            ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
+                const inputs = document.querySelectorAll(`input[name^="user_${cat}_"]`);
+                inputs.forEach(input => {
+                    input.disabled = disable;
+                    if(disable) input.classList.add('bg-slate-100', 'cursor-not-allowed');
+                    else input.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                });
+            });
         }
 
         window.calculateTotal = function() {
@@ -1102,6 +1174,9 @@
 
         window.closeEditModal = function() {
             document.getElementById('editModal').classList.add('hidden');
+            const tgl = document.getElementById('inputTanggal').value;
+            loadTaskForCurrentDate(); // Refresh form state setelah modal edit ditutup
+            loadArchives();
         }
 
         window.submitEditReport = async function(e) {
@@ -1377,6 +1452,8 @@
                     await deleteDoc(docRef);
                     showModalAlert('Berhasil', 'Data laporan dan file berhasil dihapus.', 'success');
                     loadArchives();
+                    const tgl = document.getElementById('inputTanggal').value;
+                    loadTaskForCurrentDate();
                 } catch (err) {
                     console.error(err);
                     showModalAlert('Gagal', 'Gagal menghapus data.', 'error');
