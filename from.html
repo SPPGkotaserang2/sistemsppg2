@@ -67,7 +67,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors text-sm shadow-md">Masuk</button>
 <div class="pt-2 border-t text-center">
 <button type="button" onclick="openPublicStockViewer()" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center justify-center gap-1.5 w-full py-1">
-<i class="fa-solid fa-magnifying-glass-chart"></i> Lihat Data
+<i class="fa-solid fa-magnifying-glass-chart"></i> Lihat Data Arsip
 </button>
 </div>
 </form>
@@ -77,7 +77,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 <div id="publicStockModal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4">
 <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl max-w-4xl w-full border border-gray-100 max-h-[90vh] flex flex-col">
 <div class="flex justify-between items-center mb-4 border-b pb-3">
-<h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Lihat Data Stok per Tanggal</h3>
+<h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Lihat Data Arsip Stok per Tanggal</h3>
 <button onclick="closePublicStockModal()" class="text-gray-400 hover:text-gray-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
 </div>
 <div class="flex flex-wrap items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
@@ -96,7 +96,6 @@ input, select, textarea { border: none !important; background: transparent !impo
 <thead>
 <tr class="bg-gray-100 text-gray-700 font-semibold uppercase text-[11px]">
 <th class="border border-gray-300 p-2 text-center w-10">No</th>
-<th class="border border-gray-300 p-2 text-center w-20">Foto</th>
 <th class="border border-gray-300 p-2">Nama Barang</th>
 <th class="border border-gray-300 p-2 text-center">Jml Pesan</th>
 <th class="border border-gray-300 p-2 text-center">Jml Terima</th>
@@ -110,7 +109,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 </tr>
 </thead>
 <tbody id="publicStockTableBody">
-<tr><td colspan="12" class="text-center p-6 text-gray-500">Silakan pilih tanggal dan klik Cari Stok.</td></tr>
+<tr><td colspan="11" class="text-center p-6 text-gray-500">Silakan pilih tanggal dan klik Cari Stok.</td></tr>
 </tbody>
 </table>
 </div>
@@ -123,9 +122,9 @@ input, select, textarea { border: none !important; background: transparent !impo
 <div id="mainApp" class="hidden max-w-7xl mx-auto">
 <datalist id="masterItemsList"></datalist>
 <datalist id="satuanList">
-<option value="kg"></option><option value="gram"></option><option value="liter"></option><option value="ml"></option>
-<option value="pcs"></option><option value="box"></option><option value="pack"></option><option value="karung"></option>
-<option value="kaleng"></option><option value="ikat"></option><option value="botol"></option><option value="dus"></option>
+<option value="1 kg"></option><option value="500 gram"></option><option value="1 liter"></option><option value="250 ml"></option>
+<option value="1 pcs"></option><option value="1 box"></option><option value="12g/1 renceng"></option><option value="1 karung"></option>
+<option value="1 kaleng"></option><option value="1 ikat"></option><option value="1 botol"></option><option value="1 dus"></option>
 </datalist>
 
 <div class="no-print bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 space-y-4">
@@ -204,8 +203,8 @@ input, select, textarea { border: none !important; background: transparent !impo
 <input type="number" min="0" step="any" id="inputMasuk" placeholder="0" class="w-full p-2 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 </div>
 <div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">Satuan</label>
-<input type="text" id="inputSatuan" list="satuanList" placeholder="kg, pcs, liter..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+<label class="block text-xs font-semibold text-gray-600 mb-1">Satuan <span class="text-red-500">*</span> (wajib ada angka)</label>
+<input type="text" id="inputSatuan" list="satuanList" required placeholder="Contoh: 12g/1renceng" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 </div>
 </div>
 
@@ -515,7 +514,6 @@ function updateNextNoUrut() {
   if (inputNo) inputNo.value = nextNo;
 }
 
-// PERBAIKAN FORMAT URL GOOGLE DRIVE YANG LEBIH TANGGUH DAN STABIL
 function formatPhotoUrl(url) {
   if (!url) return '';
   if (url.startsWith('blob:') || url.startsWith('data:')) return url;
@@ -615,35 +613,26 @@ window.searchPublicStockData = async function() {
   const searchDate = document.getElementById('publicSearchDate').value;
   if (!searchDate) { showToast('warning', 'Pilih tanggal terlebih dahulu.'); return; }
   const tbody = document.getElementById('publicStockTableBody');
-  tbody.innerHTML = `<tr><td colspan="12" class="text-center p-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="11" class="text-center p-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>`;
 
   let records = null;
   if (window.loadDataFromFirebase) { records = await window.loadDataFromFirebase(searchDate); }
 
   tbody.innerHTML = '';
   if (!records || records.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="12" class="text-center p-6 text-gray-500">Tidak ada data stok ditemukan untuk tanggal ${searchDate}.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11" class="text-center p-6 text-gray-500">Tidak ada data arsip stok ditemukan untuk tanggal ${searchDate}.</td></tr>`;
     return;
   }
 
   records.forEach((item, index) => {
-    const photoUrls = item.photo || [];
-    let photoHtml = '-';
-    if (photoUrls.length > 0) {
-      const formattedUrl = formatPhotoUrl(photoUrls[0]);
-      photoHtml = `<img src="${formattedUrl}" onerror="handleImageError(this, '${formattedUrl}')" onclick="openImagePreview('${formattedUrl}')" class="w-10 h-10 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-80 inline-block" title="Klik Pratinjau">`;
-      if (photoUrls.length > 1) { photoHtml += ` <span class="text-[10px] bg-gray-200 px-1 rounded"> +${photoUrls.length - 1}</span>`; }
-    }
-
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-gray-50';
     tr.innerHTML = `
       <td class="border border-gray-300 p-2 text-center font-medium">${index + 1}</td>
-      <td class="border border-gray-300 p-2 text-center">${photoHtml}</td>
       <td class="border border-gray-300 p-2 font-semibold">${item.nama || '-'}</td>
       <td class="border border-gray-300 p-2 text-center">${item.order || '0'}</td>
       <td class="border border-gray-300 p-2 text-center">${item.masuk || '0'}</td>
-      <td class="border border-gray-300 p-2 text-center">${item.satuan || '-'}</td>
+      <td class="border border-gray-300 p-2 text-center font-medium text-indigo-700">${item.satuan || '-'}</td>
       <td class="border border-gray-300 p-2">${item.kemasan || '-'}</td>
       <td class="border border-gray-300 p-2">${item.fisik || '-'}</td>
       <td class="border border-gray-300 p-2 text-center">${item.suhu || '-'}</td>
@@ -785,7 +774,7 @@ window.submitSingleInputItem = async function(e) {
   const nama = document.getElementById('inputNamaBahan').value.trim();
   const order = document.getElementById('inputOrder').value;
   const masuk = document.getElementById('inputMasuk').value;
-  const satuan = document.getElementById('inputSatuan').value || 'kg';
+  const satuan = document.getElementById('inputSatuan').value.trim();
   const kondisiKemasan = document.getElementById('inputKondisiKemasan').value;
   const kondisiFisik = document.getElementById('inputKondisiFisik').value;
   const suhu = document.getElementById('inputSuhu').value;
@@ -794,6 +783,17 @@ window.submitSingleInputItem = async function(e) {
   const ket = document.getElementById('inputKeterangan').value;
 
   if (!nama) { showToast('warning', 'Nama Barang wajib diisi!'); return; }
+
+  // Validasi wajib angka pada satuan (misal: 12g/1renceng, 1kg, dll)
+  if (!satuan || !/\d/.test(satuan)) {
+    Swal.fire({
+      title: 'Satuan Wajib Mengandung Angka!',
+      text: 'Contoh format satuan yang benar: 12g/1renceng, 1kg, 500ml, 1 pcs, dll.',
+      icon: 'warning',
+      confirmButtonColor: '#4f46e5'
+    });
+    return;
+  }
 
   if (isPackagingItemByName(nama) && !tglExpired) {
     Swal.fire({ title: 'Tanggal Expired Wajib Diisi!', text: `Barang kemasan (${nama}) wajib diisi tanggal kedaluwarsanya.`, icon: 'warning', confirmButtonColor: '#4f46e5' });
@@ -892,7 +892,7 @@ function getTableDataArray() {
     const rNama = inputs[0] ? inputs[0].value.trim() : '';
     const rOrder = inputs[1] ? inputs[1].value : '';
     const rMasuk = inputs[2] ? inputs[2].value : '';
-    const rSatuan = inputs[3] ? inputs[3].value : '';
+    const rSatuan = inputs[3] ? inputs[3].value.trim() : '';
     const rKemasan = inputs[4] ? inputs[4].value : 'Baik';
     const rFisik = inputs[5] ? inputs[5].value : 'Baik';
     const rSuhu = inputs[6] ? inputs[6].value : '';
@@ -907,7 +907,7 @@ function getTableDataArray() {
   return dataToSave;
 }
 
-window.addRow = function(nama = '', order = '', masuk = '', satuan = 'kg', kemasan = 'Baik', fisik = 'Baik/Segar', suhu = '', tglExpired = '', sesuai = 'Ya', ket = '', photo = [], fileId = [], rawFiles = []) {
+window.addRow = function(nama = '', order = '', masuk = '', satuan = '1 kg', kemasan = 'Baik', fisik = 'Baik/Segar', suhu = '', tglExpired = '', sesuai = 'Ya', ket = '', photo = [], fileId = [], rawFiles = []) {
   const tbody = document.getElementById('tableBody');
   const rowCount = tbody.children.length + 1;
 
@@ -935,7 +935,7 @@ window.addRow = function(nama = '', order = '', masuk = '', satuan = 'kg', kemas
     <td class="border border-gray-300 p-1"><input type="text" list="masterItemsList" value="${nama}" onchange="handleItemInputChange(this)" placeholder="Nama Barang" class="item-input input-print-border w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 text-xs"></td>
     <td class="border border-gray-300 p-1"><input type="number" min="0" step="any" value="${order}" placeholder="0" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
     <td class="border border-gray-300 p-1"><input type="number" min="0" step="any" value="${masuk}" placeholder="0" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
-    <td class="border border-gray-300 p-1"><input type="text" list="satuanList" value="${satuan}" placeholder="Satuan" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
+    <td class="border border-gray-300 p-1"><input type="text" list="satuanList" value="${satuan}" placeholder="Contoh: 12g/1renceng" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
     <td class="border border-gray-300 p-1">
       <select class="input-print-border w-full p-1 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-indigo-500">
         <option value="Baik" ${kemasan === 'Baik' ? 'selected' : ''}>Baik</option>
@@ -1157,7 +1157,19 @@ window.saveCurrentData = async function() {
     const row = rows[i];
     const inputs = row.querySelectorAll('input:not(.photo-data):not(.photo-input-camera):not(.photo-input-gallery):not(.drive-file-id), select');
     const namaBarang = inputs[0] ? inputs[0].value.trim() : '';
+    const rSatuan = inputs[3] ? inputs[3].value.trim() : '';
     const tglExp = inputs[7] ? inputs[7].value : '';
+
+    // Validasi satuan wajib angka saat menyimpan
+    if (!rSatuan || !/\d/.test(rSatuan)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Satuan Wajib Mengandung Angka!',
+        text: `Baris ke-${i + 1} (${namaBarang || 'Tanpa Nama'}) satuan harus mencantumkan angka (contoh: 12g/1renceng, 1kg).`,
+        confirmButtonColor: '#4f46e5'
+      });
+      return false;
+    }
 
     if (isPackagingItemByName(namaBarang) && !tglExp) {
       Swal.fire({ icon: 'warning', title: 'Tanggal Expired Wajib Diisi!', text: `Baris ke-${i + 1} (${namaBarang}) termasuk barang kemasan dan wajib diisi tanggal kedaluwarsanya.`, confirmButtonColor: '#4f46e5' });
@@ -1212,7 +1224,7 @@ window.saveCurrentData = async function() {
 
     if (window.saveDataToFirebase) {
       const success = await window.saveDataToFirebase(dateKey, getTableDataArray());
-      if (success) { showToast('success', `Data tanggal ${dateKey} tersinkronisasi!`); return true; }
+      if (success) { showToast('success', `Data tanggal ${dateKey} tersinkronisasi sempurna!`); return true; }
     }
     return false;
   } catch (err) {
