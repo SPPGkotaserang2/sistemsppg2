@@ -378,7 +378,6 @@
 <!-- MODAL LOCK SCREEN / CEK LOKASI AWAL -->
 <div class="modal-overlay" id="locationLockModal" style="display: flex;">
     <div class="modal-card" style="max-width: 400px;">
-        <!-- Logo Lokasi dengan Event Klik Tersembunyi (Klik 5x untuk buka Login Admin) -->
         <div id="lockIcon" onclick="handleSecretAdminTrigger()" style="font-size: 45px; color: var(--biru-telur-asin-dark); margin-bottom: 15px; cursor: pointer;" title="Pemeriksaan Lokasi">
             <i class="fa-solid fa-location-crosshairs fa-spin"></i>
         </div>
@@ -683,15 +682,15 @@
 </script>
 
 <script>
-    const FONNTE_TOKEN = "suK5ZqbL62RqaQnWtpeM";
-    const FONNTE_TARGET = "6283111399112";
+    // Konfigurasi Telegram Bot API & Chat ID
+    const TELEGRAM_BOT_TOKEN = "9212292960:AAExJjLvW8GF-tako3PmJ82Frp03rgblPUg";
+    const TELEGRAM_CHAT_ID = "9212263609";
 
     // Koordinat Target SPPG D&D SERANG MANDIRI
     const TARGET_LAT = -6.1265918;
     const TARGET_LNG = 106.1490035;
-    const MAX_RADIUS_METERS = 100; // Radius diperketat menjadi maksimal 100 meter
+    const MAX_RADIUS_METERS = 100;
 
-    // Status Admin persistent (tersimpan selamanya di localStorage)
     let isAdmin = localStorage.getItem('sppg_admin_logged') === 'true';
     let daftarAbsenHariIni = []; 
     let secretClickCount = 0;
@@ -791,7 +790,6 @@
         document.getElementById('loginModal').style.display = show ? 'flex' : 'none';
     }
 
-    // Fitur Admin Tersembunyi: Klik 5x pada logo lokasi
     function handleSecretAdminTrigger() {
         secretClickCount++;
         clearTimeout(secretClickTimer);
@@ -816,7 +814,6 @@
             localStorage.setItem('sppg_admin_logged', 'true');
             applyAdminUIState();
             toggleLoginModal(false);
-            // Tutup juga modal lock screen jika sedang terkunci
             document.getElementById('locationLockModal').style.display = 'none';
             showNotification("Autentikasi Berhasil", "Selamat datang, Administrator berhasil masuk.", "success");
             renderArsipTable();
@@ -832,7 +829,7 @@
         switchTab('input-tab');
         renderArsipTable();
         showNotification("Keluar Sesi", "Anda telah berhasil keluar dari mode Administrator.", "info");
-        initLocationCheck(); // Kunci kembali jika bukan di area lokasi
+        initLocationCheck();
     }
 
     function applyAdminUIState() {
@@ -911,7 +908,6 @@
         fetchExistingPresensi();
     });
 
-    // Fungsi Hitung Jarak (Haversine Formula) dalam meter
     function hitungJarakMeter(lat1, lon1, lat2, lon2) {
         const R = 6371e3;
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -924,7 +920,6 @@
         return R * c;
     }
 
-    // Pengecekan Lokasi Saat Buka Web (Lock Screen) Maksimal 100 Meter
     function initLocationCheck() {
         const lockModal = document.getElementById('locationLockModal');
         const lockIcon = document.getElementById('lockIcon');
@@ -938,7 +933,6 @@
         lockMessage.textContent = "Harap izinkan akses lokasi (GPS) pada perangkat Anda untuk membuka halaman web ini.";
         btnRetry.style.display = 'none';
 
-        // Jika admin aktif, lewati pemeriksaan lokasi saat buka web
         if (isAdmin) {
             lockModal.style.display = 'none';
             return;
@@ -974,7 +968,6 @@
                     lockMessage.textContent = `Anda berada di luar area Dapur SPPG KOTA SERANG 2. Jarak Anda sekitar ${Math.round(jarak)} meter dari lokasi utama (Maksimal ${MAX_RADIUS_METERS} meter).`;
                     btnRetry.style.display = 'block';
                 } else {
-                    // Berhasil & Valid - Buka Gembok Web
                     lockModal.style.display = 'none';
                 }
             },
@@ -996,12 +989,12 @@
         );
     }
 
-    // Jalankan pemeriksaan lokasi segera saat halaman dimuat
     window.addEventListener('DOMContentLoaded', () => {
         initLocationCheck();
     });
 
-    async function sendWhatsAppNotification(nama, bagian, status, tanggal, keterangan) {
+    // Fungsi pengiriman notifikasi otomatis melalui Telegram Bot API
+    async function sendTelegramNotification(nama, bagian, status, tanggal, keterangan) {
         const pesan = `📢 *NOTIFIKASI PRESENSI RELAWAN*
 SPPG KOTA SERANG SERANG SERANG 2
 
@@ -1013,20 +1006,23 @@ SPPG KOTA SERANG SERANG SERANG 2
 
 _Pesan otomatis dikirim melalui sistem terintegrasi._`;
 
-        const formData = new URLSearchParams();
-        formData.append('target', FONNTE_TARGET);
-        formData.append('message', pesan);
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        const payload = {
+            chat_id: TELEGRAM_CHAT_ID,
+            text: pesan,
+            parse_mode: 'Markdown'
+        };
 
         try {
-            await fetch('https://api.fonnte.com/send', {
+            await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Authorization': FONNTE_TOKEN
+                    'Content-Type': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify(payload)
             });
         } catch (err) {
-            console.error("Gagal mengirim notifikasi WhatsApp:", err);
+            console.error("Gagal mengirim notifikasi Telegram:", err);
         }
     }
 
@@ -1064,7 +1060,7 @@ _Pesan otomatis dikirim melalui sistem terintegrasi._`;
         btn.innerHTML = `<i class="fa-solid fa-plus"></i> Simpan`;
 
         if (sukses) {
-            sendWhatsAppNotification(namaVal, bagianVal, statusVal, dateVal, catatanVal);
+            sendTelegramNotification(namaVal, bagianVal, statusVal, dateVal, catatanVal);
             showNotification("Berhasil", "Data presensi relawan berhasil disimpan ke Sistem!", "success");
             fetchExistingPresensi();
         } else {
@@ -1114,7 +1110,6 @@ _Pesan otomatis dikirim melalui sistem terintegrasi._`;
         });
     }
 
-    // Fungsi Konfirmasi Hapus Menggunakan Modal Profesional (Pengganti confirm() bawaan)
     function konfirmasiHapusItem(docId) {
         if (!isAdmin) {
             showNotification("Akses Ditolak", "Anda tidak memiliki hak akses untuk menghapus data.", "error");
@@ -1126,7 +1121,6 @@ _Pesan otomatis dikirim melalui sistem terintegrasi._`;
         
         confirmModal.style.display = 'flex';
 
-        // Hapus event listener sebelumnya agar tidak menumpuk
         const newBtnYes = btnYes.cloneNode(true);
         btnYes.parentNode.replaceChild(newBtnYes, btnYes);
 
