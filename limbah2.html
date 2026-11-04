@@ -334,10 +334,10 @@
                     <i class="fa-solid fa-wallet"></i><span>Saldo & Riwayat</span>
                 </button>
                 <button onclick="switchTab('adminWA')" id="tabBtn-adminWA" class="admin-only tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
-                    <i class="fa-brands fa-whatsapp text-emerald-600"></i><span>Kelola WhatsApp</span>
+                    <i class="fa-brands fa-telegram text-sky-500"></i><span>Kelola Telegram</span>
                 </button>
                 <button onclick="switchTab('pesanWA')" id="tabBtn-pesanWA" class="admin-only tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-white text-gray-600 hover:bg-gray-100 flex items-center space-x-2">
-                    <i class="fa-solid fa-paper-plane text-emerald-600"></i><span>Kirim Pesan WhatsApp</span>
+                    <i class="fa-solid fa-paper-plane text-sky-500"></i><span>Kirim Pesan Telegram</span>
                 </button>
             </div>
 
@@ -607,19 +607,19 @@
                 </div>
             </div>
 
-            <!-- KELOLA WHATSAPP -->
+            <!-- KELOLA TELEGRAM -->
             <div id="content-adminWA" class="tab-content hidden space-y-8">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
                     <h2 class="text-lg font-bold text-gray-900 mb-2 flex items-center">
-                        <i class="fa-brands fa-whatsapp text-emerald-600 text-2xl mr-3"></i> Kelola Nomor Penerima Pesan WhatsApp
+                        <i class="fa-brands fa-telegram text-sky-500 text-2xl mr-3"></i> Kelola ID Chat Telegram Penerima Pesan
                     </h2>
-                    <p class="text-xs text-gray-500 mb-6">Atur nomor WhatsApp penerima laporan otomatis. Berikan centang untuk mengirim ke nomor tersebut.</p>
+                    <p class="text-xs text-gray-500 mb-6">Atur Chat ID Telegram penerima laporan otomatis. Berikan centang untuk mengirim ke ID tersebut.</p>
 
                     <form onsubmit="handleAddWaNumber(event)" class="flex flex-col sm:flex-row gap-3 mb-6">
                         <input type="text" id="newWaLabel" required placeholder="Label/Nama Pemilik (Contoh: Bpk Supri)" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
-                        <input type="text" id="newWaNumber" required placeholder="Nomor WA (Contoh: 628812345678)" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
+                        <input type="text" id="newWaNumber" required placeholder="Chat ID Telegram (Contoh: 123456789 atau -100123456789)" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500">
                         <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs shadow-md">
-                            <i class="fa-solid fa-plus mr-1"></i> Tambah Nomor
+                            <i class="fa-solid fa-plus mr-1"></i> Tambah Chat ID
                         </button>
                     </form>
 
@@ -629,7 +629,7 @@
                                 <tr class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
                                     <th class="p-3.5 text-center w-16">Kirim</th>
                                     <th class="p-3.5">Nama / Label</th>
-                                    <th class="p-3.5">Nomor WhatsApp</th>
+                                    <th class="p-3.5">Chat ID Telegram</th>
                                     <th class="p-3.5 text-center w-32">Aksi</th>
                                 </tr>
                             </thead>
@@ -639,17 +639,17 @@
                 </div>
             </div>
 
-            <!-- KIRIM PESAN WHATSAPP (MULTI-TARGET) -->
+            <!-- KIRIM PESAN TELEGRAM (MULTI-TARGET) -->
             <div id="content-pesanWA" class="tab-content hidden space-y-8">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
                     <h2 class="text-lg font-bold text-gray-900 mb-2 flex items-center">
-                        <i class="fa-solid fa-paper-plane text-emerald-600 text-2xl mr-3"></i> Kirim Pesan ke Beberapa Nomor WhatsApp
+                        <i class="fa-solid fa-paper-plane text-sky-500 text-2xl mr-3"></i> Kirim Pesan ke Beberapa Telegram Chat ID
                     </h2>
-                    <p class="text-xs text-gray-500 mb-6">Pilih beberapa nomor tujuan sekaligus dari daftar di bawah, tulis pesan Anda, lalu kirimkan.</p>
+                    <p class="text-xs text-gray-500 mb-6">Pilih beberapa ID tujuan sekaligus dari daftar di bawah, tulis pesan Anda, lalu kirimkan.</p>
 
                     <form onsubmit="handleSendCustomWaMessage(event)" class="space-y-5">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Pilih Daftar Nomor Tujuan (Bisa Centang Banyak)</label>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Pilih Daftar ID Tujuan (Bisa Centang Banyak)</label>
                             <div id="customWaTargetCheckboxes" class="max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-4 space-y-2 bg-gray-50"></div>
                         </div>
                         <div>
@@ -657,8 +657,8 @@
                             <textarea id="customWaMessageText" rows="5" required placeholder="Tulis pesan yang ingin dikirim..." class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500"></textarea>
                         </div>
                         <div class="flex justify-end">
-                            <button type="submit" id="sendCustomWaBtn" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm shadow-md flex items-center">
-                                <i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Kirim Pesan Sekarang
+                            <button type="submit" id="sendCustomWaBtn" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl text-sm shadow-md flex items-center">
+                                <i class="fa-brands fa-telegram mr-2 text-lg"></i> Kirim Pesan Sekarang
                             </button>
                         </div>
                     </form>
@@ -667,13 +667,13 @@
         </main>
     </div>
 
-    <!-- MODAL EDIT NOMOR WHATSAPP -->
+    <!-- MODAL EDIT NOMOR TELEGRAM -->
     <div id="modalEditWa" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 class="text-base font-bold text-gray-900 flex items-center">
                     <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mr-3 text-sm"><i class="fa-solid fa-pen-to-square"></i></span>
-                    Edit Nomor WhatsApp
+                    Edit ID Chat Telegram
                 </h3>
                 <button onclick="closeModalEditWa()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -684,7 +684,7 @@
                     <input type="text" id="editWaLabel" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Nomor WhatsApp</label>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Chat ID Telegram</label>
                     <input type="text" id="editWaNumber" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500">
                 </div>
                 <div class="flex justify-end space-x-3 pt-3">
@@ -785,12 +785,14 @@
         const db = getFirestore(app);
 
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwE_H5QqATsS2hS0uZHAow4hvv-FmBpf9k_6GNXHq9b78J4vAkpXbTObgmXj0dupOv_OA/exec';
-        const WA_TOKEN = 'suK5ZqbL62RqaQnWtpeM';
-        const WA_TARGET_PRIMARY = '6283111399112';
+        
+        // INTEGRASI TELEGRAM BOT API TOKEN
+        const TELEGRAM_BOT_TOKEN = '9017252794:AAFadJxD1ZjN0eisIcWasu5T7VPFLWHk0wo';
+        const WA_TARGET_PRIMARY = '9212263609'; // Isi Chat ID Telegram default jika diperlukan
 
         const DEFAULT_WA_LIST = [
-            { id: '1', name: 'Nomor Utama 1', number: '6283804346245', active: true },
-            { id: '2', name: 'Nomor Utama 2', number: '6287785982118', active: true },
+            { id: '1', name: '9212263609', number: '', active: true },
+            { id: '2', name: 'Chat ID Telegram Utama 2', number: '', active: true },
         ];
 
         window.appData = { penjualan: [], pembelian: [], pembagian: [] };
@@ -848,21 +850,23 @@
 
         async function sendWhatsAppNotification(message, targetList = null) {
             try {
-                let targets = targetList && Array.isArray(targetList) ? targetList : window.waNumbersList.filter(item => item.active).map(item => item.number);
+                let targets = targetList && Array.isArray(targetList) ? targetList : window.waNumbersList.filter(item => item.active && item.number).map(item => item.number);
                 if (targets.length === 0) return;
 
-                const bodyData = new URLSearchParams();
-                bodyData.append('target', targets.join(','));
-                bodyData.append('message', message);
-                bodyData.append('token', WA_TOKEN);
-
-                await fetch('https://api.fonnte.com/send', {
-                    method: 'POST',
-                    headers: { 'Authorization': WA_TOKEN },
-                    body: bodyData
-                });
+                for (const chatId of targets) {
+                    if (!chatId) continue;
+                    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: message,
+                            parse_mode: 'Markdown'
+                        })
+                    });
+                }
             } catch (err) {
-                console.error("Gagal mengirim pesan WhatsApp:", err);
+                console.error("Gagal mengirim pesan Telegram:", err);
             }
         }
 
@@ -930,7 +934,6 @@
                 if(endEl) endEl.value = todayStr;
             });
 
-            // Tarik data dasar untuk keperluan viewer publik saat halaman dibuka
             fetchAllDataSilent();
 
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -980,7 +983,6 @@
             loadPublicTableData();
         };
 
-        // FUNGSI PORTAL LIHAT DATA (PUBLIC VIEWER)
         window.openPublicViewerModal = async function() {
             showToast('Memuat', 'Mengambil data terbaru dari sistem...', 'info');
             await fetchAllDataSilent();
@@ -1198,7 +1200,9 @@
                 showToast('Login Berhasil', `Selamat datang kembali ${displayName}`, 'success');
                 showApp();
                 
-                await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${displayName}* berhasil *MASUK (LOGIN)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
+                if (WA_TARGET_PRIMARY) {
+                    await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${displayName}* berhasil *MASUK (LOGIN)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
+                }
             } else {
                 document.getElementById('loginError').classList.remove('hidden');
                 showToast('Gagal Masuk', 'Username atau sandi salah.', 'error');
@@ -1216,7 +1220,9 @@
                 document.getElementById('loginPage').classList.remove('hidden');
                 setViewportMode('mobile');
                 showToast('Berhasil Keluar', 'Sesi berakhir.', 'success');
-                await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${currentUser}* telah *KELUAR (LOGOUT)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
+                if (WA_TARGET_PRIMARY) {
+                    await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${currentUser}* telah *KELUAR (LOGOUT)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
+                }
             });
         };
 
@@ -1436,7 +1442,7 @@
             try {
                 await setDoc(doc(db, "settings", "wa_numbers"), { list: window.waNumbersList });
             } catch(e) {
-                showToast("Gagal", "Pengaturan WA tidak dapat disimpan", "error");
+                showToast("Gagal", "Pengaturan Telegram tidak dapat disimpan", "error");
             }
         }
 
@@ -1445,7 +1451,7 @@
             if (!tbody) return;
 
             if (window.waNumbersList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Belum ada nomor tersimpan.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Belum ada ID Chat tersimpan.</td></tr>`;
                 return;
             }
 
@@ -1472,15 +1478,13 @@
             window.waNumbersList[index].active = !window.waNumbersList[index].active;
             await saveWaNumbers();
             renderWaNumbersTable();
-            showToast("Berhasil", "Status pengiriman nomor diperbarui", "success");
+            showToast("Berhasil", "Status pengiriman Telegram diperbarui", "success");
         };
 
         window.handleAddWaNumber = async function(e) {
             e.preventDefault();
             const name = document.getElementById('newWaLabel').value.trim();
-            let number = document.getElementById('newWaNumber').value.trim().replace(/[^0-9]/g, '');
-
-            if (number.startsWith('0')) number = '62' + number.slice(1);
+            let number = document.getElementById('newWaNumber').value.trim();
 
             window.waNumbersList.push({
                 id: Date.now().toString(),
@@ -1494,7 +1498,7 @@
 
             await saveWaNumbers();
             renderWaNumbersTable();
-            showToast("Berhasil", "Nomor WhatsApp baru berhasil ditambahkan", "success");
+            showToast("Berhasil", "Chat ID Telegram baru berhasil ditambahkan", "success");
         };
 
         window.openModalEditWa = function(index) {
@@ -1514,9 +1518,7 @@
             e.preventDefault();
             const index = parseInt(document.getElementById('editWaIndex').value, 10);
             const name = document.getElementById('editWaLabel').value.trim();
-            let number = document.getElementById('editWaNumber').value.trim().replace(/[^0-9]/g, '');
-
-            if (number.startsWith('0')) number = '62' + number.slice(1);
+            let number = document.getElementById('editWaNumber').value.trim();
 
             if (window.waNumbersList[index]) {
                 window.waNumbersList[index].name = name;
@@ -1524,16 +1526,16 @@
                 await saveWaNumbers();
                 renderWaNumbersTable();
                 closeModalEditWa();
-                showToast("Berhasil", "Nomor WhatsApp berhasil diperbarui", "success");
+                showToast("Berhasil", "Chat ID Telegram berhasil diperbarui", "success");
             }
         };
 
         window.deleteWaNumber = function(index) {
-            showCustomConfirm('Hapus Nomor WA', 'Apakah Anda yakin ingin menghapus nomor ini?', async function() {
+            showCustomConfirm('Hapus Chat ID', 'Apakah Anda yakin ingin menghapus Chat ID ini?', async function() {
                 window.waNumbersList.splice(index, 1);
                 await saveWaNumbers();
                 renderWaNumbersTable();
-                showToast("Berhasil", "Nomor WA dihapus", "success");
+                showToast("Berhasil", "Chat ID Telegram dihapus", "success");
             });
         };
 
@@ -1541,7 +1543,7 @@
             const container = document.getElementById('customWaTargetCheckboxes');
             if (!container) return;
             if (window.waNumbersList.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-400">Belum ada nomor tujuan terdaftar.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-400">Belum ada Chat ID tujuan terdaftar.</p>`;
                 return;
             }
             let html = '';
@@ -1561,7 +1563,7 @@
             const btn = document.getElementById('sendCustomWaBtn');
 
             if (checkboxes.length === 0 || !messageText) {
-                showToast('Perhatian', 'Pilih minimal satu nomor tujuan dan isi pesan terlebih dahulu!', 'error');
+                showToast('Perhatian', 'Pilih minimal satu ID tujuan dan isi pesan terlebih dahulu!', 'error');
                 return;
             }
 
@@ -1569,18 +1571,18 @@
 
             try {
                 btn.disabled = true;
-                btn.innerText = 'Mengirim Pesan ke Beberapa Nomor...';
+                btn.innerText = 'Mengirim Pesan Telegram...';
 
                 await sendWhatsAppNotification(messageText, selectedNumbers);
 
                 document.getElementById('customWaMessageText').value = '';
-                showToast('Berhasil', `Pesan WhatsApp berhasil dikirim ke ${selectedNumbers.length} nomor tujuan.`, 'success');
+                showToast('Berhasil', `Pesan Telegram berhasil dikirim ke ${selectedNumbers.length} ID tujuan.`, 'success');
             } catch (err) {
                 console.error(err);
-                showToast('Gagal', 'Gagal mengirim pesan WhatsApp.', 'error');
+                showToast('Gagal', 'Gagal mengirim pesan Telegram.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-brands fa-whatsapp mr-2 text-lg"></i> Kirim Pesan Sekarang`;
+                btn.innerHTML = `<i class="fa-brands fa-telegram mr-2 text-lg"></i> Kirim Pesan Sekarang`;
             }
         };
 
