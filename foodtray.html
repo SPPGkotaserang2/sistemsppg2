@@ -417,8 +417,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const FONNTE_TOKEN = "suK5ZqbL62RqaQnWtpeM";
-        const FONNTE_TARGET = "6283111399112";
+        const TELEGRAM_BOT_TOKEN = "9177431084:AAFFHNjiw0SrAiU8U3d3f7oNcOUyJWbxT_k";
+        const TELEGRAM_CHAT_ID = "9212263609";
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJ2NewG5cACfraFXXaGmM4AUPDzOf3eyMuCzJv6imR8YYwYc0zcbe6WXcW7_jLt6Lt/exec"; 
 
         const accounts = {
@@ -883,12 +883,17 @@
                     lainnya: lainnyaItems
                 });
 
-                const waMessage = `*LAPORAN PENDATAAN SISA MAKANAN DARI FOODTRAY*\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
-                fetch('https://api.fonnte.com/send', {
+                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MAKANAN DARI FOODTRAY* 🚨\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
+                
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
-                    headers: { 'Authorization': FONNTE_TOKEN, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ target: FONNTE_TARGET, message: waMessage })
-                }).catch(err => console.log('WA Error:', err));
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: telegramMessage,
+                        parse_mode: 'Markdown'
+                    })
+                }).catch(err => console.log('Telegram Error:', err));
 
                 showModalAlert('Berhasil', 'Laporan berhasil disimpan!', 'success');
                 document.getElementById('foodtrayForm').reset();
@@ -901,7 +906,7 @@
                 showModalAlert('Gagal', error.message || 'Gagal menyimpan data.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan Sisa Makanan Foodtray`;
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan Sisa`;
             }
         }
 
@@ -1236,7 +1241,7 @@
             const doc = new jsPDF('landscape', 'mm', 'a4');
 
             doc.setFontSize(14);
-            doc.text("LAPORAN PENDATAAN SISA MAKANAN DARI FOODTRAY", 14, 15);
+            doc.text("LAPORAN PENDATAAN SISA MASA KANAN DARI FOODTRAY", 14, 15);
             doc.setFontSize(10);
             doc.text("SPPG KOTA SERANG SERANG SERANG 2", 14, 21);
 
