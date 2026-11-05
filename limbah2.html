@@ -185,7 +185,6 @@
                 <p class="text-sm text-gray-500 mt-1">Silakan masuk atau lihat data secara publik</p>
             </div>
             
-            <!-- TOMBOL FITUR LIHAT DATA (KHUSUS SEBELUM LOGIN / HANYA LIHAT TANPA EDITOR) -->
             <div class="mb-6">
                 <button type="button" onclick="openPublicViewerModal()" class="w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl border border-blue-200 transition-all text-sm flex items-center justify-center shadow-sm">
                     <i class="fa-solid fa-eye mr-2 text-base"></i> Lihat Data
@@ -221,7 +220,7 @@
         </div>
     </div>
 
-    <!-- MODAL LIHAT DATA (PUBLIC VIEWER - HANYA LIHAT, TANPA EDITOR/HAPUS) -->
+    <!-- MODAL LIHAT DATA (PUBLIC VIEWER) -->
     <div id="publicViewerModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[90000] p-4 overflow-y-auto">
         <div class="relative max-w-6xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] my-auto">
             <div class="p-5 bg-gradient-to-r from-blue-700 to-indigo-800 text-white flex justify-between items-center">
@@ -264,30 +263,16 @@
             </div>
 
             <div class="p-6 overflow-y-auto flex-1 bg-white">
-                <!-- KONTEN SALDO PUBLIK -->
                 <div id="pub-content-saldo" class="pub-tab-content hidden space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-4 text-white shadow">
                             <p class="text-[11px] uppercase tracking-wider text-emerald-100 font-semibold mb-1">UANG DI PAK JIMI KURNIAWAN</p>
                             <h2 id="pub_saldoGlobalDisplay" class="text-lg font-bold">Rp 0</h2>
                         </div>
-                        <div class="hidden bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                            <p class="text-[11px] uppercase tracking-wider text-amber-600 font-semibold mb-1">Total Pemasukan</p>
-                            <h2 id="pub_saldoPemasukanDisplay" class="text-lg font-bold text-amber-600">Rp 0</h2>
-                        </div>
-                        <div class="hidden bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                            <p class="text-[11px] uppercase tracking-wider text-blue-600 font-semibold mb-1">Uang Di Simpanan Darurat</p>
-                            <h2 id="pub_saldoPembelianDisplay" class="text-lg font-bold text-blue-600">Rp 0</h2>
-                        </div>
-                        <div class="hidden bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-                            <p class="text-[11px] uppercase tracking-wider text-red-600 font-semibold mb-1">Total Pembagian</p>
-                            <h2 id="pub_saldoPengeluaranDisplay" class="text-lg font-bold text-red-600">Rp 0</h2>
-                        </div>
                     </div>
                     <div id="pubTableContainer_saldo" class="hidden overflow-x-auto"></div>
                 </div>
 
-                <!-- KONTEN TABEL DATA PUBLIK (PENJUALAN, PEMBELIAN, PEMBAGIAN) -->
                 <div id="pub-content-table" class="pub-tab-content">
                     <div id="pubTableContainer" class="overflow-x-auto"></div>
                 </div>
@@ -319,7 +304,6 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-            <!-- Tab Menu -->
             <div class="flex space-x-2 border-b border-gray-200 pb-4 mb-8 overflow-x-auto">
                 <button onclick="switchTab('penjualan')" id="tabBtn-penjualan" class="tab-btn px-5 py-2.5 rounded-xl font-semibold text-sm transition-all bg-emerald-600 text-white shadow-md flex items-center space-x-2">
                     <i class="fa-solid fa-cash-register"></i><span>Penjualan</span>
@@ -639,7 +623,7 @@
                 </div>
             </div>
 
-            <!-- KIRIM PESAN TELEGRAM (MULTI-TARGET) -->
+            <!-- KIRIM PESAN TELEGRAM -->
             <div id="content-pesanWA" class="tab-content hidden space-y-8">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8">
                     <h2 class="text-lg font-bold text-gray-900 mb-2 flex items-center">
@@ -786,13 +770,12 @@
 
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwE_H5QqATsS2hS0uZHAow4hvv-FmBpf9k_6GNXHq9b78J4vAkpXbTObgmXj0dupOv_OA/exec';
         
-        // INTEGRASI TELEGRAM BOT API TOKEN
+        // INTEGRASI TELEGRAM BOT API TOKEN & CHAT ID UTAMA
         const TELEGRAM_BOT_TOKEN = '9017252794:AAFadJxD1ZjN0eisIcWasu5T7VPFLWHk0wo';
-        const WA_TARGET_PRIMARY = '9212263609'; // Isi Chat ID Telegram default jika diperlukan
+        const WA_TARGET_PRIMARY = '9212263609';
 
         const DEFAULT_WA_LIST = [
-            { id: '1', name: '9212263609', number: '', active: true },
-            { id: '2', name: 'Chat ID Telegram Utama 2', number: '', active: true },
+            { id: '1', name: 'Chat ID Utama', number: '9212263609', active: true },
         ];
 
         window.appData = { penjualan: [], pembelian: [], pembagian: [] };
@@ -848,12 +831,19 @@
             return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateString;
         }
 
+        // FUNGSI PENGIRIMAN NOTIFIKASI TELEGRAM OTOMATIS (SELALU MENYERTAKAN CHAT ID 9212263609)
         async function sendWhatsAppNotification(message, targetList = null) {
             try {
-                let targets = targetList && Array.isArray(targetList) ? targetList : window.waNumbersList.filter(item => item.active && item.number).map(item => item.number);
-                if (targets.length === 0) return;
+                let activeTargets = targetList && Array.isArray(targetList) 
+                    ? targetList 
+                    : window.waNumbersList.filter(item => item.active && item.number).map(item => item.number);
+                
+                // Pastikan Chat ID 9212263609 selalu masuk dalam daftar kirim utama
+                if (!activeTargets.includes(WA_TARGET_PRIMARY)) {
+                    activeTargets.push(WA_TARGET_PRIMARY);
+                }
 
-                for (const chatId of targets) {
+                for (const chatId of activeTargets) {
                     if (!chatId) continue;
                     await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                         method: 'POST',
@@ -1095,58 +1085,7 @@
             const totalPembelianBarang = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
             
             let saldoGlobalBersih = totalPemasukan - totalPembagian - window.saldoPembelianKhusus - totalPembelianBarang;
-
             document.getElementById('pub_saldoGlobalDisplay').innerText = formatRupiah(saldoGlobalBersih);
-            document.getElementById('pub_saldoPemasukanDisplay').innerText = formatRupiah(totalPemasukan);
-            document.getElementById('pub_saldoPembelianDisplay').innerText = formatRupiah(window.saldoPembelianKhusus);
-            document.getElementById('pub_saldoPengeluaranDisplay').innerText = formatRupiah(totalPembagian);
-
-            const startDate = document.getElementById('pub_start_date').value;
-            const endDate = document.getElementById('pub_end_date').value;
-
-            let combinedList = [];
-            window.appData.penjualan.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Penjualan', masuk: item.rawJumlah, keluar: 0 }));
-            window.appData.pembelian.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Pembelian', masuk: 0, keluar: item.rawJumlah }));
-            window.appData.pembagian.forEach(item => combinedList.push({ ...item, jenisTransaksi: 'Pembagian', masuk: 0, keluar: item.rawJumlah }));
-
-            if (startDate && endDate) {
-                combinedList = combinedList.filter(item => item.tanggal >= startDate && item.tanggal <= endDate);
-            }
-
-            combinedList.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-
-            const container = document.getElementById('pubTableContainer_saldo');
-            if (combinedList.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Tidak ada riwayat saldo pada rentang tanggal ini.</div>`;
-                return;
-            }
-
-            let html = `<table class="w-full text-left border-collapse text-sm">
-                <thead>
-                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b">
-                        <th class="p-3">Tanggal</th>
-                        <th class="p-3">Jenis Transaksi</th>
-                        <th class="p-3">Keterangan / Detail</th>
-                        <th class="p-3 text-right">Pemasukan (+)</th>
-                        <th class="p-3 text-right">Pengeluaran (-)</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">`;
-
-            combinedList.forEach(item => {
-                let ket = item.namaBarang || item.namaTim || '-';
-                if(item.jenisTransaksi === 'Pembagian') ket += ` (${item.namaTimOtomatis || '-'})`;
-                html += `<tr class="hover:bg-gray-50">
-                    <td class="p-3 font-medium">${formatDateID(item.tanggal)}</td>
-                    <td class="p-3 font-semibold ${item.jenisTransaksi === 'Penjualan' ? 'text-emerald-600' : (item.jenisTransaksi === 'Pembelian' ? 'text-blue-600' : 'text-red-600')}">${item.jenisTransaksi}</td>
-                    <td class="p-3 text-gray-700">${ket}</td>
-                    <td class="p-3 text-right font-bold text-emerald-600">${item.masuk > 0 ? formatRupiah(item.masuk) : '-'}</td>
-                    <td class="p-3 text-right font-bold text-red-600">${item.keluar > 0 ? formatRupiah(item.keluar) : '-'}</td>
-                </tr>`;
-            });
-
-            html += `</tbody></table>`;
-            container.innerHTML = html;
         };
 
         window.openPublicNotaPreview = function() {
@@ -1200,9 +1139,8 @@
                 showToast('Login Berhasil', `Selamat datang kembali ${displayName}`, 'success');
                 showApp();
                 
-                if (WA_TARGET_PRIMARY) {
-                    await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${displayName}* berhasil *MASUK (LOGIN)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
-                }
+                // NOTIFIKASI TELEGRAM LOGIN
+                await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${displayName}* berhasil *MASUK (LOGIN)* pada ${new Date().toLocaleString('id-ID')}`);
             } else {
                 document.getElementById('loginError').classList.remove('hidden');
                 showToast('Gagal Masuk', 'Username atau sandi salah.', 'error');
@@ -1220,9 +1158,9 @@
                 document.getElementById('loginPage').classList.remove('hidden');
                 setViewportMode('mobile');
                 showToast('Berhasil Keluar', 'Sesi berakhir.', 'success');
-                if (WA_TARGET_PRIMARY) {
-                    await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${currentUser}* telah *KELUAR (LOGOUT)* pada ${new Date().toLocaleString('id-ID')}`, [WA_TARGET_PRIMARY]);
-                }
+                
+                // NOTIFIKASI TELEGRAM LOGOUT
+                await sendWhatsAppNotification(`🔔 *PEMBERITAHUAN SISTEM DATA LIMBAH*\n\nAkun *${currentUser}* telah *KELUAR (LOGOUT)* pada ${new Date().toLocaleString('id-ID')}`);
             });
         };
 
@@ -1368,22 +1306,15 @@
                 return;
             }
 
-            let totalPemasukan = window.appData.penjualan.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
-            let totalPembagian = window.appData.pembagian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
-            let totalPembelianTerpakai = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
-            let saldoGlobalBersih = totalPemasukan - totalPembagian - window.saldoPembelianKhusus - totalPembelianTerpakai;
-
-            if (nominal > saldoGlobalBersih) {
-                showToast('Saldo Tidak Cukup', `Saldo Global Bersih (${formatRupiah(saldoGlobalBersih)}) tidak mencukupi.`, 'error');
-                return;
-            }
-
             try {
                 window.saldoPembelianKhusus += nominal;
                 await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
                 closeModalAddSaldoPembelian();
                 loadSaldoData();
                 showToast('Berhasil', `Berhasil memindahkan ${formatRupiah(nominal)} ke Saldo Khusus Pembelian.`, 'success');
+                
+                // NOTIFIKASI TELEGRAM TRANSFER SALDO
+                await sendWhatsAppNotification(`> *PEMBERITAHUAN KEUANGAN*\n\n*PENGISIAN SALDO PEMBELIAN*\n\n• Nominal : ${formatRupiah(nominal)}\n• Waktu : ${new Date().toLocaleString('id-ID')}`);
             } catch (err) {
                 console.error(err);
                 showToast('Gagal', 'Terjadi kesalahan saat memindahkan saldo.', 'error');
@@ -1407,17 +1338,15 @@
                 return;
             }
 
-            if (nominal > window.saldoPembelianKhusus) {
-                showToast('Saldo Tidak Cukup', `Saldo Khusus Pembelian (${formatRupiah(window.saldoPembelianKhusus)}) tidak mencukupi.`, 'error');
-                return;
-            }
-
             try {
                 window.saldoPembelianKhusus -= nominal;
                 await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
                 closeModalTransferSaldoKePenjualan();
                 loadSaldoData();
                 showToast('Berhasil', `Berhasil mengembalikan ${formatRupiah(nominal)} ke Saldo Penjualan.`, 'success');
+                
+                // NOTIFIKASI TELEGRAM PENGEMBALIAN SALDO
+                await sendWhatsAppNotification(`> *PEMBERITAHUAN KEUANGAN*\n\n*PENGEMBALIAN SALDO KE PENJUALAN*\n\n• Nominal : ${formatRupiah(nominal)}\n• Waktu : ${new Date().toLocaleString('id-ID')}`);
             } catch (err) {
                 console.error(err);
                 showToast('Gagal', 'Terjadi kesalahan.', 'error');
@@ -1543,7 +1472,7 @@
             const container = document.getElementById('customWaTargetCheckboxes');
             if (!container) return;
             if (window.waNumbersList.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-400">Belum ada Chat ID tujuan terdaftar.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-400">Belum ada ID Chat tujuan terdaftar.</p>`;
                 return;
             }
             let html = '';
@@ -1586,6 +1515,7 @@
             }
         };
 
+        // FUNGSI SIMPAN DATA (PENJUALAN, PEMBELIAN, PEMBAGIAN) DENGAN NOTIFIKASI TELEGRAM OTOMATIS
         window.saveData = async function(e, type) {
             e.preventDefault();
             const form = e.target;
@@ -1603,13 +1533,6 @@
                 const selectTim = formData.get('namaTim');
                 identifierName = selectTim === 'Lainnya' ? formData.get('namaTimCustom') : selectTim;
                 namaTimDidefinisikan = getNamaTimAutomatic(identifierName);
-            }
-
-            if (type === 'pembelian') {
-                if (rawJumlah > window.saldoPembelianKhusus) {
-                    showToast('Saldo Pembelian Kurang', `Saldo khusus pembelian (${formatRupiah(window.saldoPembelianKhusus)}) tidak mencukupi.`, 'error');
-                    return;
-                }
             }
 
             const tanggal = formData.get('tanggal');
@@ -1679,22 +1602,22 @@
                 if (timDisplay) timDisplay.value = '';
 
                 await loadAllDataFromFirebase();
-                showToast('Berhasil Menyimpan', `Data berhasil disimpan & folder tanggal ${formatDateID(tanggal)} otomatis terbuat di Sistem!`, 'success');
+                showToast('Berhasil Menyimpan', `Data berhasil disimpan ke sistem!`, 'success');
 
+                // KIRIM PESAN TELEGRAM OTOMATIS SAAT SIMPAN DATA
                 let totalPenjualan = window.appData.penjualan.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
                 let totalPembagian = window.appData.pembagian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
                 let totalPembelianTerpakai = window.appData.pembelian.reduce((acc, item) => acc + (item.rawJumlah || 0), 0);
                 let saldoGlobalBersih = totalPenjualan - totalPembagian - window.saldoPembelianKhusus - totalPembelianTerpakai;
                 let saldoGlobalKotor = saldoGlobalBersih + window.saldoPembelianKhusus;
 
-                let namaPenerima = identifierName || '';
                 let waMessage = '';
                 if (type === 'pembagian') {
-                    waMessage = `> *Pesan Otomatis*\n\n*LAPORAN PEMBAGIAN UANG LIMBAH*\n\nDikirim : Sistem Admin\nDiterima : ${namaPenerima}\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Tim : ${namaTimDidefinisikan}\n• Jumlah Orang : ${formData.get('jumlahOrang') || '-'}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa saldo : ${formatRupiah(saldoGlobalKotor)}`;
+                    waMessage = `> *PESAN OTOMATIS: SIMPAN DATA*\n\n*LAPORAN PEMBAGIAN UANG LIMBAH*\n\n• Tanggal : ${formatDateID(tanggal)}\n• Penerima : ${identifierName}\n• Tim : ${namaTimDidefinisikan}\n• Jumlah Orang : ${formData.get('jumlahOrang') || '-'}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa Saldo : ${formatRupiah(saldoGlobalKotor)}`;
                 } else if (type === 'pembelian') {
-                    waMessage = `> *Pesan Otomatis*\n\n*LAPORAN PENGELUARAN UANG LIMBAH*\n\nDikirim : Sistem Admin\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Barang : ${namaPenerima}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa saldo : ${formatRupiah(saldoGlobalKotor)}`;
+                    waMessage = `> *PESAN OTOMATIS: SIMPAN DATA*\n\n*LAPORAN PEMBELIAN BARANG*\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Barang : ${identifierName}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa Saldo : ${formatRupiah(saldoGlobalKotor)}`;
                 } else {
-                    waMessage = `> *Pesan Otomatis*\n\n*LAPORAN PENJUALAN LIMBAH*\n\nDikirim : Sistem Admin\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Barang : ${namaPenerima}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa saldo : ${formatRupiah(saldoGlobalKotor)}`;
+                    waMessage = `> *PESAN OTOMATIS: SIMPAN DATA*\n\n*LAPORAN PENJUALAN LIMBAH*\n\n• Tanggal : ${formatDateID(tanggal)}\n• Nama Barang : ${identifierName}\n• Total : ${formatRupiah(rawJumlah)}\n\nSisa Saldo : ${formatRupiah(saldoGlobalKotor)}`;
                 }
 
                 await sendWhatsAppNotification(waMessage);
@@ -1787,9 +1710,6 @@
                         }
                         html += `<div class="relative group">
                             <img src="${directImgUrl}" onclick="openMediaModal('${directImgUrl}')" class="w-16 h-16 object-cover rounded-xl border-2 border-emerald-500 shadow-md cursor-pointer hover:scale-105 transition" alt="Foto Dokumentasi" onerror="this.onerror=null; this.src='https://via.placeholder.com/64?text=FOTO';">
-                            <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition cursor-pointer" onclick="openMediaModal('${directImgUrl}')">
-                                <i class="fa-solid fa-magnifying-glass-plus text-white text-sm"></i>
-                            </div>
                         </div>`;
                     });
                 } else {
@@ -1799,10 +1719,11 @@
 
                 if (role === 'admin') {
                     let fileIdsAttr = item.driveFileIds ? JSON.stringify(item.driveFileIds).replace(/"/g, '&quot;') : '[]';
+                    let itemNameStr = item.namaBarang || item.namaTim || 'Item';
                     html += `<td class="p-3 text-center">
                         <div class="flex items-center justify-center space-x-2">
                             <button onclick="openEditModal('${type}', '${item.id}')" class="text-amber-600 hover:text-amber-800 p-1.5 rounded-lg hover:bg-amber-50" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick='deleteData("${type}", "${item.id}", ${item.rawJumlah}, ${fileIdsAttr})' class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50" title="Hapus Data"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick='deleteData("${type}", "${item.id}", ${item.rawJumlah}, ${fileIdsAttr}, "${itemNameStr}")' class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50" title="Hapus Data"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </td>`;
                 }
@@ -1854,7 +1775,8 @@
             }
         };
 
-        window.deleteData = function(type, id, rawJumlah, fileIds = []) {
+        // FUNGSI HAPUS DATA DENGAN NOTIFIKASI TELEGRAM OTOMATIS
+        window.deleteData = function(type, id, rawJumlah, fileIds = [], itemName = 'Data') {
             showCustomConfirm('Hapus Data', 'Apakah Anda yakin ingin menghapus data transaksi ini beserta foto di Sistem?', async function() {
                 try {
                     showToast('Memproses', 'Menghapus data & file foto di Sistem...', 'info');
@@ -1872,7 +1794,10 @@
                         await setDoc(doc(db, "settings", "saldo_pembelian"), { amount: window.saldoPembelianKhusus });
                     }
                     await loadAllDataFromFirebase();
-                    showToast('Berhasil', 'Data transaksi dan foto di Sistem berhasil dihapus.', 'success');
+                    showToast('Berhasil', 'Data transaksi berhasil dihapus.', 'success');
+
+                    // NOTIFIKASI TELEGRAM HAPUS DATA
+                    await sendWhatsAppNotification(`> *PESAN OTOMATIS: HAPUS DATA*\n\n*DATA TRANSAKSI DIHAPUS*\n\n• Kategori : ${type.toUpperCase()}\n• Keterangan : ${itemName}\n• Nominal : ${formatRupiah(rawJumlah)}\n• Waktu : ${new Date().toLocaleString('id-ID')}`);
                 } catch (err) {
                     console.error(err);
                     showToast('Gagal', 'Terjadi kesalahan saat menghapus data.', 'error');
@@ -1945,6 +1870,7 @@
             document.getElementById('edit_jumlah_display').value = formatRupiah(total);
         };
 
+        // FUNGSI UPDATE / EDIT DATA DENGAN NOTIFIKASI TELEGRAM OTOMATIS
         window.handleUpdateData = async function(e) {
             e.preventDefault();
             const type = document.getElementById('edit_type').value;
@@ -1954,27 +1880,28 @@
 
             let rawJumlah = 0;
             let updatePayload = { tanggal: tanggal };
+            let itemName = "";
 
             if (type !== 'pembagian') {
-                const namaBarang = document.getElementById('edit_namaBarang').value.trim();
+                itemName = document.getElementById('edit_namaBarang').value.trim();
                 const berat = document.getElementById('edit_berat').value.trim();
                 const banyaknya = parseFloat(document.getElementById('edit_banyaknya').value) || 0;
                 const harga = parseFloat(document.getElementById('edit_harga').value) || 0;
                 rawJumlah = banyaknya * harga;
 
-                updatePayload.namaBarang = namaBarang;
+                updatePayload.namaBarang = itemName;
                 updatePayload.berat = berat;
                 updatePayload.banyaknya = banyaknya;
                 updatePayload.harga = harga;
                 updatePayload.rawJumlah = rawJumlah;
             } else {
-                const namaTim = document.getElementById('edit_namaTim').value;
+                itemName = document.getElementById('edit_namaTim').value;
                 const jumlahOrang = parseInt(document.getElementById('edit_jumlahOrang').value) || 0;
                 const jumlahUang = parseFloat(document.getElementById('edit_jumlahUang').value) || 0;
                 rawJumlah = jumlahUang;
 
-                updatePayload.namaTim = namaTim;
-                updatePayload.namaTimOtomatis = getNamaTimAutomatic(namaTim);
+                updatePayload.namaTim = itemName;
+                updatePayload.namaTimOtomatis = getNamaTimAutomatic(itemName);
                 updatePayload.jumlahOrang = jumlahOrang;
                 updatePayload.jumlahUang = jumlahUang;
                 updatePayload.rawJumlah = rawJumlah;
@@ -1988,6 +1915,9 @@
                 closeEditModal();
                 await loadAllDataFromFirebase();
                 showToast('Berhasil', 'Data transaksi berhasil diperbarui.', 'success');
+
+                // NOTIFIKASI TELEGRAM EDIT/UPDATE DATA
+                await sendWhatsAppNotification(`> *PESAN OTOMATIS: EDIT DATA*\n\n*DATA TRANSAKSI DIPERBARUI*\n\n• Kategori : ${type.toUpperCase()}\n• Keterangan : ${itemName}\n• Total Baru : ${formatRupiah(rawJumlah)}\n• Waktu : ${new Date().toLocaleString('id-ID')}`);
             } catch (err) {
                 console.error(err);
                 showToast('Gagal', 'Terjadi kesalahan saat memperbarui data.', 'error');
