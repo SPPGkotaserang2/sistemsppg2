@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Form Penerimaan Bahan Baku</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> <!-- Diperbarui ke Tailwind v4 / standar script -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -382,6 +382,27 @@ return false;
 <script>
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzoa_39qALkTA_3-GXrvMhDq0Q4kp2_thVLqZHN18F7BSTCIF676koF3kodO4nSyUoHBg/exec";
 
+// Konfigurasi Telegram Bot
+const TELEGRAM_BOT_TOKEN = "8571439751:AAHgY4InAghZvovNmq6S4Xjf-CrGWcEdn5M";
+const TELEGRAM_CHAT_ID = "9212263609";
+
+async function sendTelegramNotification(message) {
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: "Markdown"
+      })
+    });
+  } catch (err) {
+    console.error("Gagal mengirim notifikasi Telegram:", err);
+  }
+}
+
 let tempFormFiles = [];
 let tempFormPhotos = [];
 
@@ -721,7 +742,7 @@ window.submitSingleInputItem = async function(e) {
   }
 
   if (!tempFormPhotos || tempFormPhotos.length === 0) {
-    Swal.fire({ title: 'Foto Belum Ada!', text: 'Silakan unggah minimal satu foto barang untuk disimpan ke Drive.', icon: 'warning', confirmButtonColor: '#4f46e5' });
+    Swal.fire({ title: 'Foto Belum Ada!', text: 'Silakan unggah minimal satu foto barang untuk disimpan ke Sistem.', icon: 'warning', confirmButtonColor: '#4f46e5' });
     return;
   }
 
@@ -748,6 +769,10 @@ window.submitSingleInputItem = async function(e) {
   }
 
   showToast('success', 'Barang ditambahkan');
+  
+  // Kirim notifikasi Telegram untuk penambahan barang
+  const roleInfo = localStorage.getItem('userRole') || 'user';
+  sendTelegramNotification(`🟢 *PENERIMAAN BAHAN BAKU*\n\n*Barang:* ${nama}\n*Jumlah Diterima:* ${masuk} ${satuan}\n*Tanggal:* ${dateKey}\n*Role:* ${roleInfo}\n*Status:* Berhasil ditambahkan ke tabel.`);
 
   (async () => {
     try {
@@ -945,6 +970,8 @@ window.deleteRow = async function(btn) {
   if (!canUserDelete()) { showToast('error', 'User hanya dapat menghapus data transaksi hari ini!'); return; }
 
   const row = btn.closest('tr');
+  const inputs = row.querySelectorAll('input:not(.photo-data):not(.drive-file-id), select');
+  const namaBarang = inputs[0] ? inputs[0].value.trim() : 'Barang';
 
   Swal.fire({
     title: 'Hapus Baris Ini?', text: "Data bahan baku pada baris ini akan dihapus dari sistem!", icon: 'warning',
@@ -976,6 +1003,9 @@ window.deleteRow = async function(btn) {
       if (dateKey && window.saveDataToFirebase) {
         await window.saveDataToFirebase(dateKey, getTableDataArray());
       }
+
+      // Kirim notifikasi Telegram untuk penghapusan baris/barang
+      sendTelegramNotification(`🔴 *HAPUS BARIS DATA*\n\n*Barang:* ${namaBarang}\n*Tanggal:* ${dateKey}\n*Status:* Berhasil dihapus dari tabel/sistem.`);
 
       showToast('success', 'Barang berhasil dihapus!');
     }
@@ -1066,7 +1096,12 @@ window.saveCurrentData = async function() {
 
     if (window.saveDataToFirebase) {
       const success = await window.saveDataToFirebase(dateKey, getTableDataArray());
-      if (success) { showToast('success', `Data tanggal ${dateKey} tersinkronisasi sempurna!`); return true; }
+      if (success) { 
+        // Kirim notifikasi Telegram untuk penyimpanan data utama ke sistem
+        sendTelegramNotification(`💾 *PENYIMPANAN DATA (SIMPAN KE SISTEM)*\n\n*Tanggal Transaksi:* ${dateKey}\n*Total Item:* ${rows.length} barang\n*Status:* Berhasil disinkronkan ke Firebase & Sistem.`);
+        showToast('success', `Data tanggal ${dateKey} tersinkronisasi sempurna!`); 
+        return true; 
+      }
     }
     return false;
   } catch (err) {
@@ -1107,6 +1142,8 @@ window.deleteSavedDataFirebase = async function() {
         if (success) {
           document.getElementById('tableBody').innerHTML = '';
           updateNextNoUrut();
+          // Kirim notifikasi Telegram saat seluruh data tanggal dihapus permanen
+          sendTelegramNotification(`🗑️ *HAPUS DATA PERMANEN (SISTEM)*\n\n*Tanggal:* ${dateKey}\n*Status:* Seluruh data transaksi tanggal tersebut telah dihapus permanen.`);
           showToast('success', `Data tanggal ${dateKey} telah dihapus.`);
         }
       }
@@ -1158,6 +1195,7 @@ window.resetForm = function() {
     if (result.isConfirmed) {
       document.getElementById('tableBody').innerHTML = '';
       updateNextNoUrut();
+      sendTelegramNotification(`🔄 *RESET FORM/TABEL*\n\n*Status:* Tabel form penerimaan barang dikosongkan/reset.`);
       showToast('info', 'Tabel berhasil dikosongkan');
     }
   });
