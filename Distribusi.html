@@ -301,8 +301,8 @@
     <!-- SCRIPT APLIKASI UTAMA -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwTgSlvDRzNtcv-UBp7ls1LN5EoutQrsKIDzPz1rI9T9k9ZOoitGMaGAEgYWbmc-RO/exec";
-        const FONNTE_TOKEN = "suK5ZqbL62RqaQnWtpeM";
-        const FONNTE_TARGET = "6283111399112";
+        const TELEGRAM_BOT_TOKEN = "9133882020:AAHd6BICRHUlbFhUBGUFnqzr3ampvSW-dak";
+        const TELEGRAM_CHAT_ID = "9212263609";
 
         let currentUser = null;
         let isSyncing = false; 
@@ -577,17 +577,16 @@
             document.getElementById('loginForm').reset();
         }
 
-        function sendWhatsAppNotification(message) {
-            const formData = new URLSearchParams();
-            formData.append('target', FONNTE_TARGET);
-            formData.append('message', message);
-            formData.append('token', FONNTE_TOKEN);
-
-            fetch('https://api.fonnte.com/send', {
+        function sendTelegramNotification(message) {
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
-                headers: { "Authorization": FONNTE_TOKEN },
-                body: formData
-            }).catch(err => console.log('WA notification error', err));
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            }).catch(err => console.log('Telegram notification error', err));
         }
 
         async function fileToBase64Payload(item) {
@@ -894,8 +893,8 @@
                 updateLiveInputDate();
                 loadHistory();
 
-                const waMessage = `📢 *LAPORAN DISTRIBUSI MAKAN BERGIZI*\n\n🏫 Instansi: ${institution}\n📅 Tanggal: ${dateString}\n📦 Kirim: ${qtySent} porsi\n↩️ Kembali: ${qtyReturned} porsi\n👤 Pengirim: ${currentUser.name}\n\nStatus: Berhasil Terkirim.`;
-                sendWhatsAppNotification(waMessage);
+                const telegramMessage = `📢 *LAPORAN DISTRIBUSI MAKAN BERGIZI*\n\n🏫 Instansi: ${institution}\n📅 Tanggal: ${dateString}\n📦 Kirim: ${qtySent} porsi\n↩️ Kembali: ${qtyReturned} porsi\n👤 Pengirim: ${currentUser.name}\n\nStatus: Berhasil Terkirim.`;
+                sendTelegramNotification(telegramMessage);
 
                 (async () => {
                     isSyncing = true;
