@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta id="viewportMeta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Form Penerimaan Bahan Baku</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -24,6 +23,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 .input-print-border { border-bottom: 1px dotted #ccc !important; }
 .print-table { border-collapse: collapse !important; width: 100% !important; }
 .print-table th, .print-table td { border: 1px solid #000 !important; padding: 4px 6px !important; font-size: 9pt !important; }
+.photo-upload-btn { display: none !important; }
 }
 </style>
 </head>
@@ -67,7 +67,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors text-sm shadow-md">Masuk</button>
 <div class="pt-2 border-t text-center">
 <button type="button" onclick="openPublicStockViewer()" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center justify-center gap-1.5 w-full py-1">
-<i class="fa-solid fa-magnifying-glass-chart"></i> Lihat Data Arsip
+<i class="fa-solid fa-magnifying-glass-chart"></i> Lihat Data
 </button>
 </div>
 </form>
@@ -77,7 +77,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 <div id="publicStockModal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center p-4">
 <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl max-w-4xl w-full border border-gray-100 max-h-[90vh] flex flex-col">
 <div class="flex justify-between items-center mb-4 border-b pb-3">
-<h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Lihat Data Arsip Stok per Tanggal</h3>
+<h3 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Lihat Data Stok per Tanggal</h3>
 <button onclick="closePublicStockModal()" class="text-gray-400 hover:text-gray-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
 </div>
 <div class="flex flex-wrap items-center gap-3 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
@@ -96,6 +96,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 <thead>
 <tr class="bg-gray-100 text-gray-700 font-semibold uppercase text-[11px]">
 <th class="border border-gray-300 p-2 text-center w-10">No</th>
+<th class="border border-gray-300 p-2 text-center w-20">Foto</th>
 <th class="border border-gray-300 p-2">Nama Barang</th>
 <th class="border border-gray-300 p-2 text-center">Jml Pesan</th>
 <th class="border border-gray-300 p-2 text-center">Jml Terima</th>
@@ -109,7 +110,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 </tr>
 </thead>
 <tbody id="publicStockTableBody">
-<tr><td colspan="11" class="text-center p-6 text-gray-500">Silakan pilih tanggal dan klik Cari Stok.</td></tr>
+<tr><td colspan="12" class="text-center p-6 text-gray-500">Silakan pilih tanggal dan klik Cari Stok.</td></tr>
 </tbody>
 </table>
 </div>
@@ -122,9 +123,9 @@ input, select, textarea { border: none !important; background: transparent !impo
 <div id="mainApp" class="hidden max-w-7xl mx-auto">
 <datalist id="masterItemsList"></datalist>
 <datalist id="satuanList">
-<option value="1 kg"></option><option value="500 gram"></option><option value="1 liter"></option><option value="250 ml"></option>
-<option value="1 pcs"></option><option value="1 box"></option><option value="12g/1 renceng"></option><option value="1 karung"></option>
-<option value="1 kaleng"></option><option value="1 ikat"></option><option value="1 botol"></option><option value="1 dus"></option>
+<option value="kg"></option><option value="gram"></option><option value="liter"></option><option value="ml"></option>
+<option value="pcs"></option><option value="box"></option><option value="pack"></option><option value="karung"></option>
+<option value="kaleng"></option><option value="ikat"></option><option value="botol"></option><option value="dus"></option>
 </datalist>
 
 <div class="no-print bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 space-y-4">
@@ -203,8 +204,8 @@ input, select, textarea { border: none !important; background: transparent !impo
 <input type="number" min="0" step="any" id="inputMasuk" placeholder="0" class="w-full p-2 border border-gray-300 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 </div>
 <div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">Satuan <span class="text-red-500">*</span> (wajib ada angka)</label>
-<input type="text" id="inputSatuan" list="satuanList" required placeholder="Contoh: 12g/1renceng" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+<label class="block text-xs font-semibold text-gray-600 mb-1">Satuan</label>
+<input type="text" id="inputSatuan" list="satuanList" placeholder="kg, pcs, liter..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
 </div>
 </div>
 
@@ -245,7 +246,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 </div>
 
 <div class="border-t pt-3">
-<label class="block text-xs font-semibold text-gray-700 mb-2">Upload Foto Barang <span class="text-red-500 font-bold">*</span> </label>
+<label class="block text-xs font-semibold text-gray-700 mb-2">Upload Foto Barang <span class="text-red-500 font-bold">*</span></label>
 <div class="flex flex-wrap items-center gap-3" id="singleFormPhotoContainer">
 <input type="file" accept="image/*" id="singleFormCamera" class="hidden" onchange="handleFormPhotoUpload(this)">
 <input type="file" accept="image/*" id="singleFormGallery" multiple class="hidden" onchange="handleFormPhotoUpload(this)">
@@ -283,6 +284,7 @@ input, select, textarea { border: none !important; background: transparent !impo
 <thead>
 <tr class="bg-gray-100 text-gray-700 font-semibold uppercase text-[11px]">
 <th class="border border-gray-300 p-1.5 text-center w-10">No</th>
+<th class="border border-gray-300 p-1.5 text-center min-w-[80px]">Foto</th>
 <th class="border border-gray-300 p-1.5 min-w-[150px]">Nama Barang</th>
 <th class="border border-gray-300 p-1.5 text-center w-16">Jml Pesanan</th>
 <th class="border border-gray-300 p-1.5 text-center w-16">Jml Diterima</th>
@@ -320,6 +322,20 @@ input, select, textarea { border: none !important; background: transparent !impo
 <div class="max-h-60 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100" id="masterItemsContainer"></div>
 <div class="mt-5 text-right">
 <button onclick="closeMasterModal()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-lg transition-colors">Selesai</button>
+</div>
+</div>
+</div>
+
+<div id="imagePreviewModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4 no-print" onclick="closeImagePreview()">
+<div class="relative max-w-2xl w-full bg-white rounded-xl overflow-hidden shadow-2xl p-4 flex flex-col items-center" onclick="event.stopPropagation()">
+<button onclick="closeImagePreview()" class="absolute top-3 right-3 bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center z-10 transition-colors">
+<i class="fa-solid fa-xmark"></i>
+</button>
+<img id="previewImageSrc" src="" alt="Foto Barang" class="w-full h-auto max-h-[70vh] object-contain rounded-lg mb-4">
+<div class="w-full flex justify-end">
+<button id="btnDownloadPreview" onclick="downloadImageFromPreview()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow">
+<i class="fa-solid fa-download"></i> Unduh Gambar
+</button>
 </div>
 </div>
 </div>
@@ -382,27 +398,6 @@ return false;
 <script>
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzoa_39qALkTA_3-GXrvMhDq0Q4kp2_thVLqZHN18F7BSTCIF676koF3kodO4nSyUoHBg/exec";
 
-// Konfigurasi Telegram Bot
-const TELEGRAM_BOT_TOKEN = "8571439751:AAHgY4InAghZvovNmq6S4Xjf-CrGWcEdn5M";
-const TELEGRAM_CHAT_ID = "9212263609";
-
-async function sendTelegramNotification(message) {
-  try {
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text: message,
-        parse_mode: "Markdown"
-      })
-    });
-  } catch (err) {
-    console.error("Gagal mengirim notifikasi Telegram:", err);
-  }
-}
-
 let tempFormFiles = [];
 let tempFormPhotos = [];
 
@@ -450,6 +445,33 @@ async function checkForHtmlUpdates() {
 }
 setInterval(checkForHtmlUpdates, 300000);
 
+window.downloadPhotoDirectly = async function(url, filename) {
+  try {
+    showToast('info', 'Mengunduh gambar...');
+    const formattedUrl = formatPhotoUrl(url);
+    const response = await fetch(formattedUrl);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename || `Foto_Barang_${Date.now()}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+    showToast('success', 'Gambar berhasil diunduh ke lokal');
+  } catch (err) {
+    const a = document.createElement('a');
+    a.href = formatPhotoUrl(url);
+    a.download = filename || `Foto_Barang_${Date.now()}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+};
+
+// PERBAIKAN UTAMA: KOMPRESI GAMBAR AMAN & RINGAN UNTUK SEMUA PERANGKAT (ANDROID 5+)
 function compressImage(file, maxWidth = 800, quality = 0.6) {
   return new Promise((resolve) => {
     if (!file || !file.type.startsWith('image/')) {
@@ -493,6 +515,44 @@ function updateNextNoUrut() {
   const inputNo = document.getElementById('inputNo');
   if (inputNo) inputNo.value = nextNo;
 }
+
+function formatPhotoUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('blob:') || url.startsWith('data:')) return url;
+  let fileId = '';
+  if (url.includes('drive.google.com/file/d/')) {
+    const idMatch = url.match(/\/d\/([^/?]+)\//);
+    if (idMatch && idMatch[1]) fileId = idMatch[1];
+  } else if (url.includes('drive.google.com/uc?')) {
+    const idMatch = url.match(/id=([^&]+)/);
+    if (idMatch && idMatch[1]) fileId = idMatch[1];
+  } else if (url.includes('lh3.googleusercontent.com/d/')) {
+    const idMatch = url.match(/\/d\/([^/?]+)/);
+    if (idMatch && idMatch[1]) fileId = idMatch[1];
+  } else if (url.length > 20 && !url.includes('/') && !url.includes('.')) {
+    fileId = url;
+  }
+  if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}=s800`;
+  return url;
+}
+
+window.handleImageError = function(imgElement, originalUrl) {
+  if (!imgElement._retryCount) {
+    imgElement._retryCount = 1;
+    setTimeout(() => {
+      let fileId = '';
+      const m = originalUrl.match(/\/d\/([^/?]+)/) || originalUrl.match(/id=([^&]+)/);
+      if (m && m[1]) {
+        imgElement.src = `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      } else {
+        imgElement.src = originalUrl;
+      }
+    }, 1000);
+  } else {
+    imgElement.onerror = null;
+    imgElement.src = 'https://via.placeholder.com/80?text=Gagal+Muat';
+  }
+};
 
 function canUserDelete() {
   const role = localStorage.getItem('userRole') || 'user';
@@ -555,26 +615,35 @@ window.searchPublicStockData = async function() {
   const searchDate = document.getElementById('publicSearchDate').value;
   if (!searchDate) { showToast('warning', 'Pilih tanggal terlebih dahulu.'); return; }
   const tbody = document.getElementById('publicStockTableBody');
-  tbody.innerHTML = `<tr><td colspan="11" class="text-center p-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="12" class="text-center p-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data...</td></tr>`;
 
   let records = null;
   if (window.loadDataFromFirebase) { records = await window.loadDataFromFirebase(searchDate); }
 
   tbody.innerHTML = '';
   if (!records || records.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="11" class="text-center p-6 text-gray-500">Tidak ada data arsip stok ditemukan untuk tanggal ${searchDate}.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" class="text-center p-6 text-gray-500">Tidak ada data stok ditemukan untuk tanggal ${searchDate}.</td></tr>`;
     return;
   }
 
   records.forEach((item, index) => {
+    const photoUrls = item.photo || [];
+    let photoHtml = '-';
+    if (photoUrls.length > 0) {
+      const formattedUrl = formatPhotoUrl(photoUrls[0]);
+      photoHtml = `<img src="${formattedUrl}" onerror="handleImageError(this, '${formattedUrl}')" onclick="openImagePreview('${formattedUrl}')" class="w-10 h-10 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-80 inline-block" title="Klik Pratinjau">`;
+      if (photoUrls.length > 1) { photoHtml += ` <span class="text-[10px] bg-gray-200 px-1 rounded"> +${photoUrls.length - 1}</span>`; }
+    }
+
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-gray-50';
     tr.innerHTML = `
       <td class="border border-gray-300 p-2 text-center font-medium">${index + 1}</td>
+      <td class="border border-gray-300 p-2 text-center">${photoHtml}</td>
       <td class="border border-gray-300 p-2 font-semibold">${item.nama || '-'}</td>
       <td class="border border-gray-300 p-2 text-center">${item.order || '0'}</td>
       <td class="border border-gray-300 p-2 text-center">${item.masuk || '0'}</td>
-      <td class="border border-gray-300 p-2 text-center font-medium text-indigo-700">${item.satuan || '-'}</td>
+      <td class="border border-gray-300 p-2 text-center">${item.satuan || '-'}</td>
       <td class="border border-gray-300 p-2">${item.kemasan || '-'}</td>
       <td class="border border-gray-300 p-2">${item.fisik || '-'}</td>
       <td class="border border-gray-300 p-2 text-center">${item.suhu || '-'}</td>
@@ -705,7 +774,7 @@ function renderFormPhotoPreviews() {
   tempFormPhotos.forEach((rawUrl) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'relative inline-block m-0.5';
-    wrapper.innerHTML = `<img src="${rawUrl}" class="w-10 h-10 object-cover rounded border border-gray-300">`;
+    wrapper.innerHTML = `<img src="${rawUrl}" onerror="handleImageError(this, '${rawUrl}')" onclick="openImagePreview('${rawUrl}')" class="w-10 h-10 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-80">`;
     container.appendChild(wrapper);
   });
 }
@@ -716,7 +785,7 @@ window.submitSingleInputItem = async function(e) {
   const nama = document.getElementById('inputNamaBahan').value.trim();
   const order = document.getElementById('inputOrder').value;
   const masuk = document.getElementById('inputMasuk').value;
-  const satuan = document.getElementById('inputSatuan').value.trim();
+  const satuan = document.getElementById('inputSatuan').value || 'kg';
   const kondisiKemasan = document.getElementById('inputKondisiKemasan').value;
   const kondisiFisik = document.getElementById('inputKondisiFisik').value;
   const suhu = document.getElementById('inputSuhu').value;
@@ -726,103 +795,75 @@ window.submitSingleInputItem = async function(e) {
 
   if (!nama) { showToast('warning', 'Nama Barang wajib diisi!'); return; }
 
-  if (!satuan || !/\d/.test(satuan)) {
-    Swal.fire({
-      title: 'Satuan Wajib Mengandung Angka!',
-      text: 'Contoh format satuan yang benar: 12g/1renceng, 1kg, 500ml, 1 pcs, dll.',
-      icon: 'warning',
-      confirmButtonColor: '#4f46e5'
-    });
-    return;
-  }
-
   if (isPackagingItemByName(nama) && !tglExpired) {
     Swal.fire({ title: 'Tanggal Expired Wajib Diisi!', text: `Barang kemasan (${nama}) wajib diisi tanggal kedaluwarsanya.`, icon: 'warning', confirmButtonColor: '#4f46e5' });
     return;
   }
 
-  if (!tempFormPhotos || tempFormPhotos.length === 0) {
-    Swal.fire({ title: 'Foto Belum Ada!', text: 'Silakan unggah minimal satu foto barang untuk disimpan ke Sistem.', icon: 'warning', confirmButtonColor: '#4f46e5' });
+  if (!tempFormFiles || tempFormFiles.length === 0) {
+    Swal.fire({ title: 'Foto Belum Ada!', text: 'Silakan unggah minimal satu foto barang.', icon: 'warning', confirmButtonColor: '#4f46e5' });
     return;
   }
 
   const dateKey = document.getElementById('inputDate').value || getFormattedToday();
-  const initialPhotoUrls = [...tempFormPhotos];
-  const filesToUpload = [...tempFormFiles];
 
-  addRow(nama, order, masuk, satuan, kondisiKemasan, kondisiFisik, suhu, tglExpired, sesuaiSpec, ket, initialPhotoUrls, [], filesToUpload);
+  Swal.fire({
+    title: 'Sedang Di Kirim...',
+    text: 'Mohon tunggu agar penyimpanan foto berhasil tersimpan',
+    allowOutsideClick: false,
+    didOpen: () => { Swal.showLoading(); }
+  });
 
-  const targetRow = document.querySelector('#tableBody tr:last-child');
+  try {
+    const sanitizedNama = nama.replace(/[^a-zA-Z0-9-]/g, '_');
+    const uploadPromises = tempFormFiles.map(async (file, fIndex) => {
+      const compressedBase64 = await compressImage(file, 800, 0.6);
+      const customFileName = `${sanitizedNama}_${dateKey}_${Date.now()}_${fIndex}.jpg`;
 
-  document.getElementById('inputNamaBahan').value = '';
-  document.getElementById('inputOrder').value = '';
-  document.getElementById('inputMasuk').value = '';
-  document.getElementById('inputSatuan').value = '';
-  document.getElementById('inputSuhu').value = '';
-  document.getElementById('inputTglExpired').value = '';
-  document.getElementById('inputKeterangan').value = '';
-  tempFormPhotos = []; tempFormFiles = [];
-  renderFormPhotoPreviews();
-
-  if (window.saveDataToFirebase) {
-    await window.saveDataToFirebase(dateKey, getTableDataArray());
-  }
-
-  showToast('success', 'Barang ditambahkan');
-  
-  // Kirim notifikasi Telegram untuk penambahan barang
-  const roleInfo = localStorage.getItem('userRole') || 'user';
-  sendTelegramNotification(`🟢 *PENERIMAAN BAHAN BAKU*\n\n*Barang:* ${nama}\n*Jumlah Diterima:* ${masuk} ${satuan}\n*Tanggal:* ${dateKey}\n*Role:* ${roleInfo}\n*Status:* Berhasil ditambahkan ke tabel.`);
-
-  (async () => {
-    try {
-      const sanitizedNama = nama.replace(/[^a-zA-Z0-9-]/g, '_');
-      const uploadPromises = filesToUpload.map(async (file, fIndex) => {
-        const compressedBase64 = await compressImage(file, 800, 0.6);
-        const customFileName = `${sanitizedNama}_${dateKey}_${Date.now()}_${fIndex}.jpg`;
-
-        const response = await fetch(GAS_WEB_APP_URL, {
-          method: "POST",
-          body: JSON.stringify({ image: compressedBase64, fileName: customFileName, dateString: dateKey, itemName: nama })
-        });
-        return await response.json();
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify({ image: compressedBase64, fileName: customFileName, dateString: dateKey, itemName: nama })
       });
+      return await response.json();
+    });
 
-      const results = await Promise.all(uploadPromises);
-      let uploadedPhotoUrls = [];
-      let uploadedFileIds = [];
+    const results = await Promise.all(uploadPromises);
+    let uploadedPhotoUrls = [];
+    let uploadedFileIds = [];
 
-      results.forEach(res => {
-        if (res.status === "success" && res.downloadUrl) {
-          uploadedPhotoUrls.push(res.downloadUrl);
-          uploadedFileIds.push(res.fileId || (res.fileIds ? res.fileIds[0] : ''));
-        }
-      });
-
-      if (targetRow && document.body.contains(targetRow) && uploadedPhotoUrls.length > 0) {
-        let photoDataInput = targetRow.querySelector('.photo-data');
-        let fileIdInput = targetRow.querySelector('.drive-file-id');
-        
-        let currentPhotos = [];
-        try { currentPhotos = JSON.parse(photoDataInput.value || "[]"); } catch(e){}
-        
-        uploadedPhotoUrls.forEach((url, i) => {
-          if (i < currentPhotos.length) currentPhotos[i] = url;
-          else currentPhotos.push(url);
-        });
-
-        photoDataInput.value = JSON.stringify(currentPhotos);
-        fileIdInput.value = JSON.stringify(uploadedFileIds);
-        
-        if (window.saveDataToFirebase) {
-          await window.saveDataToFirebase(dateKey, getTableDataArray());
-        }
+    results.forEach(res => {
+      if (res && res.status === "success" && res.downloadUrl) {
+        uploadedPhotoUrls.push(res.downloadUrl);
+        uploadedFileIds.push(res.fileId || (res.fileIds ? res.fileIds[0] : ''));
       }
-      showToast('info', 'Foto Berhasil Tersimpan!');
-    } catch (err) {
-      console.error("Gagal sinkronisasi latar belakang:", err);
+    });
+
+    if (uploadedPhotoUrls.length === 0) {
+      throw new Error("Gagal mengunggah foto ke server penyimpanan.");
     }
-  })();
+
+    addRow(nama, order, masuk, satuan, kondisiKemasan, kondisiFisik, suhu, tglExpired, sesuaiSpec, ket, uploadedPhotoUrls, uploadedFileIds, []);
+
+    document.getElementById('inputNamaBahan').value = '';
+    document.getElementById('inputOrder').value = '';
+    document.getElementById('inputMasuk').value = '';
+    document.getElementById('inputSatuan').value = '';
+    document.getElementById('inputSuhu').value = '';
+    document.getElementById('inputTglExpired').value = '';
+    document.getElementById('inputKeterangan').value = '';
+    tempFormPhotos = []; tempFormFiles = [];
+    renderFormPhotoPreviews();
+
+    if (window.saveDataToFirebase) {
+      await window.saveDataToFirebase(dateKey, getTableDataArray());
+    }
+
+    Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto sukses di-upload dan data tersimpan.', timer: 1500, showConfirmButton: false });
+
+  } catch (err) {
+    console.error("Gagal upload foto:", err);
+    Swal.fire({ icon: 'error', title: 'Upload Gagal', text: err.message || 'Terjadi kesalahan saat mengunggah foto.' });
+  }
 };
 
 function getTableDataArray() {
@@ -832,11 +873,11 @@ function getTableDataArray() {
     try { photoData = JSON.parse(row.querySelector('.photo-data').value || "[]"); } catch(e){}
     try { fileIdData = JSON.parse(row.querySelector('.drive-file-id').value || "[]"); } catch(e){}
 
-    const inputs = row.querySelectorAll('input:not(.photo-data):not(.drive-file-id), select');
+    const inputs = row.querySelectorAll('input:not(.photo-data):not(.photo-input-camera):not(.photo-input-gallery):not(.drive-file-id), select');
     const rNama = inputs[0] ? inputs[0].value.trim() : '';
     const rOrder = inputs[1] ? inputs[1].value : '';
     const rMasuk = inputs[2] ? inputs[2].value : '';
-    const rSatuan = inputs[3] ? inputs[3].value.trim() : '';
+    const rSatuan = inputs[3] ? inputs[3].value : '';
     const rKemasan = inputs[4] ? inputs[4].value : 'Baik';
     const rFisik = inputs[5] ? inputs[5].value : 'Baik';
     const rSuhu = inputs[6] ? inputs[6].value : '';
@@ -851,7 +892,7 @@ function getTableDataArray() {
   return dataToSave;
 }
 
-window.addRow = function(nama = '', order = '', masuk = '', satuan = '1 kg', kemasan = 'Baik', fisik = 'Baik/Segar', suhu = '', tglExpired = '', sesuai = 'Ya', ket = '', photo = [], fileId = [], rawFiles = []) {
+window.addRow = function(nama = '', order = '', masuk = '', satuan = 'kg', kemasan = 'Baik', fisik = 'Baik/Segar', suhu = '', tglExpired = '', sesuai = 'Ya', ket = '', photo = [], fileId = [], rawFiles = []) {
   const tbody = document.getElementById('tableBody');
   const rowCount = tbody.children.length + 1;
 
@@ -866,14 +907,20 @@ window.addRow = function(nama = '', order = '', masuk = '', satuan = '1 kg', kem
 
   tr.innerHTML = `
     <td class="border border-gray-300 p-1 text-center font-medium row-number">${rowCount}</td>
-    <td class="border border-gray-300 p-1 hidden-photo-wrapper">
-      <input type="hidden" class="photo-data" value='${JSON.stringify(photoArray)}'>
-      <input type="hidden" class="drive-file-id" value='${JSON.stringify(fileIdArray)}'>
-      <input type="text" list="masterItemsList" value="${nama}" onchange="handleItemInputChange(this)" placeholder="Nama Barang" class="item-input input-print-border w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 text-xs">
+    <td class="border border-gray-300 p-1 text-center align-middle">
+      <div class="relative group flex items-center justify-center gap-1 flex-wrap">
+        <input type="file" accept="image/*" class="hidden photo-input-camera" onchange="handlePhotoUpload(this)">
+        <input type="file" accept="image/*" multiple class="hidden photo-input-gallery" onchange="handlePhotoUpload(this)">
+        <input type="hidden" class="photo-data" value='${JSON.stringify(photoArray)}'>
+        <input type="hidden" class="drive-file-id" value='${JSON.stringify(fileIdArray)}'>
+        <div class="photo-preview flex flex-wrap gap-1 items-center justify-center"></div>
+        <button type="button" onclick="triggerPhotoUploadChoice(this)" title="Unggah Foto Tambahan" class="photo-upload-btn no-print w-7 h-7 border border-dashed border-gray-300 hover:border-indigo-500 rounded text-gray-400 hover:text-indigo-600 flex items-center justify-center transition-colors bg-gray-50 hover:bg-indigo-50"><i class="fa-solid fa-camera text-xs"></i></button>
+      </div>
     </td>
+    <td class="border border-gray-300 p-1"><input type="text" list="masterItemsList" value="${nama}" onchange="handleItemInputChange(this)" placeholder="Nama Barang" class="item-input input-print-border w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-indigo-500 text-xs"></td>
     <td class="border border-gray-300 p-1"><input type="number" min="0" step="any" value="${order}" placeholder="0" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
     <td class="border border-gray-300 p-1"><input type="number" min="0" step="any" value="${masuk}" placeholder="0" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
-    <td class="border border-gray-300 p-1"><input type="text" list="satuanList" value="${satuan}" placeholder="Contoh: 12g/1renceng" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
+    <td class="border border-gray-300 p-1"><input type="text" list="satuanList" value="${satuan}" placeholder="Satuan" class="input-print-border w-full p-1 border border-gray-200 rounded text-center focus:ring-1 focus:ring-indigo-500 text-xs"></td>
     <td class="border border-gray-300 p-1">
       <select class="input-print-border w-full p-1 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-indigo-500">
         <option value="Baik" ${kemasan === 'Baik' ? 'selected' : ''}>Baik</option>
@@ -907,7 +954,109 @@ window.addRow = function(nama = '', order = '', masuk = '', satuan = '1 kg', kem
 
   tbody.appendChild(tr);
   tr._rawFiles = rawFilesArray;
+  renderPhotoPreviews(tr.querySelector('td:nth-child(2)'), photoArray);
   updateNextNoUrut();
+};
+
+window.triggerPhotoUploadChoice = function(btn) {
+  const container = btn.closest('td');
+  Swal.fire({
+    title: 'Pilih Sumber Foto', text: 'Ingin mengambil gambar langsung dari kamera atau galeri?', icon: 'question',
+    showCancelButton: true, showDenyButton: true,
+    confirmButtonText: '<i class="fa-solid fa-camera mr-1"></i> Kamera',
+    denyButtonText: '<i class="fa-solid fa-images mr-1"></i> Galeri',
+    cancelButtonText: 'Batal', confirmButtonColor: '#4f46e5', denyButtonColor: '#059669'
+  }).then((result) => {
+    if (result.isConfirmed) container.querySelector('.photo-input-camera').click();
+    else if (result.isDenied) container.querySelector('.photo-input-gallery').click();
+  });
+};
+
+window.handlePhotoUpload = async function(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+
+  const row = input.closest('tr');
+  const container = input.closest('td');
+  const photoDataInput = container.querySelector('.photo-data');
+  const fileIdInput = container.querySelector('.drive-file-id');
+  const dateKey = document.getElementById('inputDate').value || getFormattedToday();
+  const inputs = row.querySelectorAll('input:not(.photo-data):not(.photo-input-camera):not(.photo-input-gallery):not(.drive-file-id), select');
+  const nama = inputs[0] ? inputs[0].value.trim() : 'Barang';
+
+  Swal.fire({
+    title: 'Mengunggah Foto...',
+    text: 'Mengunggah foto tambahan...',
+    allowOutsideClick: false,
+    didOpen: () => { Swal.showLoading(); }
+  });
+
+  try {
+    let photoUrls = []; let fileIds = [];
+    try { photoUrls = JSON.parse(photoDataInput.value || "[]"); } catch(e) { photoUrls = []; }
+    try { fileIds = JSON.parse(fileIdInput.value || "[]"); } catch(e) { fileIds = []; }
+
+    const sanitizedNama = nama.replace(/[^a-zA-Z0-9-]/g, '_');
+    const uploadPromises = files.map(async (file, fIndex) => {
+      if (!file.type.startsWith('image/')) return null;
+      const compressedBase64 = await compressImage(file, 800, 0.6);
+      const customFileName = `${sanitizedNama}_${dateKey}_${Date.now()}_${fIndex}.jpg`;
+
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        body: JSON.stringify({ image: compressedBase64, fileName: customFileName, dateString: dateKey, itemName: nama })
+      });
+      return await response.json();
+    });
+
+    const results = await Promise.all(uploadPromises);
+    results.forEach(res => {
+      if (res && res.status === "success" && res.downloadUrl) {
+        photoUrls.push(res.downloadUrl);
+        fileIds.push(res.fileId || (res.fileIds ? res.fileIds[0] : ''));
+      }
+    });
+
+    photoDataInput.value = JSON.stringify(photoUrls);
+    fileIdInput.value = JSON.stringify(fileIds);
+    renderPhotoPreviews(container, photoUrls);
+    input.value = '';
+
+    if (window.saveDataToFirebase) {
+      await window.saveDataToFirebase(dateKey, getTableDataArray());
+    }
+
+    Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto tambahan berhasil di-upload.', timer: 1500, showConfirmButton: false });
+  } catch (err) {
+    console.error("Gagal upload foto tambahan:", err);
+    Swal.fire({ icon: 'error', title: 'Upload Gagal', text: err.message || 'Terjadi kesalahan saat mengunggah foto.' });
+  }
+};
+
+function renderPhotoPreviews(tdContainer, photoUrls) {
+  const previewContainer = tdContainer.querySelector('.photo-preview');
+  if(!previewContainer) return;
+  previewContainer.innerHTML = '';
+  photoUrls.forEach((rawUrl) => {
+    const formattedUrl = formatPhotoUrl(rawUrl);
+    const wrapper = document.createElement('div');
+    wrapper.className = 'relative inline-block m-0.5';
+    wrapper.innerHTML = `<img src="${formattedUrl}" onerror="handleImageError(this, '${formattedUrl}')" onclick="openImagePreview('${formattedUrl}')" title="Klik untuk melihat foto" class="w-8 h-8 object-cover rounded border border-gray-300 cursor-pointer hover:opacity-80">`;
+    previewContainer.appendChild(wrapper);
+  });
+}
+
+window.openImagePreview = function(src) {
+  if (!src) return;
+  document.getElementById('previewImageSrc').src = formatPhotoUrl(src);
+  document.getElementById('imagePreviewModal').classList.remove('hidden');
+};
+
+window.closeImagePreview = function() { document.getElementById('imagePreviewModal').classList.add('hidden'); };
+
+window.downloadImageFromPreview = function() {
+  const imgSrc = document.getElementById('previewImageSrc').src;
+  if (imgSrc) downloadPhotoDirectly(imgSrc, `Foto_Barang_${Date.now()}.jpg`);
 };
 
 window.handleItemInputChange = function(inputElem) {
@@ -970,8 +1119,6 @@ window.deleteRow = async function(btn) {
   if (!canUserDelete()) { showToast('error', 'User hanya dapat menghapus data transaksi hari ini!'); return; }
 
   const row = btn.closest('tr');
-  const inputs = row.querySelectorAll('input:not(.photo-data):not(.drive-file-id), select');
-  const namaBarang = inputs[0] ? inputs[0].value.trim() : 'Barang';
 
   Swal.fire({
     title: 'Hapus Baris Ini?', text: "Data bahan baku pada baris ini akan dihapus dari sistem!", icon: 'warning',
@@ -991,7 +1138,7 @@ window.deleteRow = async function(btn) {
               body: JSON.stringify({ action: "delete", fileId: fId })
             });
           } catch (err) {
-            console.error("Gagal hapus foto di Sistem:", err);
+            console.error("Gagal hapus foto:", err);
           }
         }
       }
@@ -1003,9 +1150,6 @@ window.deleteRow = async function(btn) {
       if (dateKey && window.saveDataToFirebase) {
         await window.saveDataToFirebase(dateKey, getTableDataArray());
       }
-
-      // Kirim notifikasi Telegram untuk penghapusan baris/barang
-      sendTelegramNotification(`🔴 *HAPUS BARIS DATA*\n\n*Barang:* ${namaBarang}\n*Tanggal:* ${dateKey}\n*Status:* Berhasil dihapus dari tabel/sistem.`);
 
       showToast('success', 'Barang berhasil dihapus!');
     }
@@ -1029,20 +1173,9 @@ window.saveCurrentData = async function() {
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    const inputs = row.querySelectorAll('input:not(.photo-data):not(.drive-file-id), select');
+    const inputs = row.querySelectorAll('input:not(.photo-data):not(.photo-input-camera):not(.photo-input-gallery):not(.drive-file-id), select');
     const namaBarang = inputs[0] ? inputs[0].value.trim() : '';
-    const rSatuan = inputs[3] ? inputs[3].value.trim() : '';
     const tglExp = inputs[7] ? inputs[7].value : '';
-
-    if (!rSatuan || !/\d/.test(rSatuan)) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Satuan Wajib Mengandung Angka!',
-        text: `Baris ke-${i + 1} (${namaBarang || 'Tanpa Nama'}) satuan harus mencantumkan angka (contoh: 12g/1renceng, 1kg).`,
-        confirmButtonColor: '#4f46e5'
-      });
-      return false;
-    }
 
     if (isPackagingItemByName(namaBarang) && !tglExp) {
       Swal.fire({ icon: 'warning', title: 'Tanggal Expired Wajib Diisi!', text: `Baris ke-${i + 1} (${namaBarang}) termasuk barang kemasan dan wajib diisi tanggal kedaluwarsanya.`, confirmButtonColor: '#4f46e5' });
@@ -1051,57 +1184,9 @@ window.saveCurrentData = async function() {
   }
 
   try {
-    for (let rIndex = 0; rIndex < rows.length; rIndex++) {
-      const row = rows[rIndex];
-      let photoData = []; let fileIdData = [];
-      try { photoData = JSON.parse(row.querySelector('.photo-data').value || "[]"); } catch(e){}
-      try { fileIdData = JSON.parse(row.querySelector('.drive-file-id').value || "[]"); } catch(e){}
-
-      const inputs = row.querySelectorAll('input:not(.photo-data):not(.drive-file-id), select');
-      const nama = inputs[0] ? inputs[0].value.trim() : 'TanpaNama';
-
-      if (row._rawFiles && row._rawFiles.length > 0) {
-        const sanitizedNama = nama.replace(/[^a-zA-Z0-9-]/g, '_');
-        const batchUploads = row._rawFiles.map(async (file, fIndex) => {
-          const compressedBase64 = await compressImage(file, 800, 0.6);
-          const customFileName = `${sanitizedNama}_${dateKey}_${Date.now()}_${rIndex}_${fIndex}.jpg`;
-
-          const response = await fetch(GAS_WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({ image: compressedBase64, fileName: customFileName, dateString: dateKey, itemName: nama })
-          });
-          return await response.json();
-        });
-
-        const uploadResults = await Promise.all(batchUploads);
-        uploadResults.forEach(res => {
-          if (res.status === "success" && res.downloadUrl) {
-            const blobIndex = photoData.findIndex(url => url.startsWith('blob:'));
-            const singleFileId = res.fileId || (res.fileIds ? res.fileIds[0] : '');
-            if (blobIndex !== -1) {
-              photoData[blobIndex] = res.downloadUrl;
-              fileIdData[blobIndex] = singleFileId;
-            } else {
-              photoData.push(res.downloadUrl);
-              fileIdData.push(singleFileId);
-            }
-          }
-        });
-        row._rawFiles = [];
-      }
-
-      row.querySelector('.photo-data').value = JSON.stringify(photoData);
-      row.querySelector('.drive-file-id').value = JSON.stringify(fileIdData);
-    }
-
     if (window.saveDataToFirebase) {
       const success = await window.saveDataToFirebase(dateKey, getTableDataArray());
-      if (success) { 
-        // Kirim notifikasi Telegram untuk penyimpanan data utama ke sistem
-        sendTelegramNotification(`💾 *PENYIMPANAN DATA (SIMPAN KE SISTEM)*\n\n*Tanggal Transaksi:* ${dateKey}\n*Total Item:* ${rows.length} barang\n*Status:* Berhasil disinkronkan ke Firebase & Sistem.`);
-        showToast('success', `Data tanggal ${dateKey} tersinkronisasi sempurna!`); 
-        return true; 
-      }
+      if (success) { showToast('success', `Data tanggal ${dateKey} tersinkronisasi!`); return true; }
     }
     return false;
   } catch (err) {
@@ -1142,8 +1227,6 @@ window.deleteSavedDataFirebase = async function() {
         if (success) {
           document.getElementById('tableBody').innerHTML = '';
           updateNextNoUrut();
-          // Kirim notifikasi Telegram saat seluruh data tanggal dihapus permanen
-          sendTelegramNotification(`🗑️ *HAPUS DATA PERMANEN (SISTEM)*\n\n*Tanggal:* ${dateKey}\n*Status:* Seluruh data transaksi tanggal tersebut telah dihapus permanen.`);
           showToast('success', `Data tanggal ${dateKey} telah dihapus.`);
         }
       }
@@ -1195,14 +1278,13 @@ window.resetForm = function() {
     if (result.isConfirmed) {
       document.getElementById('tableBody').innerHTML = '';
       updateNextNoUrut();
-      sendTelegramNotification(`🔄 *RESET FORM/TABEL*\n\n*Status:* Tabel form penerimaan barang dikosongkan/reset.`);
       showToast('info', 'Tabel berhasil dikosongkan');
     }
   });
 };
 
 function replaceInputsWithText(element) {
-  const inputs = element.querySelectorAll('input:not(.photo-data):not(.drive-file-id), select');
+  const inputs = element.querySelectorAll('input:not(.photo-data):not(.photo-input-camera):not(.photo-input-gallery):not(.drive-file-id), select');
   const replacedList = [];
   inputs.forEach(input => {
     const span = document.createElement('span');
@@ -1297,8 +1379,8 @@ window.downloadExcelDirect = function() {
       let docParsed = new DOMParser().parseFromString(tableHTML, 'text/html');
       let table = docParsed.querySelector('table');
       table.querySelectorAll('tr').forEach(tr => {
-        let ths = tr.querySelectorAll('th'); if (ths.length > 11) ths[11].remove();
-        let tds = tr.querySelectorAll('td'); if (tds.length > 11) tds[11].remove();
+        let ths = tr.querySelectorAll('th'); if (ths.length > 12) ths[12].remove(); if (ths.length > 1) ths[1].remove();
+        let tds = tr.querySelectorAll('td'); if (tds.length > 12) tds[12].remove(); if (tds.length > 1) tds[1].remove();
       });
       table.querySelectorAll('tr').forEach(tr => {
         tr.querySelectorAll('input, select').forEach(input => {
