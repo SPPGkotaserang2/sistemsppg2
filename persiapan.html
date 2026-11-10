@@ -402,7 +402,7 @@
      <!-- SCRIPT APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc, setDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD_1aa3viH2qB5gM8VrYmU8e5zEorgZZRg",
@@ -430,7 +430,6 @@
         let archiveRowsData = [];
         let currentLoadedTask = null;
 
-        // Fungsi bantu mendapatkan tanggal lokal (YYYY-MM-DD) yang akurat sesuai zona waktu perangkat
         function getLocalDateString(date = new Date()) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -649,16 +648,41 @@
             const tgl = document.getElementById('inputTanggal').value;
             const noticeBox = document.getElementById('taskNoticeBox');
             const noticeText = document.getElementById('taskNoticeText');
+            const submitBtn = document.getElementById('submitBtn');
 
             ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                 document.getElementById(`user${cat.charAt(0).toUpperCase() + cat.slice(1)}Container`).innerHTML = '';
             });
 
             try {
+                const q = query(collection(db, "sisa_makanan"), where("tanggal", "==", tgl));
+                const querySnap = await getDocs(q);
+                let alreadyUploaded = false;
+                querySnap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    if (currentUser.role === 'admin' || d.username === currentUser.username) {
+                        alreadyUploaded = true;
+                    }
+                });
+
+                if (alreadyUploaded) {
+                    noticeBox.classList.remove('hidden');
+                    noticeBox.className = "mb-6 p-4 bg-emerald-50 border-2 border-emerald-300 rounded-2xl text-sm font-bold text-emerald-900 flex items-center space-x-3";
+                    noticeBox.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-xl"></i><span>Laporan untuk tanggal ${tgl} sudah dikirim. Input terkunci dan bersih otomatis.</span>`;
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    document.getElementById('totalKg').value = "0.00 Kg";
+                    return;
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+
                 const docSnap = await getDoc(doc(db, "menu_tugas", tgl));
                 if (docSnap.exists()) {
                     currentLoadedTask = docSnap.data();
                     noticeBox.classList.add('hidden');
+                    noticeBox.className = "hidden mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-sm font-bold text-amber-900 flex items-center space-x-3";
 
                     ['karbo', 'protein', 'sayur', 'buah', 'lainnya'].forEach(cat => {
                         const items = currentLoadedTask[cat] || [];
@@ -700,8 +724,9 @@
                     });
                 } else {
                     currentLoadedTask = null;
-                    noticeText.innerText = `Admin belum menentukan tugas menu untuk tanggal ${tgl}. Silakan hubungi admin.`;
                     noticeBox.classList.remove('hidden');
+                    noticeBox.className = "mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-sm font-bold text-amber-900 flex items-center space-x-3";
+                    noticeText.innerText = `Admin belum menentukan tugas menu untuk tanggal ${tgl}. Silakan hubungi admin.`;
                 }
             } catch (err) {
                 console.error(err);
@@ -898,16 +923,14 @@
                     body: JSON.stringify({ target: FONNTE_TARGET, message: waMessage })
                 }).catch(err => console.log('WA Error:', err));
 
-                showModalAlert('Berhasil', 'Laporan berhasil disimpan!', 'success');
+                showModalAlert('Berhasil', 'Laporan berhasil disimpan dan input terkunci otomatis!', 'success');
                 document.getElementById('persiapanForm').reset();
-                document.getElementById('inputTanggal').value = getLocalDateString();
                 loadTaskForCurrentDate();
                 calculateTotal();
                 loadArchives();
             } catch (error) {
                 console.error(error);
                 showModalAlert('Gagal', error.message || 'Gagal menyimpan data.', 'error');
-            } finally {
                 btn.disabled = false;
                 btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Kirim Laporan`;
             }
@@ -1231,49 +1254,63 @@
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Persiapan");
-            XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.xlsx`);
+            XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_Persiapan_${getLocalDateString()}.xlsx`);
         }
 
+        // FUNGSI EKSPOR KE PDF YANG SUDAH DIPERBAIKI AMAN DARI ERROR
         window.exportToPDF = function() {
             if (!archiveRowsData || archiveRowsData.length === 0) {
                 showModalAlert('Informasi', 'Tidak ada data arsip untuk diekspor.', 'info');
                 return;
             }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape', 'mm', 'a4');
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape', 'mm', 'a4');
 
-            doc.setFontSize(14);
-            doc.text("LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PRODUKSI", 14, 15);
-            doc.setFontSize(10);
-            doc.text("SPPG KOTA SERANG SERANG SERANG 2", 14, 21);
+                doc.setFontSize(14);
+                doc.text("LAPORAN PENDATAAN SISA PANGAN DARI TAHAP PERSIAPAN", 14, 15);
+                doc.setFontSize(10);
+                doc.text("SPPG KOTA SERANG SERANG SERANG 2", 14, 21);
 
-            let bodyData = [];
-            archiveRowsData.forEach((r, idx) => {
-                const formatCatString = (arr) => (arr || []).map(i => `${i.ket}: ${i.kg} Kg`).join('\n');
-                bodyData.push([
-                    idx + 1,
-                    r.tanggal,
-                    formatCatString(r.karbo) || "-",
-                    formatCatString(r.protein) || "-",
-                    formatCatString(r.sayur) || "-",
-                    formatCatString(r.buah) || "-",
-                    formatCatString(r.lainnya) || "-",
-                    r.totalKg || "0 Kg"
-                ]);
-            });
+                let bodyData = [];
+                archiveRowsData.forEach((r, idx) => {
+                    const formatCatStringSafe = (arr) => {
+                        if (!arr || !Array.isArray(arr) || arr.length === 0) return "-";
+                        return arr.map(i => {
+                            const ket = i.ket || 'Menu';
+                            const kg = i.kg ? `${i.kg} Kg` : '0 Kg';
+                            return `${ket}: ${kg}`;
+                        }).join('\n');
+                    };
 
-            doc.autoTable({
-                startY: 26,
-                head: [['No', 'Tanggal', 'Karbohidrat', 'Protein', 'Sayur', 'Buah', 'Lainnya', 'Total (Kg)']],
-                body: bodyData,
-                theme: 'grid',
-                styles: { fontSize: 8, cellPadding: 2 },
-                headStyles: { fillColor: [2, 132, 199] }
-            });
+                    bodyData.push([
+                        idx + 1,
+                        r.tanggal || '-',
+                        formatCatStringSafe(r.karbo),
+                        formatCatStringSafe(r.protein),
+                        formatCatStringSafe(r.sayur),
+                        formatCatStringSafe(r.buah),
+                        formatCatStringSafe(r.lainnya),
+                        r.totalKg || "0 Kg"
+                    ]);
+                });
 
-            doc.save(`Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.pdf`);
-        }
+                doc.autoTable({
+                    startY: 26,
+                    head: [['No', 'Tanggal', 'Karbohidrat', 'Protein', 'Sayur', 'Buah', 'Lainnya', 'Total (Kg)']],
+                    body: bodyData,
+                    theme: 'grid',
+                    styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+                    headStyles: { fillColor: [2, 132, 199] }
+                });
+
+                doc.save(`Laporan_Sisa_Makanan_Persiapan_${getLocalDateString()}.pdf`);
+            } catch (err) {
+                console.error("PDF Export Error:", err);
+                showModalAlert('Gagal', `Gagal mengekspor ke PDF: ${err.message}`, 'error');
+            }
+        };
 
         window.exportToPNG = function() {
             if (!archiveRowsData || archiveRowsData.length === 0) {
@@ -1333,15 +1370,20 @@
 
             document.body.appendChild(container);
 
-            html2canvas(container, { scale: 2 }).then(canvas => {
-                document.body.removeChild(container);
+            html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
+                if (document.body.contains(container)) {
+                    document.body.removeChild(container);
+                }
                 const link = document.createElement('a');
-                link.download = `Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.png`;
+                link.download = `Laporan_Sisa_Makanan_Persiapan_${getLocalDateString()}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }).catch(err => {
                 console.error("Gagal ekspor gambar PNG:", err);
-                if (document.body.contains(container)) document.body.removeChild(container);
+                if (document.body.contains(container)) {
+                    document.body.removeChild(container);
+                }
+                showModalAlert('Gagal', 'Gagal mengekspor ke PNG.', 'error');
             });
         }
 
@@ -1377,6 +1419,7 @@
                     await deleteDoc(docRef);
                     showModalAlert('Berhasil', 'Data laporan dan file berhasil dihapus.', 'success');
                     loadArchives();
+                    loadTaskForCurrentDate();
                 } catch (err) {
                     console.error(err);
                     showModalAlert('Gagal', 'Gagal menghapus data.', 'error');
