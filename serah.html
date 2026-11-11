@@ -112,7 +112,7 @@
         <!-- DASHBOARD UTAMA -->
         <div id="dashboard-container" class="hidden space-y-8">
 
-            <!-- FORM INPUT (DIBESARKAN & LEBIH LUAS SESUAI PERMINTAAN) -->
+            <!-- FORM INPUT -->
             <div id="input-section-wrapper" class="bg-white rounded-3xl shadow-xl border-2 border-blue-200 p-8 sm:p-10 no-print">
                 <div class="border-b border-blue-100 pb-5 mb-6 flex justify-between items-center">
                     <div>
@@ -162,14 +162,14 @@
                 </form>
             </div>
 
-            <!-- BAGIAN ARSIR & EKSPOR (UKURAN KECIL SEPERTI SEMULA) -->
+            <!-- BAGIAN ARSIP & EKSPOR -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-4">
                     <div>
                         <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Data Serah Terima</h2>
                         <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
                     </div>
-                    <!-- Tombol Ekspor Khusus Admin (User biasa tidak melihat bagian ini) -->
+                    <!-- Tombol Ekspor Khusus Admin -->
                     <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
                         <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
                             📊 Ekspor Excel
@@ -334,6 +334,41 @@
             'Anisa': { pass: 'Anisa2', team: 'pemorsian', name: 'Anisa (Tim Pemorsian)' }
         };
 
+        // Konfigurasi Bot Telegram
+        const TELEGRAM_BOT_TOKEN = "9031682305:AAE5wB1jzkWNZlX0sfXHQVplkPqsnZDybAg";
+        const TELEGRAM_CHAT_ID = "9212263609";
+
+        async function sendTelegramNotification(teamName, tanggal, nama, jumlah, keterangan, inputOleh) {
+            const teamLabels = {
+                'persiapan': 'TIM PERSIAPAN (Bahan Baku)',
+                'pengolahan': 'TIM PENGOLAHAN & MENU',
+                'pemorsian': 'TIM PEMORSIAN & PACKING'
+            };
+
+            const text = `🔔 *NOTIFIKASI SERAH TERIMA BARU*\n\n` +
+                         `📌 *Bagian:* ${teamLabels[teamName] || teamName.toUpperCase()}\n` +
+                         `👤 *Penginput:* ${inputOleh}\n` +
+                         `📅 *Tanggal:* ${tanggal}\n` +
+                         `📦 *Nama Item:* ${nama}\n` +
+                         `⚖️ *Jumlah:* ${jumlah}\n` +
+                         `📝 *Keterangan:* ${keterangan}\n\n` +
+                         `_SPPG KOTA SERANG 2_`;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: text,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.error("Gagal mengirim notifikasi Telegram:", error);
+            }
+        }
+
         // Fungsi Notifikasi Mewah Kustom
         window.showModal = function(title, message, type = 'info', callback = null) {
             const modal = document.getElementById('custom-modal');
@@ -405,14 +440,13 @@
             const inputTgl = document.getElementById('input-tanggal');
             if (inputTgl) inputTgl.value = today;
 
-            // Cek Sesi Login (Berlaku hingga 3 Bulan / Selama tidak klik Keluar)
             const activeUser = localStorage.getItem('active_user');
             const loginTime = localStorage.getItem('login_time');
             const threeMonthsInMillis = 90 * 24 * 60 * 60 * 1000;
 
             if (activeUser && accounts[activeUser]) {
                 if (loginTime && (Date.now() - parseInt(loginTime) > threeMonthsInMillis)) {
-                    logout(); // Hapus jika sudah melebihi 3 bulan
+                    logout();
                 } else {
                     showDashboard(activeUser);
                 }
@@ -442,7 +476,7 @@
 
             if (accounts[user] && accounts[user].pass === pass) {
                 localStorage.setItem('active_user', user);
-                localStorage.setItem('login_time', Date.now().toString()); // Simpan waktu login untuk durasi 3 bulan
+                localStorage.setItem('login_time', Date.now().toString());
                 showDashboard(user);
             } else {
                 showModal('Gagal Masuk', 'Username atau Password yang Anda masukkan salah!', 'error');
@@ -472,7 +506,7 @@
             } else {
                 inputWrapper.style.display = 'block';
                 adminTeamSelectorWrapper.classList.add('hidden');
-                document.getElementById('form-title').innerText = `Form Input Bagian: Tim ${acc.team.charAt(0).toUpperCase() + acc.team.slice(1)}`;
+                document.getElementById('form-title').innerText = `Form Input Bagian : Tim ${acc.team.charAt(0).toUpperCase() + acc.team.slice(1)}`;
                 document.getElementById('active-team-key').value = acc.team;
                 btnToggleEdit.classList.add('hidden');
                 exportButtonsContainer.classList.add('hidden'); 
@@ -529,6 +563,7 @@
             });
         }
 
+        // SIMPAN INSTAN SECEPAT KILAT (OPTIMISTIC UI & BACKGROUND SYNC)
         window.handleDataSubmit = async function(e) {
             e.preventDefault();
             const activeUser = localStorage.getItem('active_user');
@@ -550,27 +585,32 @@
 
             if (!tanggal || !nama || !jumlah) return;
 
-            const submitBtn = document.getElementById('btn-submit');
-            if (submitBtn) submitBtn.innerText = 'Menyimpan ke Cloud...';
+            // 1. Buat data lokal sementara secara kilat tanpa menunggu loading lama
+            const tempDocId = 'temp_' + Date.now();
+            const newItem = { docId: tempDocId, tanggal, nama, jumlah, keterangan, createdAt: Date.now() };
+            
+            if (!window.appData[targetTeam]) window.appData[targetTeam] = [];
+            window.appData[targetTeam].unshift(newItem); // Masuk paling atas arsip seketika
+            renderTables(); // Update tampilan tabel seketika
 
+            // Reset form langsung kilat
+            document.getElementById('input-nama').value = '';
+            document.getElementById('input-jumlah').value = '';
+            document.getElementById('input-keterangan').value = '';
+            showModal('Berhasil!', 'Data serah terima berhasi disimpan.', 'success');
+
+            // 2. Simpan ke Firebase & Kirim Telegram secara asynchronous di background
             try {
-                await addDoc(collection(db, targetTeam), {
+                addDoc(collection(db, targetTeam), {
                     tanggal,
                     nama,
                     jumlah,
                     keterangan,
                     createdAt: Date.now()
                 });
-
-                document.getElementById('input-nama').value = '';
-                document.getElementById('input-jumlah').value = '';
-                document.getElementById('input-keterangan').value = '';
-                showModal('Berhasil', 'Data serah terima berhasil disimpan ke dalam sistem.', 'success');
+                sendTelegramNotification(targetTeam, tanggal, nama, jumlah, keterangan, acc.name);
             } catch (error) {
-                console.error("Gagal menambah data:", error);
-                showModal('Gagal', 'Terjadi kesalahan saat menyimpan data ke sistem.', 'error');
-            } finally {
-                if (submitBtn) submitBtn.innerText = '+ Tambah Data';
+                console.error("Gagal sinkronisasi background:", error);
             }
         }
 
@@ -633,7 +673,6 @@
                     return true;
                 });
 
-                // Badge dikosongkan (polos mengikuti warna header masing-masing)
                 if (countBadge) countBadge.innerText = '';
 
                 if (filteredItems.length === 0) {
