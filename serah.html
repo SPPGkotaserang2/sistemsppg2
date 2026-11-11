@@ -23,22 +23,42 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
 
+    <!-- MODAL NOTIFIKASI MEWAH & KEREN -->
+    <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden transition-all duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0 duration-300" id="modal-box">
+            <div class="text-center space-y-3">
+                <div id="modal-icon-container" class="w-12 h-12 mx-auto rounded-full flex items-center justify-center shadow-inner">
+                    <!-- Icon disuntikkan via JS -->
+                </div>
+                <div>
+                    <h3 id="modal-title" class="text-base font-bold text-gray-900 tracking-tight">Notifikasi Sistem</h3>
+                    <p id="modal-message" class="text-xs text-gray-500 mt-1 leading-relaxed">-</p>
+                </div>
+                <div id="modal-actions" class="pt-3 flex gap-2 justify-center">
+                    <button id="modal-btn-ok" onclick="closeModal()" class="w-full bg-[#0047AB] hover:bg-[#003380] text-white font-semibold py-2 px-4 rounded-xl transition shadow-md text-xs">
+                        Mengerti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- HEADER & LOGIN STATUS -->
     <header class="bg-white shadow-sm border-b border-gray-200 no-print">
         <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain rounded-lg border border-gray-100 shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%234f46e5\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
+                <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain rounded-lg border border-gray-100 shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230047AB\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">SERAH TERIMA BAHAN BAKU & MENU MAKANAN</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-[#0047AB] tracking-tight">SERAH TERIMA BAHAN BAKU & MENU MAKANAN</h1>
                     <p class="text-xs sm:text-sm text-gray-500 mt-0.5" id="live-datetime">-</p>
                 </div>
             </div>
             
             <!-- Area Status Login / Tombol Keluar -->
-            <div id="user-session-bar" class="hidden items-center gap-3 bg-indigo-50 border border-indigo-100 px-4 py-2 rounded-xl">
+            <div id="user-session-bar" class="hidden items-center gap-3 bg-blue-50 border border-blue-100 px-4 py-2 rounded-xl">
                 <div>
-                    <p class="text-xs text-indigo-500 font-medium">Masuk Sebagai :</p>
-                    <p class="text-sm font-bold text-indigo-900" id="logged-user-name">-</p>
+                    <p class="text-xs text-[#0047AB] font-medium">Masuk Sebagai :</p>
+                    <p class="text-sm font-bold text-blue-900" id="logged-user-name">-</p>
                 </div>
                 <!-- Tombol Mode Edit Khusus Admin -->
                 <button id="btn-toggle-edit" onclick="toggleAdminEditMode()" class="hidden bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm">
@@ -58,9 +78,9 @@
         <div id="login-container" class="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-8 my-10">
             <div class="text-center mb-6">
                 <div class="flex justify-center mb-3">
-                    <img src="logo.png" alt="Logo Instansi" class="w-16 h-16 object-contain rounded-xl shadow-md border border-gray-100 p-1" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%234f46e5\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
+                    <img src="logo.png" alt="Logo Instansi" class="w-16 h-16 object-contain rounded-xl shadow-md border border-gray-100 p-1" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230047AB\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
                 </div>
-                <h2 class="text-xl font-bold text-gray-900">Masuk Sistem Input</h2>
+                <h2 class="text-xl font-bold text-[#0047AB]">Masuk Sistem Input</h2>
                 <p class="text-sm text-gray-500 mt-1">SPPG KOTA SERANG SERANG SERANG 2</p>
             </div>
 
@@ -68,13 +88,13 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Username</label>
                     <input type="text" id="login-user" required placeholder="Masukkan username..." 
-                        class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Password</label>
                     <div class="relative">
                         <input type="password" id="login-pass" required placeholder="Masukkan password..." 
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm pr-10">
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm pr-10">
                         <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
                             <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -83,68 +103,78 @@
                         </button>
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl transition shadow-md shadow-indigo-200 text-sm">
+                <button type="submit" class="w-full bg-[#0047AB] hover:bg-[#003380] text-white font-semibold py-2.5 rounded-xl transition shadow-md text-sm">
                     Masuk Sekarang
                 </button>
             </form>
-
-          
         </div>
 
         <!-- DASHBOARD UTAMA -->
-        <div id="dashboard-container" class="hidden space-y-10">
+        <div id="dashboard-container" class="hidden space-y-8">
 
-            <!-- FORM INPUT -->
-            <div id="input-section-wrapper" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 no-print">
-                <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center">
+            <!-- FORM INPUT (DIBESARKAN & LEBIH LUAS SESUAI PERMINTAAN) -->
+            <div id="input-section-wrapper" class="bg-white rounded-3xl shadow-xl border-2 border-blue-200 p-8 sm:p-10 no-print">
+                <div class="border-b border-blue-100 pb-5 mb-6 flex justify-between items-center">
                     <div>
-                        <h2 class="text-lg font-bold text-gray-900" id="form-title">Form Input Data</h2>
-                        <p class="text-xs text-gray-500">Data otomatis tersinkronisasi ke Sistem secara real-time.</p>
+                        <h2 class="text-2xl font-black text-[#0047AB]" id="form-title">Form Input Data</h2>
+                        <p class="text-sm text-gray-500 font-medium">Data otomatis tersinkronisasi ke Sistem secara real-time.</p>
                     </div>
                 </div>
 
-                <form id="dynamic-form" onsubmit="handleDataSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
+                <form id="dynamic-form" onsubmit="handleDataSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-5 items-end">
                     <input type="hidden" id="active-team-key">
+                    
+                    <!-- Pilihan Tim Khusus Admin -->
+                    <div id="admin-team-selector-wrapper" class="hidden sm:col-span-5 mb-1 bg-blue-50 p-4 rounded-2xl border border-blue-200">
+                        <label class="block text-xs font-bold uppercase text-[#0047AB] mb-1.5 tracking-wider">Pilih Bagian Tim untuk Input Data</label>
+                        <select id="admin-target-team" class="w-full px-4 py-3 rounded-xl border border-blue-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm font-semibold bg-white text-[#0047AB]">
+                            <option value="persiapan">Tim Persiapan (Bahan Baku Makanan)</option>
+                            <option value="pengolahan">Tim Pengolahan & Menu</option>
+                            <option value="pemorsian">Tim Pemorsian & Packing</option>
+                        </select>
+                    </div>
+
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Tanggal</label>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Tanggal</label>
                         <input type="date" id="input-tanggal" required 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Nama Bahan / Menu</label>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Nama Bahan / Menu</label>
                         <input type="text" id="input-nama" required placeholder="Contoh: Beras Premium / Ayam Goreng" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Jumlah</label>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Jumlah</label>
                         <input type="text" id="input-jumlah" required placeholder="Contoh: 50 Kg / 100 Porsi" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Keterangan</label>
-                        <input type="text" id="input-keterangan" placeholder="" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Keterangan</label>
+                        <input type="text" id="input-keterangan" placeholder="Keterangan opsional..." 
+                            class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
-                        <button type="submit" id="btn-submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-xl transition shadow-sm text-sm">
+                        <button type="submit" id="btn-submit" class="w-full bg-[#0047AB] hover:bg-[#003380] text-white font-bold py-3.5 rounded-xl transition shadow-md text-base">
                             + Tambah Data
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- BAGIAN ARSIP & EKSPOR -->
+            <!-- BAGIAN ARSIR & EKSPOR (UKURAN KECIL SEPERTI SEMULA) -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-4">
                     <div>
                         <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Data Serah Terima</h2>
                         <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 no-print">
+                    <!-- Tombol Ekspor Khusus Admin (User biasa tidak melihat bagian ini) -->
+                    <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
                         <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
                             📊 Ekspor Excel
                         </button>
-                        <button onclick="exportToPNG()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                        <button onclick="exportToPNG()" class="bg-[#0047AB] hover:bg-[#003380] text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
                             🖼️ Ekspor PNG
                         </button>
                         <button onclick="exportToPDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
@@ -158,12 +188,12 @@
                     <div>
                         <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Dari Tanggal</label>
                         <input type="date" id="filter-start" onchange="renderTables()" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Sampai Tanggal</label>
                         <input type="date" id="filter-end" onchange="renderTables()" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
                     </div>
                     <div>
                         <button onclick="resetFilter()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-xl transition text-sm">
@@ -186,7 +216,7 @@
                         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
                             <div class="bg-amber-500 px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
                                 <span>TIM PERSIAPAN</span>
-                                <span class="bg-amber-600 px-2 py-0.5 rounded text-[10px] hidden" id="count-persiapan">0 Item</span>
+                                <span class="bg-amber-600 px-2 py-0.5 rounded text-[10px]" id="count-persiapan"></span>
                             </div>
                             <div class="p-3 flex-grow overflow-x-auto">
                                 <table class="w-full text-left text-xs">
@@ -206,9 +236,9 @@
 
                         <!-- TABEL TIM PENGOLAHAN -->
                         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
-                            <div class="bg-blue-600 px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
+                            <div class="bg-[#0047AB] px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
                                 <span>TIM PENGOLAHAN & MENU</span>
-                                <span class="bg-blue-700 px-2 py-0.5 rounded text-[10px] hidden" id="count-pengolahan">0 Item</span>
+                                <span class="bg-[#003380] px-2 py-0.5 rounded text-[10px]" id="count-pengolahan"></span>
                             </div>
                             <div class="p-3 flex-grow overflow-x-auto">
                                 <table class="w-full text-left text-xs">
@@ -230,7 +260,7 @@
                         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
                             <div class="bg-indigo-600 px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
                                 <span>TIM PEMORSIAN & PACKING</span>
-                                <span class="bg-indigo-700 px-2 py-0.5 rounded text-[10px] hidden" id="count-pemorsian">0 Item</span>
+                                <span class="bg-indigo-700 px-2 py-0.5 rounded text-[10px]" id="count-pemorsian"></span>
                             </div>
                             <div class="p-3 flex-grow overflow-x-auto">
                                 <table class="w-full text-left text-xs">
@@ -273,16 +303,14 @@
 
     <!-- FOOTER -->
     <footer class="bg-white border-t border-gray-200 mt-12 py-4 text-center text-xs text-gray-400 no-print">
-        Sistem Informasi Serah Terima Bahan Baku & Menu Makanan &copy; 2026
+        Sistem Informasi Serah Terima Bahan Baku & Menu Makanan &copy; 2026 - Badan Gizi Nasional
     </footer>
 
     <!-- SCRIPT FIREBASE & APLIKASI -->
     <script type="module">
-        // Import Firebase SDK dari CDN Resmi
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Anda
         const firebaseConfig = {
             apiKey: "AIzaSyCKTFGrqZXQlNE9HI7JcHoefxN4f4IH73o",
             authDomain: "laporanlpdh.firebaseapp.com",
@@ -293,11 +321,9 @@
             measurementId: "G-X1WFDYEQ8L"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Global Data Store & Admin Edit Mode Status
         window.appData = { persiapan: [], pengolahan: [], pemorsian: [] };
         window.adminEditMode = false;
 
@@ -308,7 +334,63 @@
             'Anisa': { pass: 'Anisa2', team: 'pemorsian', name: 'Anisa (Tim Pemorsian)' }
         };
 
-        // Live Tanggal & Waktu
+        // Fungsi Notifikasi Mewah Kustom
+        window.showModal = function(title, message, type = 'info', callback = null) {
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('modal-box');
+            const titleEl = document.getElementById('modal-title');
+            const msgEl = document.getElementById('modal-message');
+            const iconContainer = document.getElementById('modal-icon-container');
+            const actionsEl = document.getElementById('modal-actions');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            if (type === 'success') {
+                iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-inner";
+                iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+            } else if (type === 'error') {
+                iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-red-100 text-red-600 flex items-center justify-center shadow-inner";
+                iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            } else if (type === 'confirm') {
+                iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shadow-inner";
+                iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+            } else {
+                iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-blue-100 text-[#0047AB] flex items-center justify-center shadow-inner";
+                iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+            }
+
+            if (type === 'confirm') {
+                actionsEl.innerHTML = `
+                    <button id="modal-btn-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-3 rounded-xl transition text-xs">Batal</button>
+                    <button id="modal-btn-confirm" class="flex-1 bg-[#0047AB] hover:bg-[#003380] text-white font-semibold py-2 px-3 rounded-xl transition shadow-md text-xs">Ya, Lanjutkan</button>
+                `;
+                document.getElementById('modal-btn-cancel').onclick = () => closeModal();
+                document.getElementById('modal-btn-confirm').onclick = () => {
+                    closeModal();
+                    if (callback) callback();
+                };
+            } else {
+                actionsEl.innerHTML = `<button id="modal-btn-ok" onclick="closeModal()" class="w-full bg-[#0047AB] hover:bg-[#003380] text-white font-semibold py-2 px-4 rounded-xl transition shadow-md text-xs">Mengerti</button>`;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeModal = function() {
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('modal-box');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -323,9 +405,17 @@
             const inputTgl = document.getElementById('input-tanggal');
             if (inputTgl) inputTgl.value = today;
 
+            // Cek Sesi Login (Berlaku hingga 3 Bulan / Selama tidak klik Keluar)
             const activeUser = localStorage.getItem('active_user');
+            const loginTime = localStorage.getItem('login_time');
+            const threeMonthsInMillis = 90 * 24 * 60 * 60 * 1000;
+
             if (activeUser && accounts[activeUser]) {
-                showDashboard(activeUser);
+                if (loginTime && (Date.now() - parseInt(loginTime) > threeMonthsInMillis)) {
+                    logout(); // Hapus jika sudah melebihi 3 bulan
+                } else {
+                    showDashboard(activeUser);
+                }
             } else {
                 renderTables(); 
             }
@@ -352,9 +442,10 @@
 
             if (accounts[user] && accounts[user].pass === pass) {
                 localStorage.setItem('active_user', user);
+                localStorage.setItem('login_time', Date.now().toString()); // Simpan waktu login untuk durasi 3 bulan
                 showDashboard(user);
             } else {
-                alert('Username atau Password salah!');
+                showModal('Gagal Masuk', 'Username atau Password yang Anda masukkan salah!', 'error');
             }
         }
 
@@ -368,16 +459,24 @@
 
             const btnToggleEdit = document.getElementById('btn-toggle-edit');
             const inputWrapper = document.getElementById('input-section-wrapper');
+            const adminTeamSelectorWrapper = document.getElementById('admin-team-selector-wrapper');
+            const exportButtonsContainer = document.getElementById('export-buttons-container');
 
             if (acc.team === 'admin') {
-                inputWrapper.style.display = 'none';
-                document.getElementById('form-title').innerText = `Dashboard Administrator`;
-                btnToggleEdit.classList.remove('hidden'); // Tampilkan tombol mode edit khusus admin
+                inputWrapper.style.display = 'block'; 
+                adminTeamSelectorWrapper.classList.remove('hidden'); 
+                document.getElementById('form-title').innerText = `Dashboard Administrator (Input Segala Bagian)`;
+                btnToggleEdit.classList.remove('hidden'); 
+                exportButtonsContainer.classList.remove('hidden'); 
+                exportButtonsContainer.classList.add('flex');
             } else {
                 inputWrapper.style.display = 'block';
+                adminTeamSelectorWrapper.classList.add('hidden');
                 document.getElementById('form-title').innerText = `Form Input Bagian: Tim ${acc.team.charAt(0).toUpperCase() + acc.team.slice(1)}`;
                 document.getElementById('active-team-key').value = acc.team;
                 btnToggleEdit.classList.add('hidden');
+                exportButtonsContainer.classList.add('hidden'); 
+                exportButtonsContainer.classList.remove('flex');
             }
 
             renderTables();
@@ -390,16 +489,19 @@
                 btn.innerText = 'Mode Edit: ON';
                 btn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
                 btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                showModal('Mode Edit Aktif', 'Administrator sekarang dapat menghapus data di seluruh tabel.', 'success');
             } else {
                 btn.innerText = 'Mode Edit: OFF';
                 btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                 btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+                showModal('Mode Edit Nonaktif', 'Akses hapus data telah dikunci kembali.', 'info');
             }
             renderTables();
         }
 
         window.logout = function() {
             localStorage.removeItem('active_user');
+            localStorage.removeItem('login_time');
             window.adminEditMode = false;
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('dashboard-container').classList.add('hidden');
@@ -410,7 +512,6 @@
             renderTables();
         }
 
-        // Sinkronisasi Real-Time dengan Firestore untuk semua tim
         function initRealtimeListeners() {
             const teams = ['persiapan', 'pengolahan', 'pemorsian'];
             teams.forEach(team => {
@@ -430,7 +531,18 @@
 
         window.handleDataSubmit = async function(e) {
             e.preventDefault();
-            const team = document.getElementById('active-team-key').value;
+            const activeUser = localStorage.getItem('active_user');
+            const acc = activeUser ? accounts[activeUser] : null;
+
+            let targetTeam = '';
+            if (acc && acc.team === 'admin') {
+                targetTeam = document.getElementById('admin-target-team').value;
+            } else if (acc) {
+                targetTeam = acc.team;
+            } else {
+                return;
+            }
+
             const tanggal = document.getElementById('input-tanggal').value;
             const nama = document.getElementById('input-nama').value.trim();
             const jumlah = document.getElementById('input-jumlah').value.trim();
@@ -442,7 +554,7 @@
             if (submitBtn) submitBtn.innerText = 'Menyimpan ke Cloud...';
 
             try {
-                await addDoc(collection(db, team), {
+                await addDoc(collection(db, targetTeam), {
                     tanggal,
                     nama,
                     jumlah,
@@ -453,22 +565,25 @@
                 document.getElementById('input-nama').value = '';
                 document.getElementById('input-jumlah').value = '';
                 document.getElementById('input-keterangan').value = '';
+                showModal('Berhasil', 'Data serah terima berhasil disimpan ke dalam sistem.', 'success');
             } catch (error) {
                 console.error("Gagal menambah data:", error);
-                alert("Terjadi kesalahan saat menyimpan data.");
+                showModal('Gagal', 'Terjadi kesalahan saat menyimpan data ke sistem.', 'error');
             } finally {
                 if (submitBtn) submitBtn.innerText = '+ Tambah Data';
             }
         }
 
         window.deleteItem = async function(team, docId) {
-            if (!confirm('Yakin ingin menghapus data ini?')) return;
-            try {
-                await deleteDoc(doc(db, team, docId));
-            } catch (error) {
-                console.error("Gagal menghapus data:", error);
-                alert("Terjadi kesalahan saat menghapus data.");
-            }
+            showModal('Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus data laporan serah terima ini?', 'confirm', async () => {
+                try {
+                    await deleteDoc(doc(db, team, docId));
+                    showModal('Berhasil', 'Data berhasil dihapus dari arsip.', 'success');
+                } catch (error) {
+                    console.error("Gagal menghapus data:", error);
+                    showModal('Gagal', 'Terjadi kesalahan saat menghapus data.', 'error');
+                }
+            });
         }
 
         window.resetFilter = function() {
@@ -491,9 +606,6 @@
                 document.getElementById('periode-label').innerText = `PERIODE BULAN: KESELURUHAN ARSIP`;
             }
 
-            // Aturan tampil kolom aksi:
-            // 1. Jika tim operasional yang login, tampilkan aksi di tabel miliknya.
-            // 2. Jika admin yang login, tampilkan aksi HANYA JIKA window.adminEditMode bernilai true.
             teams.forEach(team => {
                 const thAction = document.getElementById(`th-action-${team}`);
                 const canManage = activeUser && ((activeTeam === team) || (activeTeam === 'admin' && window.adminEditMode));
@@ -521,7 +633,8 @@
                     return true;
                 });
 
-                countBadge.innerText = `${filteredItems.length} Item`;
+                // Badge dikosongkan (polos mengikuti warna header masing-masing)
+                if (countBadge) countBadge.innerText = '';
 
                 if (filteredItems.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400 italic">Tidak ada data</td></tr>`;
@@ -551,7 +664,6 @@
             });
         }
 
-        // Ekspor Excel, PNG, PDF 
         window.exportToExcel = function() {
             let excelRows = [];
             excelRows.push({ "Kategori": "LAPORAN", "Tanggal": "", "Nama Bahan / Menu": "SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN", "Jumlah": "", "Keterangan": "" });
@@ -569,6 +681,7 @@
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Serah Terima");
             XLSX.writeFile(workbook, "Laporan_Serah_Terima_Bahan_Baku.xlsx");
+            showModal('Ekspor Berhasil', 'File Excel laporan berhasil diunduh.', 'success');
         }
 
         window.exportToPNG = function() {
@@ -577,6 +690,7 @@
                 link.download = 'Laporan_Serah_Terima_Bahan_Baku.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+                showModal('Ekspor Berhasil', 'Gambar PNG laporan berhasil diunduh.', 'success');
             });
         }
 
@@ -602,6 +716,7 @@
                 }
 
                 pdf.save('Laporan_Serah_Terima_Bahan_Baku.pdf');
+                showModal('Ekspor Berhasil', 'Dokumen PDF laporan berhasil diunduh.', 'success');
             });
         }
 
