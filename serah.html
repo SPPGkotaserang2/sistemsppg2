@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serah Terima Bahan Baku dan Menu Makanan</title>
+    <title>Serah Terima Bahan Baku dan Menu Makanan - Terpadu</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,6 +18,9 @@
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; }
+        }
+        table.unified-table th, table.unified-table td {
+            border: 1px solid #111827;
         }
     </style>
 </head>
@@ -187,12 +190,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end no-print bg-gray-50 p-4 rounded-xl border border-gray-100">
                     <div>
                         <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Dari Tanggal</label>
-                        <input type="date" id="filter-start" onchange="renderTables()" 
+                        <input type="date" id="filter-start" onchange="renderUnifiedTable()" 
                             class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Sampai Tanggal</label>
-                        <input type="date" id="filter-end" onchange="renderTables()" 
+                        <input type="date" id="filter-end" onchange="renderUnifiedTable()" 
                             class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
                     </div>
                     <div>
@@ -202,95 +205,52 @@
                     </div>
                 </div>
 
-                <!-- AREA CETAK -->
-                <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6">
-                    <div class="text-center space-y-1 border-b border-gray-200 pb-4">
-                        <h3 class="text-lg font-bold text-gray-900 tracking-wider">SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN</h3>
-                        <h4 class="text-lg font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
-                        <p class="text-xs text-gray-600 font-medium" id="periode-label">PERIODE BULAN: SEMUA WAKTU</p>
+                <!-- AREA CETAK TERPADU (SATU DOKUMEN MIRIP PDF) -->
+                <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6 overflow-x-auto">
+                    <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
+                        <h3 class="text-base sm:text-lg font-bold text-gray-900 tracking-wider">SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN</h3>
+                        <h4 class="text-base sm:text-lg font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
+                        <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE BULAN: SEMUA WAKTU</p>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
-                        <!-- TABEL TIM PERSIAPAN -->
-                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
-                            <div class="bg-amber-500 px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
-                                <span>TIM PERSIAPAN</span>
-                                <span class="bg-amber-600 px-2 py-0.5 rounded text-[10px]" id="count-persiapan"></span>
-                            </div>
-                            <div class="p-3 flex-grow overflow-x-auto">
-                                <table class="w-full text-left text-xs">
-                                    <thead>
-                                        <tr class="border-b text-gray-500">
-                                            <th class="pb-2 font-semibold">Tanggal</th>
-                                            <th class="pb-2 font-semibold">Bahan Baku Makanan</th>
-                                            <th class="pb-2 font-semibold">Jumlah</th>
-                                            <th class="pb-2 font-semibold">Keterangan</th>
-                                            <th id="th-action-persiapan" class="pb-2 font-semibold text-right action-col hidden">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="table-persiapan" class="divide-y divide-gray-100"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- TABEL TIM PENGOLAHAN -->
-                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
-                            <div class="bg-[#0047AB] px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
-                                <span>TIM PENGOLAHAN & MENU</span>
-                                <span class="bg-[#003380] px-2 py-0.5 rounded text-[10px]" id="count-pengolahan"></span>
-                            </div>
-                            <div class="p-3 flex-grow overflow-x-auto">
-                                <table class="w-full text-left text-xs">
-                                    <thead>
-                                        <tr class="border-b text-gray-500">
-                                            <th class="pb-2 font-semibold">Tanggal</th>
-                                            <th class="pb-2 font-semibold">Menu Makanan</th>
-                                            <th class="pb-2 font-semibold">Jumlah</th>
-                                            <th class="pb-2 font-semibold">Keterangan</th>
-                                            <th id="th-action-pengolahan" class="pb-2 font-semibold text-right action-col hidden">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="table-pengolahan" class="divide-y divide-gray-100"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- TABEL TIM PEMORSIAN -->
-                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
-                            <div class="bg-indigo-600 px-4 py-2.5 text-white font-bold text-xs flex justify-between items-center">
-                                <span>TIM PEMORSIAN & PACKING</span>
-                                <span class="bg-indigo-700 px-2 py-0.5 rounded text-[10px]" id="count-pemorsian"></span>
-                            </div>
-                            <div class="p-3 flex-grow overflow-x-auto">
-                                <table class="w-full text-left text-xs">
-                                    <thead>
-                                        <tr class="border-b text-gray-500">
-                                            <th class="pb-2 font-semibold">Tanggal</th>
-                                            <th class="pb-2 font-semibold">Menu Makanan</th>
-                                            <th class="pb-2 font-semibold">Jumlah yang di terima</th>
-                                            <th class="pb-2 font-semibold">Keterangan</th>
-                                            <th id="th-action-pemorsian" class="pb-2 font-semibold text-right action-col hidden">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="table-pemorsian" class="divide-y divide-gray-100"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                    </div>
+                    <!-- TABEL TERPADU SATU DOKUMEN -->
+                    <table class="w-full text-left text-xs border-collapse unified-table">
+                        <thead>
+                            <tr class="bg-gray-100 text-center font-bold text-gray-900">
+                                <th rowspan="2" class="p-2 border border-gray-800 w-12">NO</th>
+                                <th colspan="3" class="p-2 border border-gray-800 bg-amber-100">TIM PERSIAPAN</th>
+                                <th colspan="3" class="p-2 border border-gray-800 bg-blue-100">TIM PENGOLAHAN</th>
+                                <th colspan="3" class="p-2 border border-gray-800 bg-indigo-100">TIM PEMORSIAN</th>
+                                <th rowspan="2" class="p-2 border border-gray-800 w-24 action-col hidden">Aksi</th>
+                            </tr>
+                            <tr class="bg-gray-50 text-center font-semibold text-gray-800">
+                                <th class="p-2 border border-gray-800">Bahan Baku</th>
+                                <th class="p-2 border border-gray-800 w-20">Jumlah</th>
+                                <th class="p-2 border border-gray-800 w-24">Ket</th>
+                                <th class="p-2 border border-gray-800">Menu Makanan</th>
+                                <th class="p-2 border border-gray-800 w-20">Jumlah</th>
+                                <th class="p-2 border border-gray-800 w-24">Ket</th>
+                                <th class="p-2 border border-gray-800">Menu Makanan</th>
+                                <th class="p-2 border border-gray-800 w-20">Jumlah</th>
+                                <th class="p-2 border border-gray-800 w-24">Ket</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unified-table-body" class="divide-y divide-gray-200">
+                            <!-- Baris data disuntikkan via JS -->
+                        </tbody>
+                    </table>
 
                     <!-- Tanda Tangan -->
-                    <div class="grid grid-cols-2 pt-8 text-center text-xs font-semibold text-gray-700 mt-6 border-t border-gray-100">
+                    <div class="grid grid-cols-2 pt-10 text-center text-xs font-semibold text-gray-800 mt-8 border-t border-gray-200">
                         <div>
-                            <p class="mb-12">PENANGGUNG JAWAB</p>
+                            <p class="mb-14">PENANGGUNG JAWAB</p>
                             <p class="font-bold underline">NURHAJANAH</p>
-                            <p class="text-[11px] text-gray-500 font-normal">KOKI</p>
+                            <p class="text-[11px] text-gray-600 font-normal">KOKI</p>
                         </div>
                         <div>
-                            <p class="mb-12">MENGETAHUI</p>
+                            <p class="mb-14">MENGETAHUI</p>
                             <p class="font-bold underline">FAJAR RIZKI RAMADHAN</p>
-                            <p class="text-[11px] text-gray-500 font-normal">ASLAP</p>
+                            <p class="text-[11px] text-gray-600 font-normal">ASLAP</p>
                         </div>
                     </div>
                 </div>
@@ -451,7 +411,7 @@
                     showDashboard(activeUser);
                 }
             } else {
-                renderTables(); 
+                renderUnifiedTable(); 
             }
             
             initRealtimeListeners();
@@ -513,7 +473,7 @@
                 exportButtonsContainer.classList.remove('flex');
             }
 
-            renderTables();
+            renderUnifiedTable();
         }
 
         window.toggleAdminEditMode = function() {
@@ -530,7 +490,7 @@
                 btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
                 showModal('Mode Edit Nonaktif', 'Akses hapus data telah dikunci kembali.', 'info');
             }
-            renderTables();
+            renderUnifiedTable();
         }
 
         window.logout = function() {
@@ -543,7 +503,7 @@
             document.getElementById('user-session-bar').classList.add('hidden');
             document.getElementById('login-user').value = '';
             document.getElementById('login-pass').value = '';
-            renderTables();
+            renderUnifiedTable();
         }
 
         function initRealtimeListeners() {
@@ -556,14 +516,13 @@
                         items.push({ docId: docSnap.id, ...docSnap.data() });
                     });
                     window.appData[team] = items;
-                    renderTables();
+                    renderUnifiedTable();
                 }, (error) => {
                     console.error("Gagal memuat data dari Firestore:", error);
                 });
             });
         }
 
-        // SIMPAN INSTAN SECEPAT KILAT (OPTIMISTIC UI & BACKGROUND SYNC)
         window.handleDataSubmit = async function(e) {
             e.preventDefault();
             const activeUser = localStorage.getItem('active_user');
@@ -585,21 +544,18 @@
 
             if (!tanggal || !nama || !jumlah) return;
 
-            // 1. Buat data lokal sementara secara kilat tanpa menunggu loading lama
             const tempDocId = 'temp_' + Date.now();
             const newItem = { docId: tempDocId, tanggal, nama, jumlah, keterangan, createdAt: Date.now() };
             
             if (!window.appData[targetTeam]) window.appData[targetTeam] = [];
-            window.appData[targetTeam].unshift(newItem); // Masuk paling atas arsip seketika
-            renderTables(); // Update tampilan tabel seketika
+            window.appData[targetTeam].unshift(newItem);
+            renderUnifiedTable();
 
-            // Reset form langsung kilat
             document.getElementById('input-nama').value = '';
             document.getElementById('input-jumlah').value = '';
             document.getElementById('input-keterangan').value = '';
-            showModal('Berhasil!', 'Data serah terima berhasi disimpan.', 'success');
+            showModal('Berhasil!', 'Data serah terima berhasil disimpan.', 'success');
 
-            // 2. Simpan ke Firebase & Kirim Telegram secara asynchronous di background
             try {
                 addDoc(collection(db, targetTeam), {
                     tanggal,
@@ -629,11 +585,10 @@
         window.resetFilter = function() {
             document.getElementById('filter-start').value = '';
             document.getElementById('filter-end').value = '';
-            renderTables();
+            renderUnifiedTable();
         }
 
-        window.renderTables = function() {
-            const teams = ['persiapan', 'pengolahan', 'pemorsian'];
+        window.renderUnifiedTable = function() {
             const activeUser = localStorage.getItem('active_user');
             const activeTeam = activeUser ? accounts[activeUser].team : null;
 
@@ -646,90 +601,116 @@
                 document.getElementById('periode-label').innerText = `PERIODE BULAN : KESELURUHAN ARSIP`;
             }
 
-            teams.forEach(team => {
-                const thAction = document.getElementById(`th-action-${team}`);
-                const canManage = activeUser && ((activeTeam === team) || (activeTeam === 'admin' && window.adminEditMode));
-                
-                if (thAction) {
-                    if (canManage) {
-                        thAction.classList.remove('hidden');
-                    } else {
-                        thAction.classList.add('hidden');
-                    }
-                }
-            });
-
-            teams.forEach(team => {
-                const tbody = document.getElementById(`table-${team}`);
-                const countBadge = document.getElementById(`count-${team}`);
-                if (!tbody) return;
-                tbody.innerHTML = '';
-
-                let items = window.appData[team] || [];
-                let filteredItems = items.filter(item => {
+            // Filter item per team berdasarkan tanggal
+            const filterByDate = (items) => {
+                return (items || []).filter(item => {
                     if (!item.tanggal) return true;
                     if (startDate && item.tanggal < startDate) return false;
                     if (endDate && item.tanggal > endDate) return false;
                     return true;
                 });
+            };
 
-                if (countBadge) countBadge.innerText = '';
+            const persiapanList = filterByDate(window.appData.persiapan);
+            const pengolahanList = filterByDate(window.appData.pengolahan);
+            const pemorsianList = filterByDate(window.appData.pemorsian);
 
-                if (filteredItems.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400 italic">Tidak ada data</td></tr>`;
-                } else {
-                    filteredItems.forEach(item => {
-                        const canManage = activeUser && ((activeTeam === team) || (activeTeam === 'admin' && window.adminEditMode));
-                        
-                        let tr = document.createElement('tr');
-                        tr.className = 'hover:bg-gray-50 transition';
-                        
-                        let actionTdHtml = canManage ? `
-                            <td class="py-2 text-right action-col">
-                                <button onclick="deleteItem('${team}', '${item.docId}')" class="text-red-500 hover:text-red-700 font-semibold px-1.5 py-0.5 rounded text-[11px] bg-red-50 hover:bg-red-100 transition">Hapus</button>
-                            </td>
-                        ` : '';
+            const maxRows = Math.max(persiapanList.length, pengolahanList.length, pemorsianList.length, 1);
+            const tbody = document.getElementById('unified-table-body');
+            tbody.innerHTML = '';
 
-                        tr.innerHTML = `
-                            <td class="py-2 text-gray-500 whitespace-nowrap">${escapeHtml(item.tanggal || '-')}</td>
-                            <td class="py-2 font-medium text-gray-900">${escapeHtml(item.nama)}</td>
-                            <td class="py-2 text-gray-600">${escapeHtml(item.jumlah)}</td>
-                            <td class="py-2 text-gray-500">${escapeHtml(item.keterangan)}</td>
-                            ${actionTdHtml}
-                        `;
-                        tbody.appendChild(tr);
-                    });
+            const canManageTeam = (team) => activeUser && ((activeTeam === team) || (activeTeam === 'admin' && window.adminEditMode));
+
+            for (let i = 0; i < maxRows; i++) {
+                const pItem = persiapanList[i] || {};
+                const oItem = pengolahanList[i] || {};
+                const mItem = pemorsianList[i] || {};
+
+                let tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition text-center';
+
+                // Kolom Aksi gabungan jika salah satu baris memiliki hak kelola
+                let actionCellHtml = '';
+                const showActionCol = activeUser && (activeTeam === 'admin' && window.adminEditMode);
+                
+                if (showActionCol) {
+                    let actionButtons = [];
+                    if (pItem.docId && activeTeam === 'persiapan') actionButtons.push(`<button onclick="deleteItem('persiapan', '${pItem.docId}')" class="text-red-600 text-[10px] underline">Hapus Persiapan</button>`);
+                    if (oItem.docId && activeTeam === 'pengolahan') actionButtons.push(`<button onclick="deleteItem('pengolahan', '${oItem.docId}')" class="text-red-600 text-[10px] underline">Hapus Pengolahan</button>`);
+                    if (mItem.docId && activeTeam === 'pemorsian') actionButtons.push(`<button onclick="deleteItem('pemorsian', '${mItem.docId}')" class="text-red-600 text-[10px] underline">Hapus Pemorsian</button>`);
+                    
+                    if (activeTeam === 'admin') {
+                        if (pItem.docId) actionButtons.push(`<button onclick="deleteItem('persiapan', '${pItem.docId}')" class="text-red-600 text-[10px] block">Del Persiapan</button>`);
+                        if (oItem.docId) actionButtons.push(`<button onclick="deleteItem('pengolahan', '${oItem.docId}')" class="text-red-600 text-[10px] block">Del Pengolahan</button>`);
+                        if (mItem.docId) actionButtons.push(`<button onclick="deleteItem('pemorsian', '${mItem.docId}')" class="text-red-600 text-[10px] block">Del Pemorsian</button>`);
+                    }
+
+                    actionCellHtml = `<td class="p-1.5 border border-gray-800 text-right action-col">${actionButtons.join(' ')}</td>`;
                 }
-            });
+
+                tr.innerHTML = `
+                    <td class="p-1.5 border border-gray-800 font-semibold">${i + 1}</td>
+                    <!-- Tim Persiapan -->
+                    <td class="p-1.5 border border-gray-800 text-left">${escapeHtml(pItem.nama || '')}</td>
+                    <td class="p-1.5 border border-gray-800">${escapeHtml(pItem.jumlah || '')}</td>
+                    <td class="p-1.5 border border-gray-800">${escapeHtml(pItem.keterangan || '')}</td>
+                    <!-- Tim Pengolahan -->
+                    <td class="p-1.5 border border-gray-800 text-left">${escapeHtml(oItem.nama || '')}</td>
+                    <td class="p-1.5 border border-gray-800">${escapeHtml(oItem.jumlah || '')}</td>
+                    <td class="p-1.5 border border-gray-800">${escapeHtml(oItem.keterangan || '')}</td>
+                    <!-- Tim Pemorsian -->
+                    <td class="p-1.5 border border-gray-800 text-left">${escapeHtml(mItem.nama || '')}</td>
+                    <td class="p-1.5 border border-gray-800">${escapeHtml(mItem.jumlah || '')}</td>
+                    <td class="p-1.5 border border-gray-800">${escapeHtml(mItem.keterangan || '')}</td>
+                    ${showActionCol ? actionCellHtml : ''}
+                `;
+                tbody.appendChild(tr);
+            }
         }
 
         window.exportToExcel = function() {
             let excelRows = [];
-            excelRows.push({ "Kategori": "LAPORAN", "Tanggal": "", "Nama Bahan / Menu": "SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN", "Jumlah": "", "Keterangan": "" });
+            excelRows.push({ "NO": "LAPORAN TERPADU SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN" });
             excelRows.push({});
 
-            ['persiapan', 'pengolahan', 'pemorsian'].forEach(team => {
-                excelRows.push({ "Kategori": `TIM ${team.toUpperCase()}`, "Tanggal": "", "Nama Bahan / Menu": "", "Jumlah": "", "Keterangan": "" });
-                (window.appData[team] || []).forEach(item => {
-                    excelRows.push({ "Kategori": team, "Tanggal": item.tanggal, "Nama Bahan / Menu": item.nama, "Jumlah": item.jumlah, "Keterangan": item.keterangan });
+            const persiapanList = window.appData.persiapan || [];
+            const pengolahanList = window.appData.pengolahan || [];
+            const pemorsianList = window.appData.pemorsian || [];
+            const maxRows = Math.max(persiapanList.length, pengolahanList.length, pemorsianList.length);
+
+            for (let i = 0; i < maxRows; i++) {
+                const p = persiapanList[i] || {};
+                const o = pengolahanList[i] || {};
+                const m = pemorsianList[i] || {};
+
+                excelRows.push({
+                    "NO": i + 1,
+                    "Bahan Baku (Persiapan)": p.nama || '',
+                    "Jumlah (Persiapan)": p.jumlah || '',
+                    "Ket (Persiapan)": p.keterangan || '',
+                    "Menu Makanan (Pengolahan)": o.nama || '',
+                    "Jumlah (Pengolahan)": o.jumlah || '',
+                    "Ket (Pengolahan)": o.keterangan || '',
+                    "Menu Makanan (Pemorsian)": m.nama || '',
+                    "Jumlah (Pemorsian)": m.jumlah || '',
+                    "Ket (Pemorsian)": m.keterangan || ''
                 });
-                excelRows.push({});
-            });
+            }
 
             const worksheet = XLSX.utils.json_to_sheet(excelRows);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Serah Terima");
-            XLSX.writeFile(workbook, "Laporan_Serah_Terima_Bahan_Baku.xlsx");
-            showModal('Ekspor Berhasil', 'File Excel laporan berhasil diunduh.', 'success');
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Terpadu");
+            XLSX.writeFile(workbook, "Laporan_Serah_Terima_Terpadu.xlsx");
+            showModal('Ekspor Berhasil', 'File Excel laporan terpadu berhasil diunduh.', 'success');
         }
 
         window.exportToPNG = function() {
             html2canvas(document.getElementById('printable-area'), { scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'Laporan_Serah_Terima_Bahan_Baku.png';
+                link.download = 'Laporan_Serah_Terima_Terpadu.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                showModal('Ekspor Berhasil', 'Gambar PNG laporan berhasil diunduh.', 'success');
+                showModal('Ekspor Berhasil', 'Gambar PNG laporan terpadu berhasil diunduh.', 'success');
             });
         }
 
@@ -754,8 +735,8 @@
                     heightLeft -= pageHeight;
                 }
 
-                pdf.save('Laporan_Serah_Terima_Bahan_Baku.pdf');
-                showModal('Ekspor Berhasil', 'Dokumen PDF laporan berhasil diunduh.', 'success');
+                pdf.save('Laporan_Serah_Terima_Terpadu.pdf');
+                showModal('Ekspor Berhasil', 'Dokumen PDF laporan terpadu berhasil diunduh.', 'success');
             });
         }
 
