@@ -268,7 +268,7 @@
                                         <tr class="border-b text-gray-500">
                                             <th class="pb-2 font-semibold">Tanggal</th>
                                             <th class="pb-2 font-semibold">Menu Makanan</th>
-                                            <th class="pb-2 font-semibold">Jumlah</th>
+                                            <th class="pb-2 font-semibold">Jumlah yang di terima</th>
                                             <th class="pb-2 font-semibold">Keterangan</th>
                                             <th id="th-action-pemorsian" class="pb-2 font-semibold text-right action-col hidden">Aksi</th>
                                         </tr>
@@ -643,7 +643,7 @@
             if (startDate || endDate) {
                 document.getElementById('periode-label').innerText = `PERIODE TANGGAL: ${startDate || 'Awal'} s.d. ${endDate || 'Sekarang'}`;
             } else {
-                document.getElementById('periode-label').innerText = `PERIODE BULAN: KESELURUHAN ARSIP`;
+                document.getElementById('periode-label').innerText = `PERIODE BULAN : KESELURUHAN ARSIP`;
             }
 
             teams.forEach(team => {
