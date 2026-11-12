@@ -18,6 +18,7 @@
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; }
+            #printable-area { border: none !important; padding: 0 !important; box-shadow: none !important; }
         }
         table.unified-table th, table.unified-table td {
             border: 1px solid #111827;
@@ -36,6 +37,9 @@
                 <div>
                     <h3 id="modal-title" class="text-base font-bold text-gray-900 tracking-tight">Notifikasi Sistem</h3>
                     <p id="modal-message" class="text-xs text-gray-500 mt-1 leading-relaxed">-</p>
+                </div>
+                <div id="modal-body-content" class="mt-2 text-left">
+                    <!-- Konten dinamis tambahan -->
                 </div>
                 <div id="modal-actions" class="pt-3 flex gap-2 justify-center">
                     <button id="modal-btn-ok" onclick="closeModal()" class="w-full bg-[#0047AB] hover:bg-[#003380] text-white font-semibold py-2 px-4 rounded-xl transition shadow-md text-xs">
@@ -57,13 +61,11 @@
                 </div>
             </div>
             
-            <!-- Area Status Login / Tombol Keluar -->
             <div id="user-session-bar" class="hidden items-center gap-3 bg-blue-50 border border-blue-100 px-4 py-2 rounded-xl">
                 <div>
                     <p class="text-xs text-[#0047AB] font-medium">Masuk Sebagai :</p>
                     <p class="text-sm font-bold text-blue-900" id="logged-user-name">-</p>
                 </div>
-                <!-- Tombol Mode Edit Khusus Admin -->
                 <button id="btn-toggle-edit" onclick="toggleAdminEditMode()" class="hidden bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-sm">
                     Mode Edit: OFF
                 </button>
@@ -127,7 +129,6 @@
                 <form id="dynamic-form" onsubmit="handleDataSubmit(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-5 items-end">
                     <input type="hidden" id="active-team-key">
                     
-                    <!-- Pilihan Tim Khusus Admin -->
                     <div id="admin-team-selector-wrapper" class="hidden sm:col-span-5 mb-1 bg-blue-50 p-4 rounded-2xl border border-blue-200">
                         <label class="block text-xs font-bold uppercase text-[#0047AB] mb-1.5 tracking-wider">Pilih Bagian Tim untuk Input Data</label>
                         <select id="admin-target-team" class="w-full px-4 py-3 rounded-xl border border-blue-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm font-semibold bg-white text-[#0047AB]">
@@ -172,8 +173,10 @@
                         <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Data Serah Terima</h2>
                         <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
                     </div>
-                    <!-- Tombol Ekspor Khusus Admin -->
                     <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
+                        <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                            🖨️ Cetak / Print
+                        </button>
                         <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
                             📊 Ekspor Excel
                         </button>
@@ -205,7 +208,7 @@
                     </div>
                 </div>
 
-                <!-- AREA CETAK TERPADU (SATU DOKUMEN MIRIP PDF) -->
+                <!-- AREA CETAK TERPADU -->
                 <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6 overflow-x-auto">
                     <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
                         <h3 class="text-base sm:text-lg font-bold text-gray-900 tracking-wider">SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN</h3>
@@ -217,22 +220,24 @@
                     <table class="w-full text-left text-xs border-collapse unified-table">
                         <thead>
                             <tr class="bg-gray-100 text-center font-bold text-gray-900">
-                                <th rowspan="2" class="p-2 border border-gray-800 w-12">NO</th>
+                                <th class="p-2 border border-gray-800 w-16 text-center align-middle bg-gray-100 font-bold text-gray-900">NO</th>
                                 <th colspan="3" class="p-2 border border-gray-800 bg-amber-100">TIM PERSIAPAN</th>
                                 <th colspan="3" class="p-2 border border-gray-800 bg-blue-100">TIM PENGOLAHAN</th>
                                 <th colspan="3" class="p-2 border border-gray-800 bg-indigo-100">TIM PEMORSIAN</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 w-24 action-col hidden">Aksi</th>
+                                <th class="p-2 border border-gray-800 w-24 action-col hidden">Aksi</th>
                             </tr>
                             <tr class="bg-gray-50 text-center font-semibold text-gray-800">
+                                <th class="p-2 border border-gray-800 bg-gray-100"></th> <!-- Kolom kosong penyeimbang sel NO -->
                                 <th class="p-2 border border-gray-800">Bahan Baku</th>
-                                <th class="p-2 border border-gray-800 w-20">Jumlah</th>
+                                <th class="p-2 border border-gray-800 w-20">Jumlah Awal</th>
                                 <th class="p-2 border border-gray-800 w-24">Ket</th>
                                 <th class="p-2 border border-gray-800">Menu Makanan</th>
-                                <th class="p-2 border border-gray-800 w-20">Jumlah</th>
+                                <th class="p-2 border border-gray-800 w-20">Jumlah Diberikan</th>
                                 <th class="p-2 border border-gray-800 w-24">Ket</th>
                                 <th class="p-2 border border-gray-800">Menu Makanan</th>
-                                <th class="p-2 border border-gray-800 w-20">Jumlah</th>
-                                <th class="p-2 border border-gray-800 w-24">Ket</th>
+                                <th class="p-2 border border-gray-800 w-20">Jumlah Diterima</th>
+                                <th class="p-2 border border-gray-800 w-24">Sisa Makanan</th>
+                                <th class="p-2 border border-gray-800 action-col hidden"></th>
                             </tr>
                         </thead>
                         <tbody id="unified-table-body" class="divide-y divide-gray-200">
@@ -269,7 +274,7 @@
     <!-- SCRIPT FIREBASE & APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCKTFGrqZXQlNE9HI7JcHoefxN4f4IH73o",
@@ -294,7 +299,6 @@
             'Anisa': { pass: 'Anisa2', team: 'pemorsian', name: 'Anisa (Tim Pemorsian)' }
         };
 
-        // Konfigurasi Bot Telegram
         const TELEGRAM_BOT_TOKEN = "9031682305:AAE5wB1jzkWNZlX0sfXHQVplkPqsnZDybAg";
         const TELEGRAM_CHAT_ID = "9212263609";
 
@@ -329,17 +333,18 @@
             }
         }
 
-        // Fungsi Notifikasi Mewah Kustom
-        window.showModal = function(title, message, type = 'info', callback = null) {
+        window.showModal = function(title, message, type = 'info', callback = null, customHtmlContent = null) {
             const modal = document.getElementById('custom-modal');
             const box = document.getElementById('modal-box');
             const titleEl = document.getElementById('modal-title');
             const msgEl = document.getElementById('modal-message');
             const iconContainer = document.getElementById('modal-icon-container');
             const actionsEl = document.getElementById('modal-actions');
+            const bodyContentEl = document.getElementById('modal-body-content');
 
             titleEl.innerText = title;
             msgEl.innerText = message;
+            bodyContentEl.innerHTML = customHtmlContent || '';
 
             if (type === 'success') {
                 iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-inner";
@@ -347,7 +352,7 @@
             } else if (type === 'error') {
                 iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-red-100 text-red-600 flex items-center justify-center shadow-inner";
                 iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>`;
-            } else if (type === 'confirm') {
+            } else if (type === 'confirm' || type === 'form') {
                 iconContainer.className = "w-12 h-12 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shadow-inner";
                 iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
             } else {
@@ -363,6 +368,15 @@
                 document.getElementById('modal-btn-cancel').onclick = () => closeModal();
                 document.getElementById('modal-btn-confirm').onclick = () => {
                     closeModal();
+                    if (callback) callback();
+                };
+            } else if (type === 'form') {
+                actionsEl.innerHTML = `
+                    <button id="modal-btn-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-3 rounded-xl transition text-xs">Batal</button>
+                    <button id="modal-btn-confirm" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-3 rounded-xl transition shadow-md text-xs">Simpan Perubahan</button>
+                `;
+                document.getElementById('modal-btn-cancel').onclick = () => closeModal();
+                document.getElementById('modal-btn-confirm').onclick = () => {
                     if (callback) callback();
                 };
             } else {
@@ -483,12 +497,12 @@
                 btn.innerText = 'Mode Edit: ON';
                 btn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
                 btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                showModal('Mode Edit Aktif', 'Administrator sekarang dapat menghapus data di seluruh tabel.', 'success');
+                showModal('Mode Edit Aktif', 'Administrator sekarang dapat mengubah/menghapus data di seluruh tabel.', 'success');
             } else {
                 btn.innerText = 'Mode Edit: OFF';
                 btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                 btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
-                showModal('Mode Edit Nonaktif', 'Akses hapus data telah dikunci kembali.', 'info');
+                showModal('Mode Edit Nonaktif', 'Akses edit & hapus data telah dikunci kembali.', 'info');
             }
             renderUnifiedTable();
         }
@@ -582,6 +596,53 @@
             });
         }
 
+        window.editItemPrompt = function(team, docId, currentTanggal, currentNama, currentJumlah, currentKeterangan) {
+            const formHtml = `
+                <div class="space-y-3 pt-2">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Tanggal</label>
+                        <input type="date" id="edit-modal-tanggal" value="${currentTanggal}" class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Nama Bahan/Menu</label>
+                        <input type="text" id="edit-modal-nama" value="${currentNama}" class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Jumlah</label>
+                        <input type="text" id="edit-modal-jumlah" value="${currentJumlah}" class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Keterangan</label>
+                        <input type="text" id="edit-modal-keterangan" value="${currentKeterangan}" class="w-full px-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-xs">
+                    </div>
+                </div>
+            `;
+
+            showModal('Edit Data Laporan', 'Perbarui detail data serah terima di bawah ini:', 'form', () => {
+                const newTanggal = document.getElementById('edit-modal-tanggal').value;
+                const newNama = document.getElementById('edit-modal-nama').value.trim();
+                const newJumlah = document.getElementById('edit-modal-jumlah').value.trim();
+                const newKeterangan = document.getElementById('edit-modal-keterangan').value.trim();
+
+                if (!newTanggal || !newNama || !newJumlah) {
+                    showModal('Peringatan', 'Tanggal, Nama, dan Jumlah tidak boleh kosong!', 'error');
+                    return;
+                }
+
+                updateDoc(doc(db, team, docId), {
+                    tanggal: newTanggal,
+                    nama: newNama,
+                    jumlah: newJumlah,
+                    keterangan: newKeterangan || '-'
+                }).then(() => {
+                    showModal('Berhasil', 'Data berhasil diperbarui.', 'success');
+                }).catch(error => {
+                    console.error("Gagal memperbarui data:", error);
+                    showModal('Gagal', 'Terjadi kesalahan saat memperbarui data.', 'error');
+                });
+            }, formHtml);
+        }
+
         window.resetFilter = function() {
             document.getElementById('filter-start').value = '';
             document.getElementById('filter-end').value = '';
@@ -601,7 +662,6 @@
                 document.getElementById('periode-label').innerText = `PERIODE BULAN : KESELURUHAN ARSIP`;
             }
 
-            // Filter item per team berdasarkan tanggal
             const filterByDate = (items) => {
                 return (items || []).filter(item => {
                     if (!item.tanggal) return true;
@@ -619,8 +679,6 @@
             const tbody = document.getElementById('unified-table-body');
             tbody.innerHTML = '';
 
-            const canManageTeam = (team) => activeUser && ((activeTeam === team) || (activeTeam === 'admin' && window.adminEditMode));
-
             for (let i = 0; i < maxRows; i++) {
                 const pItem = persiapanList[i] || {};
                 const oItem = pengolahanList[i] || {};
@@ -629,27 +687,29 @@
                 let tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50 transition text-center';
 
-                // Kolom Aksi gabungan jika salah satu baris memiliki hak kelola
                 let actionCellHtml = '';
                 const showActionCol = activeUser && (activeTeam === 'admin' && window.adminEditMode);
                 
                 if (showActionCol) {
                     let actionButtons = [];
-                    if (pItem.docId && activeTeam === 'persiapan') actionButtons.push(`<button onclick="deleteItem('persiapan', '${pItem.docId}')" class="text-red-600 text-[10px] underline">Hapus Persiapan</button>`);
-                    if (oItem.docId && activeTeam === 'pengolahan') actionButtons.push(`<button onclick="deleteItem('pengolahan', '${oItem.docId}')" class="text-red-600 text-[10px] underline">Hapus Pengolahan</button>`);
-                    if (mItem.docId && activeTeam === 'pemorsian') actionButtons.push(`<button onclick="deleteItem('pemorsian', '${mItem.docId}')" class="text-red-600 text-[10px] underline">Hapus Pemorsian</button>`);
-                    
-                    if (activeTeam === 'admin') {
-                        if (pItem.docId) actionButtons.push(`<button onclick="deleteItem('persiapan', '${pItem.docId}')" class="text-red-600 text-[10px] block">Del Persiapan</button>`);
-                        if (oItem.docId) actionButtons.push(`<button onclick="deleteItem('pengolahan', '${oItem.docId}')" class="text-red-600 text-[10px] block">Del Pengolahan</button>`);
-                        if (mItem.docId) actionButtons.push(`<button onclick="deleteItem('pemorsian', '${mItem.docId}')" class="text-red-600 text-[10px] block">Del Pemorsian</button>`);
+                    if (pItem.docId) {
+                        actionButtons.push(`<button onclick="editItemPrompt('persiapan', '${pItem.docId}', '${pItem.tanggal || ''}', '${escapeQuote(pItem.nama || '')}', '${escapeQuote(pItem.jumlah || '')}', '${escapeQuote(pItem.keterangan || '')}')" class="text-blue-600 text-[10px] block underline">Edit Persiapan</button>`);
+                        actionButtons.push(`<button onclick="deleteItem('persiapan', '${pItem.docId}')" class="text-red-600 text-[10px] block underline">Del Persiapan</button>`);
+                    }
+                    if (oItem.docId) {
+                        actionButtons.push(`<button onclick="editItemPrompt('pengolahan', '${oItem.docId}', '${oItem.tanggal || ''}', '${escapeQuote(oItem.nama || '')}', '${escapeQuote(oItem.jumlah || '')}', '${escapeQuote(oItem.keterangan || '')}')" class="text-blue-600 text-[10px] block underline">Edit Pengolahan</button>`);
+                        actionButtons.push(`<button onclick="deleteItem('pengolahan', '${oItem.docId}')" class="text-red-600 text-[10px] block underline">Del Pengolahan</button>`);
+                    }
+                    if (mItem.docId) {
+                        actionButtons.push(`<button onclick="editItemPrompt('pemorsian', '${mItem.docId}', '${mItem.tanggal || ''}', '${escapeQuote(mItem.nama || '')}', '${escapeQuote(mItem.jumlah || '')}', '${escapeQuote(mItem.keterangan || '')}')" class="text-blue-600 text-[10px] block underline">Edit Pemorsian</button>`);
+                        actionButtons.push(`<button onclick="deleteItem('pemorsian', '${mItem.docId}')" class="text-red-600 text-[10px] block underline">Del Pemorsian</button>`);
                     }
 
                     actionCellHtml = `<td class="p-1.5 border border-gray-800 text-right action-col">${actionButtons.join(' ')}</td>`;
                 }
 
                 tr.innerHTML = `
-                    <td class="p-1.5 border border-gray-800 font-semibold">${i + 1}</td>
+                    <td class="p-2 border border-gray-800 font-semibold text-center whitespace-nowrap bg-gray-50">${i + 1}</td>
                     <!-- Tim Persiapan -->
                     <td class="p-1.5 border border-gray-800 text-left">${escapeHtml(pItem.nama || '')}</td>
                     <td class="p-1.5 border border-gray-800">${escapeHtml(pItem.jumlah || '')}</td>
@@ -668,10 +728,29 @@
             }
         }
 
+        // Perbaikan fungsi ekspor Excel agar kolom NO terisi dengan benar di baris tabel Excel
         window.exportToExcel = function() {
             let excelRows = [];
-            excelRows.push({ "NO": "LAPORAN TERPADU SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN" });
-            excelRows.push({});
+            
+            // Tambahkan baris informasi judul di atas tabel untuk Excel
+            excelRows.push({ "NO": "SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN" });
+            excelRows.push({ "NO": "SPPG KOTA SERANG SERANG SERANG 2" });
+            excelRows.push({ "NO": document.getElementById('periode-label').innerText });
+            excelRows.push({}); // Baris kosong
+
+            // Header kolom untuk SheetJS
+            excelRows.push({
+                "NO": "NO",
+                "Bahan Baku (Persiapan)": "TIM PERSIAPAN: Bahan Baku",
+                "Jumlah (Persiapan)": "Jumlah",
+                "Ket (Persiapan)": "Ket",
+                "Menu Makanan (Pengolahan)": "TIM PENGOLAHAN: Menu Makanan",
+                "Jumlah (Pengolahan)": "Jumlah",
+                "Ket (Pengolahan)": "Ket",
+                "Menu Makanan (Pemorsian)": "TIM PEMORSIAN: Menu Makanan",
+                "Jumlah (Pemorsian)": "Jumlah",
+                "Ket (Pemorsian)": "Ket"
+            });
 
             const persiapanList = window.appData.persiapan || [];
             const pengolahanList = window.appData.pengolahan || [];
@@ -697,7 +776,7 @@
                 });
             }
 
-            const worksheet = XLSX.utils.json_to_sheet(excelRows);
+            const worksheet = XLSX.utils.json_to_sheet(excelRows, { skipHeader: true, origin: "A1" });
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Terpadu");
             XLSX.writeFile(workbook, "Laporan_Serah_Terima_Terpadu.xlsx");
@@ -742,6 +821,10 @@
 
         function escapeHtml(str) {
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function escapeQuote(str) {
+            return String(str).replace(/'/g, "\\'").replace(/"/g, "&quot;");
         }
     </script>
 </body>
