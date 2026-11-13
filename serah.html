@@ -203,7 +203,7 @@
                     </div>
                     <div>
                         <button onclick="resetFilter()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-xl transition text-sm">
-                            Reset Filter Tanggal
+                            Reset ke Hari Ini
                         </button>
                     </div>
                 </div>
@@ -213,7 +213,7 @@
                     <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
                         <h3 class="text-base sm:text-lg font-bold text-gray-900 tracking-wider">SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN</h3>
                         <h4 class="text-base sm:text-lg font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
-                        <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE BULAN: SEMUA WAKTU</p>
+                        <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE TANGGAL HARI INI</p>
                     </div>
 
                     <!-- TABEL TERPADU SATU DOKUMEN -->
@@ -400,6 +400,19 @@
             }, 200);
         }
 
+        // Fungsi penentuan tanggal otomatis: jika sudah lewat jam 19:00, tanggal otomatis maju 1 hari
+        function getSmartTargetDate() {
+            const now = new Date();
+            // Jika jam sudah >= 19 (19:00 ke atas), tambah 1 hari
+            if (now.getHours() >= 19) {
+                now.setDate(now.getDate() + 1);
+            }
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -410,9 +423,17 @@
         updateDateTime();
 
         document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
+            // Set otomatis tanggal input berdasarkan aturan jam 19:00
+            const smartDate = getSmartTargetDate();
             const inputTgl = document.getElementById('input-tanggal');
-            if (inputTgl) inputTgl.value = today;
+            if (inputTgl) inputTgl.value = smartDate;
+
+            // Set default filter Arsip & Rekapitulasi ke HARI INI saja
+            const todayStr = new Date().toISOString().split('T')[0];
+            const filterStart = document.getElementById('filter-start');
+            const filterEnd = document.getElementById('filter-end');
+            if (filterStart) filterStart.value = todayStr;
+            if (filterEnd) filterEnd.value = todayStr;
 
             const activeUser = localStorage.getItem('active_user');
             const loginTime = localStorage.getItem('login_time');
@@ -644,8 +665,9 @@
         }
 
         window.resetFilter = function() {
-            document.getElementById('filter-start').value = '';
-            document.getElementById('filter-end').value = '';
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('filter-start').value = todayStr;
+            document.getElementById('filter-end').value = todayStr;
             renderUnifiedTable();
         }
 
@@ -657,9 +679,13 @@
             const endDate = document.getElementById('filter-end').value;
 
             if (startDate || endDate) {
-                document.getElementById('periode-label').innerText = `PERIODE TANGGAL: ${startDate || 'Awal'} s.d. ${endDate || 'Sekarang'}`;
+                if (startDate === endDate && startDate) {
+                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL: ${startDate}`;
+                } else {
+                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL: ${startDate || 'Awal'} s.d. ${endDate || 'Sekarang'}`;
+                }
             } else {
-                document.getElementById('periode-label').innerText = `PERIODE BULAN : KESELURUHAN ARSIP`;
+                document.getElementById('periode-label').innerText = `PERIODE TANGGAL: HARI INI`;
             }
 
             const filterByDate = (items) => {
@@ -728,17 +754,14 @@
             }
         }
 
-        // Perbaikan fungsi ekspor Excel agar kolom NO terisi dengan benar di baris tabel Excel
         window.exportToExcel = function() {
             let excelRows = [];
             
-            // Tambahkan baris informasi judul di atas tabel untuk Excel
             excelRows.push({ "NO": "SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN" });
             excelRows.push({ "NO": "SPPG KOTA SERANG SERANG SERANG 2" });
             excelRows.push({ "NO": document.getElementById('periode-label').innerText });
-            excelRows.push({}); // Baris kosong
+            excelRows.push({}); 
 
-            // Header kolom untuk SheetJS
             excelRows.push({
                 "NO": "NO",
                 "Bahan Baku (Persiapan)": "TIM PERSIAPAN: Bahan Baku",
