@@ -856,10 +856,28 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('presensiDate').value = today;
-    document.getElementById('filterStartDate').value = today;
-    document.getElementById('filterEndDate').value = today;
+    // Fungsi untuk menghitung tanggal efektif absensi: 
+    // Jika jam saat ini sudah >= 18:30, maka tanggal digeser otomatis keesokan harinya (+1 hari).
+    function getEffectiveAttendanceDate() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+
+        // Cek apakah sudah pukul 18:30 atau lebih
+        if (hours > 18 || (hours === 18 && minutes >= 30)) {
+            now.setDate(now.getDate() + 1);
+        }
+
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    const effectiveToday = getEffectiveAttendanceDate();
+    document.getElementById('presensiDate').value = effectiveToday;
+    document.getElementById('filterStartDate').value = effectiveToday;
+    document.getElementById('filterEndDate').value = effectiveToday;
 
     function populateDropdownRelawan() {
         const select = document.getElementById('selectRelawan');
