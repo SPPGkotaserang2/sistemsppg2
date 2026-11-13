@@ -295,6 +295,9 @@
                                 <i class="fa-solid fa-image"></i>
                                 <span>PNG</span>
                             </button>
+                            <button onclick="resetFilterToToday()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3.5 py-2 rounded-xl font-bold transition shadow-sm text-xs" title="Reset ke Hari Ini">
+                                Hari Ini
+                            </button>
                         </div>
 
                         <div id="adminFilterContainer" class="hidden flex flex-wrap items-center gap-2">
@@ -309,7 +312,7 @@
                 </div>
 
                 <div id="emptyArchive" class="hidden text-center py-10 text-slate-400 text-sm font-medium">
-                    Belum ada arsip data.
+                    Belum ada arsip data untuk hari ini.
                 </div>
 
                 <div class="overflow-x-auto">
@@ -430,6 +433,18 @@
         let archiveRowsData = [];
         let currentLoadedTask = null;
 
+        // Fungsi pintar penentuan tanggal: jika jam >= 19:00, otomatis maju 1 hari
+        function getSmartTargetDate() {
+            const now = new Date();
+            if (now.getHours() >= 19) {
+                now.setDate(now.getDate() + 1);
+            }
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function getLocalDateString(date = new Date()) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -542,9 +557,11 @@
             const adminFilterContainer = document.getElementById('adminFilterContainer');
             const adminTaskCard = document.getElementById('adminTaskCard');
 
+            const smartDate = getSmartTargetDate();
             const todayStr = getLocalDateString();
-            document.getElementById('inputTanggal').value = todayStr;
-            document.getElementById('taskTanggal').value = todayStr;
+
+            document.getElementById('inputTanggal').value = smartDate;
+            document.getElementById('taskTanggal').value = smartDate;
             
             const filterStart = document.getElementById('filterStart');
             const filterEnd = document.getElementById('filterEnd');
@@ -987,6 +1004,15 @@
             }
         }
 
+        window.resetFilterToToday = function() {
+            const todayStr = getLocalDateString();
+            const filterStart = document.getElementById('filterStart');
+            const filterEnd = document.getElementById('filterEnd');
+            if (filterStart) filterStart.value = todayStr;
+            if (filterEnd) filterEnd.value = todayStr;
+            loadArchives();
+        }
+
         function formatCategoryCell(itemsArray) {
             if (!itemsArray || !Array.isArray(itemsArray) || itemsArray.length === 0) {
                 return '<span class="text-slate-400">-</span>';
@@ -1257,7 +1283,6 @@
             XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_Persiapan_${getLocalDateString()}.xlsx`);
         }
 
-        // FUNGSI EKSPOR KE PDF YANG SUDAH DIPERBAIKI AMAN DARI ERROR
         window.exportToPDF = function() {
             if (!archiveRowsData || archiveRowsData.length === 0) {
                 showModalAlert('Informasi', 'Tidak ada data arsip untuk diekspor.', 'info');
