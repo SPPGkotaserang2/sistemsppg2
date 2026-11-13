@@ -250,7 +250,7 @@
                     </div>
                 </div>
 
-                <!-- AREA CETAK SESUAI PDF -->
+                <!-- AREA CETAK NORMAL (TANPA MERGE & CENTER) -->
                 <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6 overflow-x-auto">
                     <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
                         <h3 class="text-xs sm:text-sm font-bold text-gray-800 tracking-wider">FORMULIR</h3>
@@ -259,36 +259,32 @@
                         <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE TANGGAL HARI INI</p>
                     </div>
 
-                    <!-- TABEL MIRIP FORMAT PDF ASLI -->
+                    <!-- TABEL NORMAL SATU BARIS HEADER (TANPA ROWSPAN/COLSPAN) -->
                     <table class="w-full text-left text-xs border-collapse unified-table">
                         <thead>
-                            <tr class="bg-gray-100 text-center font-bold text-gray-900">
-                                <th rowspan="2" class="p-2 border border-gray-800 w-12 align-middle">NO</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 w-28 align-middle">Tanggal</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 w-36 align-middle">Koordinat (*)</th>
-                                <th colspan="2" class="p-2 border border-gray-800">Memilah Sampah</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle">Sisa bahan penyiapan makanan (kg/hari)</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle">Organik sisa makanan (kg/hari)</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle">Kertas/Karton (Kg/hari)</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle">Plastik (Kg/hari)</th>
-                                <th colspan="2" class="p-2 border border-gray-800">Anorganik</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle">Residu (styrofoam, bungkus sasetan) (kg/hari)</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle bg-amber-50">B3 (kg/hari)</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 align-middle">DIVISI YANG MENCATAT</th>
-                                <th rowspan="2" class="p-2 border border-gray-800 w-20 align-middle action-col hidden">Aksi</th>
-                            </tr>
-                            <tr class="bg-gray-50 text-center font-semibold text-gray-800 text-[11px]">
-                                <th class="p-1 border border-gray-800 w-16">Sudah</th>
-                                <th class="p-1 border border-gray-800 w-16">Belum</th>
-                                <th class="p-1 border border-gray-800">Kaca (kg/hari)</th>
-                                <th class="p-1 border border-gray-800">Karet (Kg/hari)</th>
+                            <tr class="bg-gray-100 text-center font-bold text-gray-900 text-[11px]">
+                                <th class="p-2 border border-gray-800 w-12">NO</th>
+                                <th class="p-2 border border-gray-800 w-28">Tanggal</th>
+                                <th class="p-2 border border-gray-800 w-36">Koordinat (*)</th>
+                                <th class="p-2 border border-gray-800 w-16">Memilah (Sudah)</th>
+                                <th class="p-2 border border-gray-800 w-16">Memilah (Belum)</th>
+                                <th class="p-2 border border-gray-800">Sisa bahan penyiapan makanan (kg/hari)</th>
+                                <th class="p-2 border border-gray-800">Organik sisa makanan (kg/hari)</th>
+                                <th class="p-2 border border-gray-800">Kertas/Karton (Kg/hari)</th>
+                                <th class="p-2 border border-gray-800">Plastik (Kg/hari)</th>
+                                <th class="p-2 border border-gray-800">Anorganik Kaca (kg/hari)</th>
+                                <th class="p-2 border border-gray-800">Anorganik Karet (Kg/hari)</th>
+                                <th class="p-2 border border-gray-800">Residu (styrofoam, bungkus sasetan) (kg/hari)</th>
+                                <th class="p-2 border border-gray-800 bg-amber-100">B3 (kg/hari)</th>
+                                <th class="p-2 border border-gray-800">DIVISI YANG MENCATAT</th>
+                                <th class="p-2 border border-gray-800 w-20 action-col hidden">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="unified-table-body" class="divide-y divide-gray-200">
                             <!-- Baris data disuntikkan via JS -->
                         </tbody>
                     </table>
-                    <p class="text-[11px] text-gray-500 italic mt-2">(*) Koordinat Lokasi: <a href="https://www.google.com/maps/place/SPPG+D%26D+SERANG+MANDIRI/@-6.1265918,106.1490035,17z/data=!3m1!4b1!4m6!3m5!1s0x2e418b0079f1801f:0x73f88b0667b1aef9!8m2!3d-6.1265918!4d106.1490035!16s%2Fg%2F11xw6h6q_3?entry=ttu&g_ep=EgoyMDI2MTExMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="text-blue-600 underline">SPPG KOTA SERANG SERANG SERANG 2 (-6.1265918, 106.1490035)[cite: 1]</a></p>
+                    
 
                     <!-- Tanda Tangan -->
                     <div class="grid grid-cols-2 pt-10 text-center text-xs font-semibold text-gray-800 mt-8 border-t border-gray-200">
@@ -734,12 +730,12 @@
 
             if (startDate || endDate) {
                 if (startDate === endDate && startDate) {
-                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL: ${startDate}`;
+                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${startDate}`;
                 } else {
-                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL: ${startDate || 'Awal'} s.d. ${endDate || 'Sekarang'}`;
+                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${startDate || 'Awal'} s.d. ${endDate || 'Sekarang'}`;
                 }
             } else {
-                document.getElementById('periode-label').innerText = `PERIODE TANGGAL: HARI INI`;
+                document.getElementById('periode-label').innerText = `PERIODE TANGGAL : HARI INI`;
             }
 
             const filteredList = (window.appData.sampah || []).filter(item => {
