@@ -29,7 +29,7 @@
     <header id="header-nav" class="bg-white shadow-sm hidden sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-ite font-bold text-xl">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
                     <i class="fa-solid fa-camera-retro"></i>
                 </div>
                 <div>
@@ -120,7 +120,7 @@
                         <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xl mt-0.5"></i>
                     </div>
                     <div class="ml-3 w-full">
-                        <h3 class="text-sm font-bold text-amber-800">PERINGATAN DOKUMENTASI YANG BELUM LAPORKAN!</h3>
+                        <h3 class="text-sm font-bold text-amber-800">PERINGATAN DOKUMENTASI YANG BELUM DILAPORKAN!</h3>
                         <p id="reminder-text" class="text-xs text-amber-700 mt-1 leading-relaxed">
                             Mohon periksa dan unggah foto dokumentasi yang masih belum diunggah untuk hari ini.
                         </p>
@@ -1053,6 +1053,9 @@
                         syncedToDrive: false,
                         syncFailed: true 
                     });
+                    
+                    // Kirim notifikasi gagal ke Telegram agar admin tahu
+                    sendTelegramAlertAdmin(reportPayload.uploader, reportPayload.kategori, formattedDateFolder);
                 });
             } catch (syncErr) {
                 clearTimeout(timeoutId);
@@ -1061,15 +1064,34 @@
                     syncedToDrive: false,
                     syncFailed: true 
                 });
+                sendTelegramAlertAdmin(reportPayload.uploader, reportPayload.kategori, formattedDateFolder);
             }
+        }
+
+        function sendTelegramAlertAdmin(uploader, kategori, dateFolder) {
+            const alertMsg = `⚠️ *PERINGATAN: GAGAL KIRIM LAPORAN* ⚠️\n\n` +
+                             `Uploader: *${uploader}*\n` +
+                             `Kategori: *${kategori}*\n` +
+                             `Tanggal: *${dateFolder}*\n\n` +
+                             `Laporan gagal terkirim otomatis ke sistem/Drive. Silakan login ke Panel Admin untuk melakukan "Kirim Ulang" secara manual.`;
+            
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: alertMsg,
+                    parse_mode: "Markdown"
+                })
+            }).catch(err => console.error("Gagal kirim alert Telegram:", err));
         }
 
         async function retrySyncGroup(encodedDocIds) {
             try {
                 const docIds = JSON.parse(decodeURIComponent(encodedDocIds));
                 Swal.fire({
-                    title: 'Mengirim Ulang...',
-                    text: 'Sedang dikirim ulang ke sistem.',
+                    title: 'Memaksa Kirim Ulang...',
+                    text: 'Sedang mencoba mengirim ulang laporan dengan sempurna.',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -1101,6 +1123,13 @@
                 }
 
                 Swal.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil Dipicu',
+                    text: 'Proses pengiriman ulang sedang berjalan.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             } catch (e) {
                 console.error("Gagal Upload Ulang:", e);
                 Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal memulai proses ulang.', confirmButtonColor: '#2563eb' });
@@ -1189,6 +1218,9 @@
 
             const groupedData = groupReports(rawList);
             
+            // PERBAIKAN: Urutkan tanggal dari terkecil ke terbesar (Ascending)
+            groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+            
             if (currentUser && currentUser.role === 'user') {
                 checkGlobalSyncStatus(groupedData);
             }
@@ -1259,6 +1291,10 @@
             });
 
             const groupedData = groupReports(rawList);
+            
+            // PERBAIKAN: Urutkan tanggal dari terkecil ke terbesar (Ascending)
+            groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+
             checkGlobalSyncStatus(groupedData);
 
             let rows = "";
