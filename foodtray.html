@@ -883,7 +883,7 @@
                     lainnya: lainnyaItems
                 });
 
-                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MAKANAN DARI FOODTRAY* 🚨\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
+                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MASA KANAN DARI FOODTRAY* 🚨\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
                 
                 fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
@@ -921,8 +921,6 @@
                 let rows = [];
                 querySnapshot.forEach(docSnap => rows.push({ id: docSnap.id, ...docSnap.data() }));
 
-                rows.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
                 const todayStr = new Date().toISOString().split('T')[0];
 
                 if (currentUser.role === 'admin') {
@@ -936,6 +934,9 @@
                 } else {
                     rows = rows.filter(r => r.username === currentUser.username && r.tanggal === todayStr);
                 }
+
+                // PERBAIKAN: Urutkan tanggal dari terkecil ke terbesar (Ascending) agar tanggal 11 berada di urutan awal setelah tanggal 1
+                rows.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
                 archiveRowsData = rows;
                 tableArsipGabungan.innerHTML = '';
@@ -1306,7 +1307,7 @@
 
             container.innerHTML = `
                 <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 18px; font-weight: bold; color: #0f172a; margin: 0 0 5px 0;">LAPORAN PENDATAAN SISA MAKANAN DARI FOODTRAY</h2>
+                    <h2 style="font-size: 18px; font-weight: bold; color: #0f172a; margin: 0 0 5px 0;">LAPORAN PENDATAAN SISA MASA KANAN DARI FOODTRAY</h2>
                     <p style="font-size: 12px; color: #64748b; margin: 0;">SPPG KOTA SERANG SERANG SERANG 2</p>
                 </div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #cbd5e1;">
