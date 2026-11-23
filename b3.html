@@ -754,12 +754,19 @@
                 document.getElementById('periode-label').innerText = `PERIODE TANGGAL : HARI INI`;
             }
 
-            const filteredList = (window.appData.sampah || []).filter(item => {
-                if (!item.tanggal) return true;
-                if (startDate && item.tanggal < startDate) return false;
-                if (endDate && item.tanggal > endDate) return false;
-                return true;
-            });
+            const filteredList = (window.appData.sampah || [])
+                .filter(item => {
+                    if (!item.tanggal) return true;
+                    if (startDate && item.tanggal < startDate) return false;
+                    if (endDate && item.tanggal > endDate) return false;
+                    return true;
+                })
+                .sort((a, b) => {
+                    const tglA = a.tanggal || '';
+                    const tglB = b.tanggal || '';
+                    if (tglA !== tglB) return tglA.localeCompare(tglB);
+                    return (a.createdAt || 0) - (b.createdAt || 0);
+                });
 
             const tbody = document.getElementById('unified-table-body');
             tbody.innerHTML = '';
