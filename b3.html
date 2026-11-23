@@ -148,7 +148,7 @@
 
                 <form id="dynamic-form" onsubmit="handleDataSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-5 items-end">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Tanggal</label>
+                        <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Tanggal (DD-MM-YYYY)</label>
                         <input type="date" id="input-tanggal" required 
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
@@ -351,10 +351,28 @@
         const TELEGRAM_BOT_TOKEN = "9047967976:AAFHxpb3u4t9phENIAnr7fbLuu1YJV8Eu88";
         const TELEGRAM_CHAT_ID = "9212263609";
 
+        // Format tanggal dari YYYY-MM-DD menjadi DD-MM-YYYY (contoh: 23-11-2026)
+        function formatDateID(dateStr) {
+            if (!dateStr) return '';
+            const parts = String(dateStr).split('-');
+            if (parts.length === 3 && parts[0].length === 4) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        function getLocalISODate(dateObj = new Date()) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         async function sendTelegramNotification(tanggal, koordinat, memilah, b3, inputOleh) {
+            const tglFormatted = formatDateID(tanggal);
             const text = `🔔 *PENCATATAN SAMPAH / LIMBAH B3 BARU*\n\n` +
                          `👤 *Penginput:* ${inputOleh}\n` +
-                         `📅 *Tanggal:* ${tanggal}\n` +
+                         `📅 *Tanggal:* ${tglFormatted}\n` +
                          `📍 *Koordinat:* ${koordinat}\n` +
                          `♻️ *Memilah:* ${memilah}\n` +
                          `⚠️ *Limbah B3:* ${b3 || '-'}\n\n` +
@@ -466,17 +484,24 @@
             if (now.getHours() >= 19) {
                 now.setDate(now.getDate() + 1);
             }
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            return getLocalISODate(now);
         }
 
         function updateDateTime() {
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const hari = dayNames[now.getDay()];
+            const dd = String(now.getDate()).padStart(2, '0');
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const bulanNama = monthNames[now.getMonth()];
+            const yyyy = now.getFullYear();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+
             const dtEl = document.getElementById('live-datetime');
-            if (dtEl) dtEl.innerText = now.toLocaleDateString('id-ID', options) + ' WIB';
+            if (dtEl) dtEl.innerText = `${hari}, ${dd}-${mm}-${yyyy} (${dd} ${bulanNama} ${yyyy}) ${hh}:${min}:${ss} WIB`;
         }
         setInterval(updateDateTime, 1000);
         updateDateTime();
@@ -486,7 +511,7 @@
             const inputTgl = document.getElementById('input-tanggal');
             if (inputTgl) inputTgl.value = smartDate;
 
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalISODate();
             const filterStart = document.getElementById('filter-start');
             const filterEnd = document.getElementById('filter-end');
             if (filterStart) filterStart.value = todayStr;
@@ -648,7 +673,7 @@
             document.getElementById('input-residu').value = '';
             document.getElementById('input-b3').value = '';
             document.getElementById('input-keterangan').value = '';
-            showModal('Berhasil!', 'Data pencatatan sampah & limbah B3 berhasil disimpan.', 'success');
+            showModal('Berhasil!', `Data tanggal ${formatDateID(tanggal)} berhasil disimpan.`, 'success');
 
             try {
                 addDoc(collection(db, 'sampah_b3'), {
@@ -687,7 +712,7 @@
         window.editItemPrompt = function(docId, curTgl, curKoord, curMemilah, curSisa, curOrg, curKert, curPlas, curKaca, curKaret, curRes, curB3, curKet) {
             const formHtml = `
                 <div class="space-y-2 pt-2 max-h-[60vh] overflow-y-auto px-1">
-                    <div><label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Tanggal</label><input type="date" id="edit-tgl" value="${curTgl}" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs"></div>
+                    <div><label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Tanggal (Saat ini: ${formatDateID(curTgl)})</label><input type="date" id="edit-tgl" value="${curTgl}" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs"></div>
                     <div><label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Koordinat (Terkunci)</label><input type="text" id="edit-koord" value="${curKoord}" readonly class="w-full px-3 py-2 rounded-xl border border-gray-300 bg-gray-100 text-xs cursor-not-allowed"></div>
                     <div><label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Memilah</label><select id="edit-memilah" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs"><option value="Sudah" ${curMemilah==='Sudah'?'selected':''}>Sudah</option><option value="Belum" ${curMemilah==='Belum'?'selected':''}>Belum</option></select></div>
                     <div><label class="block text-[11px] font-bold uppercase text-gray-600 mb-1">Sisa Bahan</label><input type="text" id="edit-sisa" value="${curSisa}" class="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs"></div>
@@ -732,29 +757,17 @@
         }
 
         window.resetFilter = function() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getLocalISODate();
             document.getElementById('filter-start').value = todayStr;
             document.getElementById('filter-end').value = todayStr;
             renderUnifiedTable();
         }
 
-        window.renderUnifiedTable = function() {
-            const activeUser = localStorage.getItem('active_user');
-            const acc = activeUser ? accounts[activeUser] : null;
+        function getSortedFilteredData() {
             const startDate = document.getElementById('filter-start').value;
             const endDate = document.getElementById('filter-end').value;
 
-            if (startDate || endDate) {
-                if (startDate === endDate && startDate) {
-                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${startDate}`;
-                } else {
-                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${startDate || 'Awal'} s.d. ${endDate || 'Sekarang'}`;
-                }
-            } else {
-                document.getElementById('periode-label').innerText = `PERIODE TANGGAL : HARI INI`;
-            }
-
-            const filteredList = (window.appData.sampah || [])
+            return (window.appData.sampah || [])
                 .filter(item => {
                     if (!item.tanggal) return true;
                     if (startDate && item.tanggal < startDate) return false;
@@ -767,6 +780,25 @@
                     if (tglA !== tglB) return tglA.localeCompare(tglB);
                     return (a.createdAt || 0) - (b.createdAt || 0);
                 });
+        }
+
+        window.renderUnifiedTable = function() {
+            const activeUser = localStorage.getItem('active_user');
+            const acc = activeUser ? accounts[activeUser] : null;
+            const startDate = document.getElementById('filter-start').value;
+            const endDate = document.getElementById('filter-end').value;
+
+            if (startDate || endDate) {
+                if (startDate === endDate && startDate) {
+                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${formatDateID(startDate)}`;
+                } else {
+                    document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${startDate ? formatDateID(startDate) : 'Awal'} s.d. ${endDate ? formatDateID(endDate) : 'Sekarang'}`;
+                }
+            } else {
+                document.getElementById('periode-label').innerText = `PERIODE TANGGAL : ${formatDateID(getLocalISODate())}`;
+            }
+
+            const filteredList = getSortedFilteredData();
 
             const tbody = document.getElementById('unified-table-body');
             tbody.innerHTML = '';
@@ -796,7 +828,7 @@
 
                 tr.innerHTML = `
                     <td class="p-2 border border-gray-800 font-semibold text-center whitespace-nowrap bg-gray-50">${index + 1}</td>
-                    <td class="p-1.5 border border-gray-800 whitespace-nowrap">${escapeHtml(item.tanggal || '')}</td>
+                    <td class="p-1.5 border border-gray-800 whitespace-nowrap">${escapeHtml(formatDateID(item.tanggal || ''))}</td>
                     <td class="p-1.5 border border-gray-800 text-[11px]"><a href="https://www.google.com/maps/place/${encodeURIComponent(item.koordinat || '')}" target="_blank" class="text-blue-600 underline">${escapeHtml(item.koordinat || '')}</a></td>
                     <td class="p-1.5 border border-gray-800">${item.memilah === 'Sudah' ? '✔️' : ''}</td>
                     <td class="p-1.5 border border-gray-800">${item.memilah === 'Belum' ? '✔️' : ''}</td>
@@ -840,10 +872,10 @@
                 "DIVISI YANG MENCATAT": "DIVISI YANG MENCATAT"
             });
 
-            (window.appData.sampah || []).forEach((item, index) => {
+            getSortedFilteredData().forEach((item, index) => {
                 excelRows.push({
                     "NO": index + 1,
-                    "Tanggal": item.tanggal || '',
+                    "Tanggal": formatDateID(item.tanggal || ''),
                     "Koordinat": item.koordinat || '',
                     "Memilah (Sudah)": item.memilah === 'Sudah' ? 'V' : '',
                     "Memilah (Belum)": item.memilah === 'Belum' ? 'V' : '',
