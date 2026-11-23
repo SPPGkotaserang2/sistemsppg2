@@ -139,7 +139,7 @@
 
                 <form id="adminTaskForm" onsubmit="saveAdminTask(event)" class="space-y-6">
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 uppercase mb-2">Pilih Tanggal Tugas Menu</label>
+                        <label class="block text-sm font-bold text-slate-700 uppercase mb-2">Pilih Tanggal Tugas Menu (DD-MM-YYYY)</label>
                         <input type="date" id="taskTanggal" required onchange="loadAdminTaskForDate()" class="w-full sm:w-1/3 px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-base font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
 
@@ -232,7 +232,7 @@
 
                 <form id="pemorsianForm" onsubmit="submitReport(event)" class="space-y-8">
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 uppercase mb-2">Tanggal Pendataan</label>
+                        <label class="block text-sm font-bold text-slate-700 uppercase mb-2">Tanggal Pendataan (DD-MM-YYYY)</label>
                         <input type="date" id="inputTanggal" required onchange="onInputDateChange()" class="w-full sm:w-1/2 px-4 py-3 bg-slate-100 border-2 border-slate-200 rounded-2xl text-base font-bold text-slate-700 focus:outline-none cursor-pointer">
                     </div>
 
@@ -368,7 +368,7 @@
             <form id="editForm" onsubmit="submitEditReport(event)" class="space-y-5">
                 <input type="hidden" id="editDocId">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Tanggal Pendataan</label>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Tanggal Pendataan (DD-MM-YYYY)</label>
                     <input type="date" id="editTanggal" required class="w-full sm:w-1/2 px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
                 </div>
 
@@ -446,6 +446,16 @@
         let currentUser = null;
         let archiveRowsData = [];
         let currentLoadedTask = null;
+
+        // Konversi format YYYY-MM-DD menjadi DD-MM-YYYY (contoh: 23-11-2026)
+        function formatDateID(dateStr) {
+            if (!dateStr) return '';
+            const parts = String(dateStr).split('-');
+            if (parts.length === 3 && parts[0].length === 4) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return dateStr;
+        }
 
         // Fungsi bantu mendapatkan tanggal lokal (YYYY-MM-DD) yang akurat sesuai zona waktu perangkat
         function getLocalDateString(date = new Date()) {
@@ -625,7 +635,7 @@
 
             try {
                 await setDoc(doc(db, "menu_tugas", tgl), taskData);
-                showModalAlert('Berhasil', `Tugas menu untuk tanggal ${tgl} berhasil disimpan & diperbarui!`, 'success');
+                showModalAlert('Berhasil', `Tugas menu untuk tanggal ${formatDateID(tgl)} berhasil disimpan & diperbarui!`, 'success');
                 if (document.getElementById('inputTanggal').value === tgl) {
                     loadTaskForCurrentDate();
                 }
@@ -717,7 +727,7 @@
                     });
                 } else {
                     currentLoadedTask = null;
-                    noticeText.innerText = `Admin belum menentukan tugas menu untuk tanggal ${tgl}. Silakan hubungi admin.`;
+                    noticeText.innerText = `Admin belum menentukan tugas menu untuk tanggal ${formatDateID(tgl)}. Silakan hubungi admin.`;
                     noticeBox.classList.remove('hidden');
                 }
             } catch (err) {
@@ -932,6 +942,7 @@
 
             try {
                 const tgl = document.getElementById('inputTanggal').value;
+                const tglFormatted = formatDateID(tgl);
                 
                 const reportDataTemp = {
                     tanggal: tgl,
@@ -963,7 +974,7 @@
                     lainnya: lainnyaItems
                 });
 
-                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MAKANAN PEMORSIAN* 🚨\n\nTanggal: ${tgl}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
+                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MAKANAN PEMORSIAN* 🚨\n\nTanggal: ${tglFormatted}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nData berhasil disimpan.`;
                 
                 fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
@@ -1084,7 +1095,7 @@
 
             tr.innerHTML = `
                 <td class="p-3.5 text-center font-bold text-slate-500">${no}</td>
-                <td class="p-3.5 font-bold text-slate-900 whitespace-nowrap">${record.tanggal}</td>
+                <td class="p-3.5 font-bold text-slate-900 whitespace-nowrap">${formatDateID(record.tanggal)}</td>
                 <td class="p-3.5">${formatCategoryCell(record.karbo)}</td>
                 <td class="p-3.5">${formatCategoryCell(record.protein)}</td>
                 <td class="p-3.5">${formatCategoryCell(record.sayur)}</td>
@@ -1298,7 +1309,7 @@
                 const formatCatString = (arr) => (arr || []).map(i => `${i.ket}: ${i.kg} Kg`).join('; ');
                 excelData.push({
                     "No": idx + 1,
-                    "Tanggal Pendataan": r.tanggal,
+                    "Tanggal Pendataan": formatDateID(r.tanggal),
                     "Karbohidrat": formatCatString(r.karbo) || "-",
                     "Protein": formatCatString(r.protein) || "-",
                     "Sayur": formatCatString(r.sayur) || "-",
@@ -1312,7 +1323,7 @@
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Pemorsian");
-            XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.xlsx`);
+            XLSX.writeFile(workbook, `Laporan_Sisa_Makanan_SPPG_${formatDateID(getLocalDateString())}.xlsx`);
         }
 
         window.exportToPDF = function() {
@@ -1334,7 +1345,7 @@
                 const formatCatString = (arr) => (arr || []).map(i => `${i.ket}: ${i.kg} Kg`).join('\n');
                 bodyData.push([
                     idx + 1,
-                    r.tanggal,
+                    formatDateID(r.tanggal),
                     formatCatString(r.karbo) || "-",
                     formatCatString(r.protein) || "-",
                     formatCatString(r.sayur) || "-",
@@ -1353,7 +1364,7 @@
                 headStyles: { fillColor: [2, 132, 199] }
             });
 
-            doc.save(`Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.pdf`);
+            doc.save(`Laporan_Sisa_Makanan_SPPG_${formatDateID(getLocalDateString())}.pdf`);
         }
 
         window.exportToPNG = function() {
@@ -1377,7 +1388,7 @@
                 rowsHtml += `
                     <tr style="border-bottom: 1px solid #e2e8f0;">
                         <td style="padding: 10px; text-align: center; color: #475569;">${idx + 1}</td>
-                        <td style="padding: 10px; font-weight: 500; color: #0f172a; white-space: nowrap;">${r.tanggal}</td>
+                        <td style="padding: 10px; font-weight: 500; color: #0f172a; white-space: nowrap;">${formatDateID(r.tanggal)}</td>
                         <td style="padding: 10px; color: #334155;">${formatCatString(r.karbo) || "-"}</td>
                         <td style="padding: 10px; color: #334155;">${formatCatString(r.protein) || "-"}</td>
                         <td style="padding: 10px; color: #334155;">${formatCatString(r.sayur) || "-"}</td>
@@ -1417,7 +1428,7 @@
             html2canvas(container, { scale: 2 }).then(canvas => {
                 document.body.removeChild(container);
                 const link = document.createElement('a');
-                link.download = `Laporan_Sisa_Makanan_SPPG_${getLocalDateString()}.png`;
+                link.download = `Laporan_Sisa_Makanan_SPPG_${formatDateID(getLocalDateString())}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }).catch(err => {
