@@ -203,7 +203,7 @@
                 <div class="border-b border-slate-100 pb-5 flex flex-wrap justify-between items-center gap-3">
                     <div>
                         <h3 class="text-xl sm:text-2xl font-bold text-slate-900">Form Pendataan Sisa Pangan Dari Tahap Persiapan</h3>
-                        <p class="text-sm text-slate-600 mt-1">Masukkan jumlah berat (Kg), keterangan tambahan (opsional), dan foto bukti.</p>
+                        <p class="text-sm text-slate-600 mt-1">Masukkan jumlah berat (Kg), keterangan (wajib jika berat diisi), dan foto bukti.</p>
                     </div>
                     <span id="uploaderBadge" class="bg-sky-100 text-biruAsinDark text-sm px-4 py-1.5 rounded-full font-bold shadow-sm"></span>
                 </div>
@@ -349,7 +349,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 class="font-bold text-slate-900 text-xl mb-1.5">Edit Laporan</h3>
-            <p class="text-xs text-slate-500 mb-6 font-medium">Ubah berat, keterangan, hapus foto lama, atau tambahkan foto baru.</p>
+            <p class="text-xs text-slate-500 mb-6 font-medium">Ubah berat, keterangan (wajib jika berat diisi), hapus foto lama, atau tambahkan foto baru.</p>
 
             <form id="editForm" onsubmit="submitEditReport(event)" class="space-y-5">
                 <input type="hidden" id="editDocId">
@@ -733,8 +733,8 @@
                                     <input type="hidden" name="user_${cat}_base_${idx}" value="${menuName}">
                                     
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Keterangan Spesifik (Opsional):</label>
-                                        <input type="text" name="user_${cat}_ket_${idx}" placeholder="Misal: Porsi Lebih, dll..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Keterangan Spesifik <span class="text-rose-500">*</span> (Wajib jika berat diisi):</label>
+                                        <input type="text" name="user_${cat}_ket_${idx}" placeholder="Misal : rijek, Busuk,kulit,bonggol dll..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-biruAsinDark">
                                     </div>
 
                                     <div>
@@ -857,6 +857,28 @@
             }
         }
 
+        // Validasi pra-kirim: wajib isi keterangan jika berat > 0
+        function validateFormBeforeSubmit() {
+            const categories = ['karbo', 'protein', 'sayur', 'buah', 'lainnya'];
+            for (const categoryName of categories) {
+                const items = (currentLoadedTask && currentLoadedTask[categoryName]) || [];
+                for (let idx = 0; idx < items.length; idx++) {
+                    const baseMenuName = items[idx];
+                    const customKet = document.querySelector(`input[name="user_${categoryName}_ket_${idx}"]`)?.value.trim() || '';
+                    const kgVal = parseFloat(document.querySelector(`input[name="user_${categoryName}_kg_${idx}"]`)?.value || '0');
+                    const fileInput = document.querySelector(`input[name="user_${categoryName}_foto_${idx}"]`);
+                    const files = fileInput ? fileInput.files : [];
+
+                    if (kgVal > 0 && !customKet) {
+                        throw new Error(`Menu "${baseMenuName}" (${categoryName}) diisi beratnya (${kgVal} Kg), wajib mengisi keterangan!`);
+                    }
+                    if (kgVal > 0 && files.length === 0) {
+                        throw new Error(`Menu "${baseMenuName}" (${categoryName}) diisi beratnya, wajib menyertakan foto bukti!`);
+                    }
+                }
+            }
+        }
+
         async function processCategoryItemsFast(categoryName, dateStr, docId) {
             const items = currentLoadedTask[categoryName] || [];
             let categoryItemsArray = [];
@@ -864,10 +886,13 @@
             for (let idx = 0; idx < items.length; idx++) {
                 const baseMenuName = items[idx];
                 const customKet = document.querySelector(`input[name="user_${categoryName}_ket_${idx}"]`)?.value.trim() || '';
-                
-                const finalKet = customKet ? `${baseMenuName} (${customKet})` : baseMenuName;
-
                 const kgVal = document.querySelector(`input[name="user_${categoryName}_kg_${idx}"]`)?.value || '0';
+
+                if (parseFloat(kgVal) > 0 && !customKet) {
+                    throw new Error(`Menu "${baseMenuName}" (${categoryName}) diisi beratnya, wajib mengisi keterangan!`);
+                }
+
+                const finalKet = customKet ? `${baseMenuName} (${customKet})` : baseMenuName;
                 const fileInput = document.querySelector(`input[name="user_${categoryName}_foto_${idx}"]`);
                 const files = fileInput ? fileInput.files : [];
 
@@ -904,6 +929,13 @@
 
             if (!currentLoadedTask) {
                 showModalAlert('Peringatan', 'Belum ada tugas menu dari admin untuk tanggal ini!', 'error');
+                return;
+            }
+
+            try {
+                validateFormBeforeSubmit();
+            } catch (valErr) {
+                showModalAlert('Keterangan Wajib Diisi', valErr.message, 'error');
                 return;
             }
 
@@ -990,7 +1022,7 @@
                     rows = rows.filter(r => r.username === currentUser.username && r.tanggal === todayStr);
                 }
 
-                // PERBAIKAN: Urutkan tanggal dari terkecil (Ascending) agar tanggal 11 berada di urutan awal setelah tanggal 1
+                // Urutkan tanggal dari terkecil (Ascending) agar tanggal 11 berada di urutan awal setelah tanggal 1
                 rows.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
                 archiveRowsData = rows;
@@ -1117,7 +1149,7 @@
 
                         return `
                             <div class="p-3 bg-white border-2 rounded-xl space-y-2 mb-2">
-                                <div class="font-bold text-xs text-slate-800">Menu:</div>
+                                <div class="font-bold text-xs text-slate-800">Menu & Keterangan <span class="text-rose-500">*</span> (wajib jika berat &gt; 0):</div>
                                 <input type="text" name="edit_${cat.key}_ket_${idx}" value="${item.ket}" class="w-full px-3 py-2 bg-slate-50 border-2 rounded-xl text-xs font-bold text-slate-700">
                                 <div>
                                     <label class="text-xs font-semibold text-slate-600">Berat (Kg)</label>
@@ -1170,14 +1202,29 @@
             e.preventDefault();
             const id = document.getElementById('editDocId').value;
             const btn = document.getElementById('editSubmitBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan...`;
 
             try {
                 const docRef = doc(db, "sisa_makanan", id);
                 const docSnap = await getDoc(docRef);
                 let existingData = docSnap.exists() ? docSnap.data() : {};
                 const tgl = document.getElementById('editTanggal').value;
+
+                // Validasi keterangan wajib jika berat > 0 pada form edit
+                const catKeys = ['karbo', 'protein', 'sayur', 'buah', 'lainnya'];
+                for (const catKey of catKeys) {
+                    const oldItems = existingData[catKey] || [];
+                    for (let idx = 0; idx < oldItems.length; idx++) {
+                        const ket = (document.querySelector(`input[name="edit_${catKey}_ket_${idx}"]`)?.value || '').trim();
+                        const kg = parseFloat(document.querySelector(`input[name="edit_${catKey}_kg_${idx}"]`)?.value || '0');
+                        if (kg > 0 && !ket) {
+                            showModalAlert('Keterangan Wajib Diisi', `Item pada kategori ${catKey} diisi beratnya (${kg} Kg), wajib mengisi keterangan!`, 'error');
+                            return;
+                        }
+                    }
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Menyimpan...`;
 
                 let fileIdsToDelete = [];
 
