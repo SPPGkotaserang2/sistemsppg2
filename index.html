@@ -2,64 +2,114 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>SPPG KOTA SERANG SERANG SERANG 2 - Dashboard Divisi & Operasional</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'sky-theme-light': '#E0F7FA',
-                        'sky-theme-mid': '#B3E5FC',
-                        'sky-theme-deep': '#0288D1',
-                        'sky-theme-glow': '#03A9F4',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+        try {
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            colors: {
+                                'sky-theme-light': '#E0F7FA',
+                                'sky-theme-mid': '#B3E5FC',
+                                'sky-theme-deep': '#0288D1',
+                                'sky-theme-glow': '#03A9F4',
+                            },
+                            fontFamily: {
+                                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                            }
+                        }
                     }
-                }
+                };
             }
-        }
+        } catch (e) {}
     </script>
     <style>
-        /* Optimasi Performa untuk Perangkat Lama & Baru */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(179, 229, 252, 0.8);
-            box-shadow: 0 4px 20px -2px rgba(2, 136, 209, 0.08);
+        /* Fallback & Optimasi Performa untuk Perangkat Lama (RAM 1GB, Android/iOS Lama) & Baru */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: rgba(2, 136, 209, 0.15);
         }
-        /* Aktifkan blur hanya pada perangkat yang mendukung penuh agar tidak lag */
-        @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+
+        .glass-card {
+            background: #ffffff;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid #B3E5FC;
+            -webkit-box-shadow: 0 4px 16px -2px rgba(2, 136, 209, 0.08);
+            box-shadow: 0 4px 16px -2px rgba(2, 136, 209, 0.08);
+        }
+
+        /* Aktifkan blur hanya pada perangkat yang mendukung & bukan mode hemat daya/RAM rendah */
+        @supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
             .glass-card {
                 background: rgba(255, 255, 255, 0.90);
-                backdrop-filter: blur(10px);
                 -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(10px);
             }
         }
-        .glow-effect {
-            box-shadow: 0 0 15px rgba(3, 169, 244, 0.2);
+
+        .low-spec-mode .glass-card {
+            background: #ffffff !important;
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
         }
+
+        .low-spec-mode .animate-fade,
+        .low-spec-mode .glow-hover,
+        .low-spec-mode .glow-hover:hover {
+            animation: none !important;
+            -webkit-animation: none !important;
+            transform: none !important;
+            -webkit-transform: none !important;
+            transition: none !important;
+        }
+
+        .glow-effect {
+            -webkit-box-shadow: 0 0 12px rgba(3, 169, 244, 0.2);
+            box-shadow: 0 0 12px rgba(3, 169, 244, 0.2);
+        }
+
         .glow-hover:hover {
-            box-shadow: 0 0 20px rgba(3, 169, 244, 0.4);
+            -webkit-box-shadow: 0 0 18px rgba(3, 169, 244, 0.35);
+            box-shadow: 0 0 18px rgba(3, 169, 244, 0.35);
+            -webkit-transform: translateY(-2px);
             transform: translateY(-2px);
+            -webkit-transition: all 0.2s ease-in-out;
             transition: all 0.2s ease-in-out;
         }
+
+        @-webkit-keyframes fadeIn {
+            from { opacity: 0; -webkit-transform: translateY(4px); transform: translateY(4px); }
+            to { opacity: 1; -webkit-transform: translateY(0); transform: translateY(0); }
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; -webkit-transform: translateY(4px); transform: translateY(4px); }
+            to { opacity: 1; -webkit-transform: translateY(0); transform: translateY(0); }
         }
+
         .animate-fade {
-            animation: fadeIn 0.4s ease-in-out forwards;
+            -webkit-animation: fadeIn 0.35s ease-in-out forwards;
+            animation: fadeIn 0.35s ease-in-out forwards;
         }
+
         /* Custom Scrollbar yang Ringan */
         ::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
             background: #E0F7FA;
@@ -68,9 +118,81 @@
             background: #0288D1;
             border-radius: 3px;
         }
+
+        /* Halaman Peringatan Jaringan Lelet */
+        #slow-network-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: #E0F7FA;
+            background: -webkit-linear-gradient(135deg, #E0F7FA 0%, #E1F5FE 50%, #B3E5FC 100%);
+            background: linear-gradient(135deg, #E0F7FA 0%, #E1F5FE 50%, #B3E5FC 100%);
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        #slow-network-page.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#E0F7FA] via-[#E1F5FE] to-[#B3E5FC] min-h-screen text-slate-800 font-sans flex flex-col justify-between selection:bg-[#0288D1] selection:text-white">
+
+    <!-- HALAMAN PERINGATAN: JARINGAN ANDA LELET -->
+    <div id="slow-network-page" role="alert" aria-live="assertive">
+        <div class="max-w-lg mx-auto my-8 bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-amber-400 text-center">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-500 text-3xl font-bold">
+                <i class="fa-solid fa-wifi"></i>
+            </div>
+
+            <span class="inline-block text-xs font-extrabold uppercase tracking-wider bg-amber-100 text-amber-800 px-3 py-1 rounded-full mb-3">
+                Peringatan Koneksi
+            </span>
+
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">
+                Jaringan Anda Lelet
+            </h2>
+
+            <p id="slow-network-reason" class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                Koneksi internet perangkat Anda sedang lambat atau tidak stabil. Daripada halaman terus macet dan gagal terbuka, kami menampilkan halaman peringatan ini agar Anda tidak menunggu terlalu lama.
+            </p>
+
+            <div id="slow-network-target-box" class="hidden bg-sky-50 border border-sky-200 rounded-xl p-3 mb-5 text-left text-xs text-slate-700">
+                <div class="font-bold text-[#0288D1] mb-0.5">Halaman yang dituju:</div>
+                <div id="slow-network-target-label" class="font-semibold break-all">-</div>
+                <div id="slow-network-status-detail" class="text-[11px] text-slate-500 mt-1">Status jaringan: Terdeteksi lambat</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6 text-left text-xs text-slate-600 space-y-1.5">
+                <div class="font-bold text-slate-800">Saran cepat:</div>
+                <div>1. Periksa sinyal data seluler atau Wi-Fi Anda.</div>
+                <div>2. Matikan/nyalakan ulang mode pesawat sebentar jika perlu.</div>
+                <div>3. Coba muat ulang halaman saat sinyal sudah membaik.</div>
+            </div>
+
+            <div class="space-y-2.5">
+                <button type="button" onclick="retrySlowNetwork()" class="w-full py-3 px-4 bg-gradient-to-r from-[#01579B] via-[#0288D1] to-[#03A9F4] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> Cek Ulang & Muat Halaman
+                </button>
+
+                <button type="button" id="btn-force-open-target" onclick="forceOpenTargetUrl()" class="hidden w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl">
+                    <i class="fa-solid fa-up-right-from-square mr-1.5"></i> Tetap Paksa Buka Halaman Ini
+                </button>
+
+                <button type="button" onclick="dismissSlowNetworkWarning()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200">
+                    <i class="fa-solid fa-house mr-1.5"></i> Kembali ke Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Login Access Code -->
     <div id="login-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[100] p-4">
@@ -128,7 +250,8 @@
                     <div>
                         <h1 class="text-base sm:text-lg font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#01579B] to-[#0288D1] uppercase">SPPG KOTA SERANG SERANG SERANG 2</h1>
                         <p class="text-xs text-[#0288D1] font-semibold tracking-wide flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Pusat Pengelolaan & Operasional Dapur Sehat
+                            <span id="network-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span id="network-badge-text">Pusat Pengelolaan & Operasional Dapur Sehat</span>
                         </p>
                     </div>
                 </div>
@@ -180,7 +303,7 @@
             <!-- Menu Utama Cepat: APLIKASI MENU HARIAN & CATATAN LIMBAH DAPUR -->
             <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- 1. APLIKASI MENU HARIAN -->
-                <a href="https://sppgkotaserang2.github.io/menumbg/" class="glass-card p-5 rounded-2xl shadow-lg border border-[#B3E5FC] flex items-center justify-between glow-hover transition-all bg-gradient-to-r from-[#01579B] via-[#0288D1] to-[#03A9F4] text-white group relative overflow-hidden">
+                <a href="https://sppgkotaserang2.github.io/menumbg/" data-app-name="MENU HARIAN" onclick="return handleGuardedNavigation(event, this.href, 'MENU HARIAN')" class="glass-card p-5 rounded-2xl shadow-lg border border-[#B3E5FC] flex items-center justify-between glow-hover transition-all bg-gradient-to-r from-[#01579B] via-[#0288D1] to-[#03A9F4] text-white group relative overflow-hidden">
                     <div class="flex items-center gap-4 relative z-10">
                         <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform shadow-inner shrink-0">
                             <i class="fa-solid fa-calendar-days"></i>
@@ -198,7 +321,7 @@
                 </a>
 
                 <!-- 2. CATATAN LIMBAH DAPUR -->
-                <a href="limbah2.html" class="glass-card p-5 rounded-2xl shadow-lg border border-[#B3E5FC] flex items-center justify-between glow-hover transition-all bg-gradient-to-r from-[#00695C] via-[#00897B] to-[#26A69A] text-white group relative overflow-hidden">
+                <a href="limbah2.html" data-app-name="CATATAN LIMBAH DAPUR" onclick="return handleGuardedNavigation(event, this.href, 'CATATAN LIMBAH DAPUR')" class="glass-card p-5 rounded-2xl shadow-lg border border-[#B3E5FC] flex items-center justify-between glow-hover transition-all bg-gradient-to-r from-[#00695C] via-[#00897B] to-[#26A69A] text-white group relative overflow-hidden">
                     <div class="flex items-center gap-4 relative z-10">
                         <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform shadow-inner shrink-0">
                             <i class="fa-solid fa-recycle"></i>
@@ -613,82 +736,367 @@
         </div>
     </div>
 
-    <!-- JavaScript Logika & Interaksi -->
+    <!-- JavaScript Logika & Interaksi (Kompatibel Perangkat Lama & Baru) -->
     <script>
-        // Logika Authentication Login (Tetap tersimpan di localStorage agar tidak pernah logout otomatis)
-        const ACCESS_CODE = "SPPGSERANG2";
+        // Helper penyimpanan aman (jika localStorage diblokir di browser lama/mode tertentu)
+        var memoryStore = {};
+        function safeGetItem(key) {
+            try {
+                if (window.localStorage) return window.localStorage.getItem(key);
+            } catch (e) {}
+            return memoryStore[key] || null;
+        }
+        function safeSetItem(key, val) {
+            try {
+                if (window.localStorage) {
+                    window.localStorage.setItem(key, val);
+                    return;
+                }
+            } catch (e) {}
+            memoryStore[key] = val;
+        }
+
+        // Optimasi otomatis untuk perangkat RAM rendah / spesifikasi lama
+        (function optimizeForDeviceSpec() {
+            try {
+                var isLowSpec = false;
+                if (navigator.deviceMemory && navigator.deviceMemory <= 2) {
+                    isLowSpec = true;
+                }
+                if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
+                    isLowSpec = true;
+                }
+                var ua = navigator.userAgent || "";
+                // Deteksi Android lama (Android 1 - 5) atau iOS/iPhone lama (iOS 1 - 9)
+                var androidMatch = ua.match(/Android\s+([0-9]+)/i);
+                if (androidMatch && parseInt(androidMatch[1], 10) <= 5) {
+                    isLowSpec = true;
+                }
+                var iosMatch = ua.match(/OS\s+([0-9]+)_/i);
+                if (iosMatch && parseInt(iosMatch[1], 10) <= 9) {
+                    isLowSpec = true;
+                }
+                if (isLowSpec && document.body) {
+                    document.body.className += " low-spec-mode";
+                }
+            } catch (e) {}
+        })();
+
+        // =========================================================================
+        // SISTEM DETEKSI & HALAMAN PERINGATAN "JARINGAN ANDA LELET"
+        // =========================================================================
+        var pendingTargetUrl = null;
+        var pendingTargetLabel = null;
+        var navTimeoutTimer = null;
+
+        function getConnectionStatus() {
+            var online = (typeof navigator.onLine === "boolean") ? navigator.onLine : true;
+            var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
+            var isSlow = false;
+            var reason = "";
+            var detail = "";
+
+            if (!online) {
+                isSlow = true;
+                reason = "Perangkat Anda sedang tidak terhubung ke internet (Offline). Daripada halaman terus gagal terbuka, gunakan halaman ini untuk memeriksa koneksi.";
+                detail = "Status jaringan: Offline / Tidak ada sinyal";
+                return { slow: isSlow, reason: reason, detail: detail };
+            }
+
+            if (conn) {
+                var effType = conn.effectiveType || "";
+                var rtt = typeof conn.rtt === "number" ? conn.rtt : 0;
+                var downlink = typeof conn.downlink === "number" ? conn.downlink : 99;
+                var saveData = !!conn.saveData;
+
+                if (effType === "slow-2g" || effType === "2g") {
+                    isSlow = true;
+                    reason = "Jaringan Anda lelet (terdeteksi koneksi " + effType.toUpperCase() + "). Membuka halaman penuh berpotensi macet atau gagal memuat.";
+                    detail = "Tipe koneksi: " + effType.toUpperCase() + (rtt ? " | Latensi: " + rtt + " ms" : "");
+                } else if (rtt >= 900 || (downlink > 0 && downlink < 0.25)) {
+                    isSlow = true;
+                    reason = "Respon jaringan Anda terdeteksi sangat lambat. Halaman peringatan ditampilkan agar Anda tidak menunggu halaman macet.";
+                    detail = "Latensi: " + rtt + " ms | Kecepatan: ~" + downlink + " Mbps";
+                } else if (saveData) {
+                    detail = "Mode hemat data aktif | Koneksi: " + (effType || "Aktif");
+                } else {
+                    detail = "Koneksi: " + (effType ? effType.toUpperCase() : "Stabil");
+                }
+            } else {
+                detail = "Koneksi: Aktif";
+            }
+
+            return { slow: isSlow, reason: reason, detail: detail };
+        }
+
+        function updateNetworkHeaderIndicator() {
+            try {
+                var status = getConnectionStatus();
+                var dot = document.getElementById("network-dot");
+                var badge = document.getElementById("network-badge-text");
+                if (!dot || !badge) return;
+
+                if (status.slow) {
+                    dot.className = "w-2 h-2 rounded-full bg-amber-500";
+                    badge.innerHTML = 'Pusat Pengelolaan & Operasional Dapur Sehat • <span class="text-amber-700 font-extrabold">Jaringan Lelet</span>';
+                } else {
+                    dot.className = "w-2 h-2 rounded-full bg-emerald-500";
+                    badge.innerHTML = 'Pusat Pengelolaan & Operasional Dapur Sehat';
+                }
+            } catch (e) {}
+        }
+
+        function showSlowNetworkPage(options) {
+            options = options || {};
+            var page = document.getElementById("slow-network-page");
+            var reasonEl = document.getElementById("slow-network-reason");
+            var targetBox = document.getElementById("slow-network-target-box");
+            var targetLabelEl = document.getElementById("slow-network-target-label");
+            var statusDetailEl = document.getElementById("slow-network-status-detail");
+            var forceBtn = document.getElementById("btn-force-open-target");
+
+            if (!page) return;
+
+            if (navTimeoutTimer) {
+                clearTimeout(navTimeoutTimer);
+                navTimeoutTimer = null;
+            }
+
+            var status = getConnectionStatus();
+            pendingTargetUrl = options.url || null;
+            pendingTargetLabel = options.label || options.url || null;
+
+            if (reasonEl) {
+                reasonEl.innerText = options.customReason || status.reason || "Jaringan Anda lelet. Halaman tidak dibuka agar tidak macet atau gagal dimuat.";
+            }
+
+            if (statusDetailEl) {
+                statusDetailEl.innerText = status.detail || "Status jaringan: Terdeteksi lambat";
+            }
+
+            if (pendingTargetUrl && targetBox && targetLabelEl && forceBtn) {
+                targetBox.className = "bg-sky-50 border border-sky-200 rounded-xl p-3 mb-5 text-left text-xs text-slate-700";
+                targetLabelEl.innerText = (pendingTargetLabel ? pendingTargetLabel + " (" : "") + pendingTargetUrl + (pendingTargetLabel ? ")" : "");
+                forceBtn.className = "w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl";
+            } else if (targetBox && forceBtn) {
+                targetBox.className = "hidden bg-sky-50 border border-sky-200 rounded-xl p-3 mb-5 text-left text-xs text-slate-700";
+                forceBtn.className = "hidden w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl";
+            }
+
+            page.className = "active";
+            if (document.body) {
+                document.body.style.overflow = "hidden";
+            }
+        }
+
+        function dismissSlowNetworkWarning() {
+            if (navTimeoutTimer) {
+                clearTimeout(navTimeoutTimer);
+                navTimeoutTimer = null;
+            }
+            pendingTargetUrl = null;
+            pendingTargetLabel = null;
+            var page = document.getElementById("slow-network-page");
+            if (page) {
+                page.className = "";
+            }
+            if (document.body) {
+                document.body.style.overflow = "";
+            }
+        }
+
+        function retrySlowNetwork() {
+            var status = getConnectionStatus();
+            var targetUrl = pendingTargetUrl;
+            var targetLabel = pendingTargetLabel;
+
+            if (status.slow) {
+                showSlowNetworkPage({
+                    url: targetUrl,
+                    label: targetLabel,
+                    customReason: "Jaringan Anda masih lelet. Silakan periksa sinyal terlebih dahulu atau gunakan tombol 'Tetap Paksa Buka Halaman Ini' jika ingin tetap mencoba."
+                });
+                return;
+            }
+
+            dismissSlowNetworkWarning();
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function forceOpenTargetUrl() {
+            if (!pendingTargetUrl) return;
+            var url = pendingTargetUrl;
+            dismissSlowNetworkWarning();
+            window.location.href = url;
+        }
+
+        // Cegah buka halaman jika jaringan lelet, serta pantau batas waktu buka halaman
+        function handleGuardedNavigation(event, url, label) {
+            if (!url || url === "#") return true;
+
+            var status = getConnectionStatus();
+            if (status.slow) {
+                if (event && event.preventDefault) event.preventDefault();
+                showSlowNetworkPage({
+                    url: url,
+                    label: label || url,
+                    customReason: status.reason
+                });
+                return false;
+            }
+
+            // Jika koneksi terlihat normal tetapi halaman tidak kunjung terbuka dalam 6 detik (misal sinyal drop mendadak)
+            if (navTimeoutTimer) clearTimeout(navTimeoutTimer);
+            navTimeoutTimer = setTimeout(function () {
+                if (!document.hidden) {
+                    showSlowNetworkPage({
+                        url: url,
+                        label: label || url,
+                        customReason: "Halaman membutuhkan waktu terlalu lama untuk terbuka. Jaringan Anda kemungkinan sedang lelet atau tidak stabil."
+                    });
+                }
+            }, 6000);
+
+            return true;
+        }
+
+        // Pantau perubahan status online/offline dan perubahan kualitas jaringan
+        window.addEventListener("offline", function () {
+            updateNetworkHeaderIndicator();
+            showSlowNetworkPage({
+                customReason: "Koneksi internet terputus / jaringan Anda lelet. Halaman ditahan agar tidak gagal terbuka."
+            });
+        });
+
+        window.addEventListener("online", function () {
+            updateNetworkHeaderIndicator();
+            var page = document.getElementById("slow-network-page");
+            var status = getConnectionStatus();
+            if (page && page.className.indexOf("active") !== -1 && !status.slow) {
+                dismissSlowNetworkWarning();
+            }
+        });
+
+        window.addEventListener("pageshow", function () {
+            dismissSlowNetworkWarning();
+            updateNetworkHeaderIndicator();
+        });
+
+        (function bindConnectionChange() {
+            try {
+                var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (conn && conn.addEventListener) {
+                    conn.addEventListener("change", function () {
+                        updateNetworkHeaderIndicator();
+                        var st = getConnectionStatus();
+                        if (st.slow) {
+                            showSlowNetworkPage({ customReason: st.reason });
+                        }
+                    });
+                }
+            } catch (e) {}
+        })();
+
+        // =========================================================================
+        // LOGIKA AUTHENTICATION LOGIN (TETAP TERSIMPAN AGAR TIDAK LOGOUT OTOMATIS)
+        // =========================================================================
+        var ACCESS_CODE = "SPPGSERANG2";
 
         function checkAuth() {
-            const isAuth = localStorage.getItem("sppg_authenticated");
-            const loginModal = document.getElementById('login-modal');
-            const mainContent = document.getElementById('main-content');
+            var isAuth = safeGetItem("sppg_authenticated");
+            var loginModal = document.getElementById('login-modal');
+            var mainContent = document.getElementById('main-content');
 
             if (isAuth === "true") {
-                loginModal.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                mainContent.classList.add('flex');
+                if (loginModal) loginModal.className = "fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden items-center justify-center z-[100] p-4";
+                if (mainContent) mainContent.className = "flex flex-col min-h-screen justify-between";
             } else {
-                loginModal.classList.remove('hidden');
-                mainContent.classList.add('hidden');
-                mainContent.classList.remove('flex');
+                if (loginModal) loginModal.className = "fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center z-[100] p-4";
+                if (mainContent) mainContent.className = "hidden flex-col min-h-screen justify-between";
             }
         }
 
         function handleLogin(event) {
             event.preventDefault();
-            const inputCode = document.getElementById('access-code').value.trim();
-            const errorElement = document.getElementById('login-error');
+            var inputEl = document.getElementById('access-code');
+            var inputCode = inputEl ? inputEl.value.trim() : "";
+            var errorElement = document.getElementById('login-error');
 
             if (inputCode === ACCESS_CODE) {
-                // Menggunakan localStorage agar sesi tetap aktif permanen dan tidak pernah logout
-                localStorage.setItem("sppg_authenticated", "true");
-                errorElement.classList.add('hidden');
+                safeSetItem("sppg_authenticated", "true");
+                if (errorElement) errorElement.className = "hidden text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-2.5 font-medium flex items-center gap-2";
                 checkAuth();
             } else {
-                errorElement.classList.remove('hidden');
+                if (errorElement) errorElement.className = "flex text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-2.5 font-medium items-center gap-2";
             }
         }
 
         function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('access-code');
-            const eyeIcon = document.getElementById('toggle-eye-icon');
+            var passwordInput = document.getElementById('access-code');
+            var eyeIcon = document.getElementById('toggle-eye-icon');
+            if (!passwordInput || !eyeIcon) return;
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
+                eyeIcon.className = 'fa-solid fa-eye-slash text-sm';
             } else {
                 passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
+                eyeIcon.className = 'fa-solid fa-eye text-sm';
             }
         }
 
-        // Jalankan pengecekan auth saat halaman pertama kali dimuat
+        // Jalankan pengecekan auth & jaringan saat halaman pertama kali dimuat
         checkAuth();
+        updateNetworkHeaderIndicator();
+        (function initialNetworkCheck() {
+            var st = getConnectionStatus();
+            if (st.slow) {
+                showSlowNetworkPage({ customReason: st.reason });
+            }
+        })();
 
         // 1. Live Date & Clock
-        function updateDateTime() {
-            const now = new Date();
-            const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').innerText = now.toLocaleDateString('id-ID', optionsDate);
+        var HARI_ID = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        var BULAN_ID = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('current-clock').innerText = `${hours}:${minutes}:${seconds}`;
+        function pad2(num) {
+            return (num < 10 ? "0" : "") + num;
+        }
+
+        function updateDateTime() {
+            try {
+                var now = new Date();
+                var dateEl = document.getElementById('current-date');
+                var clockEl = document.getElementById('current-clock');
+
+                if (dateEl) {
+                    var formattedDate = HARI_ID[now.getDay()] + ", " + now.getDate() + " " + BULAN_ID[now.getMonth()] + " " + now.getFullYear();
+                    dateEl.innerText = formattedDate;
+                }
+
+                if (clockEl) {
+                    clockEl.innerText = pad2(now.getHours()) + ":" + pad2(now.getMinutes()) + ":" + pad2(now.getSeconds());
+                }
+            } catch (e) {}
         }
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // 2. Simulasi Waktu Sholat Akurat untuk Wilayah Serang & Sekitarnya
+        // 2. Waktu Sholat Wilayah Serang & Sekitarnya
         function updatePrayerTimes() {
-            document.getElementById('prayer-times').innerText = "Shubuh: 04:18 | Dzuhur: 11:45 | Ashar: 14:58 | Maghrib: 17:52 | Isya: 19:01";
+            var el = document.getElementById('prayer-times');
+            if (el) {
+                el.innerText = "Shubuh: 04:18 | Dzuhur: 11:45 | Ashar: 14:58 | Maghrib: 17:52 | Isya: 19:01";
+            }
         }
         updatePrayerTimes();
 
         // 3. Daftar Motivasi Berputar Setiap 5 Menit
-        const motivations = [
+        var motivations = [
             "\"Kerja ikhlas, kerja tuntas, menghasilkan makanan bergizi berkualitas tinggi untuk generasi Kota Serang yang sehat dan gemilang.\"",
             "\"Kebersihan adalah iman, ketepatan waktu adalah kunci utama pelayanan dapur SPPG KOTA SERANG SERANG SERANG 2.\"",
             "\"Setiap porsi makanan yang kita siapkan membawa senyum dan nutrisi bagi anak-anak bangsa.\"",
@@ -700,71 +1108,95 @@
             "\"Inovasi dalam pengelolaan dapur sehat mencerminkan dedikasi kita terhadap kualitas layanan publik.\""
         ];
 
-        let currentMotivationIndex = 0;
-        let totalSeconds = 300; // 5 Menit
+        var currentMotivationIndex = 0;
+        var totalSeconds = 300; // 5 Menit
 
         function changeMotivation() {
             currentMotivationIndex = (currentMotivationIndex + 1) % motivations.length;
-            const container = document.getElementById('motivation-container');
-            container.classList.remove('animate-fade');
-            void container.offsetWidth; 
-            container.classList.add('animate-fade');
-            document.getElementById('motivation-text').innerText = motivations[currentMotivationIndex];
+            var container = document.getElementById('motivation-container');
+            var textEl = document.getElementById('motivation-text');
+
+            if (container) {
+                container.className = "min-h-[50px] flex items-center";
+                void container.offsetWidth;
+                container.className = "min-h-[50px] flex items-center animate-fade";
+            }
+            if (textEl) {
+                textEl.innerText = motivations[currentMotivationIndex];
+            }
             totalSeconds = 300;
         }
 
-        setInterval(() => {
+        setInterval(function () {
             totalSeconds--;
             if (totalSeconds <= 0) {
                 changeMotivation();
             }
-            let min = Math.floor(totalSeconds / 60);
-            let sec = totalSeconds % 60;
-            document.getElementById('timer-counter').innerText = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+            var min = Math.floor(totalSeconds / 60);
+            var sec = totalSeconds % 60;
+            var timerEl = document.getElementById('timer-counter');
+            if (timerEl) {
+                timerEl.innerText = min + ":" + (sec < 10 ? "0" : "") + sec;
+            }
         }, 1000);
 
         // 4. Modal Sistem Divisi Dinamis
         function openDivisionModal(divName, appsArray) {
-            document.getElementById('modal-division-title').innerText = divName;
-            const listContainer = document.getElementById('modal-apps-list');
+            var titleEl = document.getElementById('modal-division-title');
+            var listContainer = document.getElementById('modal-apps-list');
+            var modal = document.getElementById('division-modal');
+
+            if (titleEl) titleEl.innerText = divName;
+            if (!listContainer) return;
+
             listContainer.innerHTML = '';
 
-            appsArray.forEach(app => {
-                const item = document.createElement('a');
+            for (var i = 0; i < appsArray.length; i++) {
+                var app = appsArray[i];
+                var item = document.createElement('a');
                 item.href = app.url;
-                item.className = "flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-sky-100 hover:border-[#0288D1] transition-all group shadow-sm";
-                item.innerHTML = `
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0288D1] to-[#03A9F4] text-white group-hover:scale-105 flex items-center justify-center text-base transition-transform shadow">
-                            <i class="fa-solid ${app.icon}"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-slate-800 group-hover:text-[#0288D1]">${app.name}</h4>
-                            <span class="text-[10px] text-slate-500 font-medium">${app.desc}</span>
-                        </div>
-                    </div>
-                    <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-[#0288D1] shadow-sm group-hover:translate-x-1 transition-transform border border-sky-200">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </div>
-                `;
-                listContainer.appendChild(item);
-            });
+                item.setAttribute("data-app-name", app.name);
+                item.onclick = (function (targetUrl, targetName) {
+                    return function (ev) {
+                        return handleGuardedNavigation(ev, targetUrl, targetName);
+                    };
+                })(app.url, app.name);
 
-            document.getElementById('division-modal').classList.remove('hidden');
-            document.getElementById('division-modal').classList.add('flex');
+                item.className = "flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-sky-100 hover:border-[#0288D1] transition-all group shadow-sm";
+                item.innerHTML =
+                    '<div class="flex items-center gap-3.5">' +
+                        '<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0288D1] to-[#03A9F4] text-white group-hover:scale-105 flex items-center justify-center text-base transition-transform shadow">' +
+                            '<i class="fa-solid ' + app.icon + '"></i>' +
+                        '</div>' +
+                        '<div>' +
+                            '<h4 class="font-extrabold text-xs sm:text-sm text-slate-800 group-hover:text-[#0288D1]">' + app.name + '</h4>' +
+                            '<span class="text-[10px] text-slate-500 font-medium">' + (app.desc || '') + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="w-7 h-7 rounded-full bg-white flex items-center justify-center text-[#0288D1] shadow-sm group-hover:translate-x-1 transition-transform border border-sky-200">' +
+                        '<i class="fa-solid fa-chevron-right text-xs"></i>' +
+                    '</div>';
+                listContainer.appendChild(item);
+            }
+
+            if (modal) {
+                modal.className = "fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4";
+            }
         }
 
         function closeDivisionModal() {
-            document.getElementById('division-modal').classList.add('hidden');
-            document.getElementById('division-modal').classList.remove('flex');
+            var modal = document.getElementById('division-modal');
+            if (modal) {
+                modal.className = "fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4";
+            }
         }
 
-        window.onclick = function(event) {
-            let modal = document.getElementById('division-modal');
+        window.onclick = function (event) {
+            var modal = document.getElementById('division-modal');
             if (event.target === modal) {
                 closeDivisionModal();
             }
-        }
+        };
     </script>
 </body>
 </html>
