@@ -40,6 +40,7 @@
             padding: 0;
             -webkit-text-size-adjust: 100%;
             -webkit-tap-highlight-color: rgba(2, 132, 199, 0.15);
+            overflow-x: hidden;
         }
 
         .bg-gradient-custom {
@@ -64,23 +65,30 @@
             animation: none !important;
         }
 
-        /* KHUSUS BAGIAN DAFTAR RIWAYAT DATA: TAMPIL LUAS, PANJANG & BEBAS SEPERTI MODE DESKTOP */
+        /* KHUSUS BAGIAN DAFTAR RIWAYAT DATA: PAKSA MODE DESKTOP UTUH DALAM 1 LAYAR HP (TANPA GESER & TANPA ZOOM) */
         #archiveContainer {
             -webkit-text-size-adjust: none;
             text-size-adjust: none;
+            overflow: hidden !important;
         }
 
         #archiveDesktopViewport {
-            width: 100%;
-            overflow-x: auto !important;
-            overflow-y: visible;
-            -webkit-overflow-scrolling: touch;
+            width: 100% !important;
+            overflow: hidden !important;
+            position: relative;
+        }
+
+        #archiveDesktopScaleInner {
+            width: 1120px !important;
+            transform-origin: top left;
+            -webkit-transform-origin: top left;
         }
 
         #archiveDesktopTable {
-            width: 100% !important;
-            min-width: 1100px !important;
-            table-layout: auto !important;
+            width: 1120px !important;
+            min-width: 1120px !important;
+            max-width: 1120px !important;
+            table-layout: fixed !important;
             border-collapse: collapse;
             font-size: 13px !important;
             line-height: 1.45 !important;
@@ -88,20 +96,22 @@
 
         #archiveDesktopTable th,
         #archiveDesktopTable td {
-            padding: 12px 14px !important;
+            padding: 12px 12px !important;
             vertical-align: top;
             white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         #archiveDesktopTable th {
             white-space: nowrap;
         }
 
-        #archiveDesktopTable .col-no { width: 55px; white-space: nowrap; }
-        #archiveDesktopTable .col-tgl { width: 125px; white-space: nowrap; }
-        #archiveDesktopTable .col-kat { min-width: 165px; }
-        #archiveDesktopTable .col-tot { width: 115px; white-space: nowrap; }
-        #archiveDesktopTable .col-aksi { width: 110px; white-space: nowrap; }
+        #archiveDesktopTable .col-no { width: 52px; }
+        #archiveDesktopTable .col-tgl { width: 112px; }
+        #archiveDesktopTable .col-kat { width: 152px; }
+        #archiveDesktopTable .col-tot { width: 102px; }
+        #archiveDesktopTable .col-aksi { width: 94px; }
 
         /* Halaman Peringatan Jaringan Lelet */
         #slow-network-page {
@@ -207,7 +217,7 @@
     </header>
 
     <!-- KONTEN UTAMA -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6 space-y-6">
 
         <!-- HALAMAN LOGIN -->
         <section id="loginSection" class="flex justify-center items-center min-h-[85vh]">
@@ -466,12 +476,12 @@
                 </form>
             </div>
 
-            <!-- BAGIAN ARSIP (TAMPIL LUAS & PANJANG SEPERTI MODE DESKTOP, TIDAK MENUMPUK) -->
-            <div id="archiveContainer" class="bg-white p-4 sm:p-8 rounded-3xl card-glow border border-sky-100 space-y-5">
+            <!-- BAGIAN ARSIP (DIPAKSA MODE DESKTOP UTUH DALAM 1 LAYAR HP: TANPA GESER & TANPA ZOOM) -->
+            <div id="archiveContainer" class="bg-white p-3 sm:p-8 rounded-3xl card-glow border border-sky-100 space-y-5">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-slate-100 pb-4">
                     <div>
                         <h3 class="text-xl font-bold text-slate-900">Daftar Riwayat Data</h3>
-                        <p class="text-sm text-slate-500">Daftar arsip tersimpan lengkap per tanggal.</p>
+                        <p class="text-sm text-slate-500">Daftar arsip tersimpan lengkap per tanggal (Tampilan Penuh Mode Desktop).</p>
                     </div>
 
                     <div id="archiveSentLockBadge" class="hidden bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-extrabold px-3.5 py-2 rounded-xl">
@@ -510,22 +520,24 @@
                 </div>
 
                 <div id="archiveDesktopViewport">
-                    <table id="archiveDesktopTable" class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-sky-50 text-slate-700 uppercase tracking-wider">
-                                <th class="col-no rounded-l-xl text-center">No</th>
-                                <th class="col-tgl">Tanggal</th>
-                                <th class="col-kat">Karbohidrat</th>
-                                <th class="col-kat">Protein</th>
-                                <th class="col-kat">Sayur</th>
-                                <th class="col-kat">Buah</th>
-                                <th class="col-kat">Lainnya</th>
-                                <th class="col-tot">Total (Kg)</th>
-                                <th class="col-aksi rounded-r-xl text-center action-col">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableArsipGabungan" class="divide-y divide-slate-100"></tbody>
-                    </table>
+                    <div id="archiveDesktopScaleInner">
+                        <table id="archiveDesktopTable" class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-sky-50 text-slate-700 uppercase tracking-wider">
+                                    <th class="col-no rounded-l-xl text-center">No</th>
+                                    <th class="col-tgl">Tanggal</th>
+                                    <th class="col-kat">Karbohidrat</th>
+                                    <th class="col-kat">Protein</th>
+                                    <th class="col-kat">Sayur</th>
+                                    <th class="col-kat">Buah</th>
+                                    <th class="col-kat">Lainnya</th>
+                                    <th class="col-tot">Total (Kg)</th>
+                                    <th class="col-aksi rounded-r-xl text-center action-col">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableArsipGabungan" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
@@ -596,7 +608,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT KOMPATIBILITAS SEMUA DEVICE, SPESIFIKASI REAL & DETEKSI JARINGAN LELET -->
+    <!-- SCRIPT KOMPATIBILITAS SEMUA DEVICE, SPESIFIKASI REAL, DETEKSI JARINGAN & AUTO-FIT DESKTOP ARCHIVE -->
     <script>
         var memoryStore = {};
         function safeStorageGet(key) {
@@ -620,6 +632,44 @@
             } catch (e) {}
             delete memoryStore[key];
         }
+
+        // Paksa tabel Daftar Riwayat Data tampil penuh mode desktop dalam 1 layar HP tanpa geser & zoom
+        function fitArchiveDesktopTableToScreen() {
+            try {
+                var viewport = document.getElementById("archiveDesktopViewport");
+                var inner = document.getElementById("archiveDesktopScaleInner");
+                var table = document.getElementById("archiveDesktopTable");
+                if (!viewport || !inner || !table) return;
+
+                var availableWidth = viewport.clientWidth;
+                if (!availableWidth || availableWidth <= 0) return;
+
+                var desktopBaseWidth = 1120;
+                if (availableWidth < desktopBaseWidth) {
+                    var scale = availableWidth / desktopBaseWidth;
+                    inner.style.width = desktopBaseWidth + "px";
+                    inner.style.webkitTransform = "scale(" + scale + ")";
+                    inner.style.transform = "scale(" + scale + ")";
+
+                    var naturalHeight = table.offsetHeight || inner.scrollHeight || 120;
+                    viewport.style.height = Math.ceil(naturalHeight * scale) + "px";
+                } else {
+                    inner.style.width = "100%";
+                    inner.style.webkitTransform = "none";
+                    inner.style.transform = "none";
+                    table.style.width = "100%";
+                    table.style.minWidth = "100%";
+                    table.style.maxWidth = "100%";
+                    viewport.style.height = "auto";
+                }
+            } catch (e) {}
+        }
+        window.fitArchiveDesktopTableToScreen = fitArchiveDesktopTableToScreen;
+
+        window.addEventListener("resize", fitArchiveDesktopTableToScreen);
+        window.addEventListener("orientationchange", function () {
+            setTimeout(fitArchiveDesktopTableToScreen, 120);
+        });
 
         // Deteksi perangkat RAM kecil / Android lama / iPhone lama agar tetap lancar
         (function optimizeForAllDevices() {
@@ -1148,6 +1198,9 @@
             if (typeof window.renderDeviceSpecifications === 'function') {
                 window.renderDeviceSpecifications();
             }
+            if (typeof window.fitArchiveDesktopTableToScreen === 'function') {
+                window.fitArchiveDesktopTableToScreen();
+            }
             checkNetworkSpeed();
             setInterval(checkNetworkSpeed, 10000);
         });
@@ -1223,6 +1276,10 @@
                 uploaderBadge.innerText = `Koordinator: ${currentUser.name}`;
                 adminFilterContainer.classList.add('hidden');
                 adminTaskCard.classList.add('hidden');
+            }
+
+            if (typeof window.fitArchiveDesktopTableToScreen === 'function') {
+                window.fitArchiveDesktopTableToScreen();
             }
 
             loadAdminTaskForDate();
@@ -1632,6 +1689,9 @@
             const emptyDiv = document.getElementById('emptyArchive');
 
             tableArsipGabungan.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400"><i class="fa-solid fa-spinner animate-spin"></i> Memuat...</td></tr>`;
+            if (typeof window.fitArchiveDesktopTableToScreen === 'function') {
+                window.fitArchiveDesktopTableToScreen();
+            }
 
             try {
                 const querySnapshot = await getDocs(collection(db, "sisa_makanan"));
@@ -1659,6 +1719,9 @@
 
                 if (rows.length === 0) {
                     emptyDiv.classList.remove('hidden');
+                    if (typeof window.fitArchiveDesktopTableToScreen === 'function') {
+                        window.fitArchiveDesktopTableToScreen();
+                    }
                     return;
                 }
                 emptyDiv.classList.add('hidden');
@@ -1672,6 +1735,11 @@
                 rows.forEach((r, index) => {
                     tableArsipGabungan.appendChild(renderCombinedRow(r, index + 1));
                 });
+
+                if (typeof window.fitArchiveDesktopTableToScreen === 'function') {
+                    window.fitArchiveDesktopTableToScreen();
+                    setTimeout(window.fitArchiveDesktopTableToScreen, 150);
+                }
 
             } catch (err) {
                 console.error(err);
@@ -1693,7 +1761,7 @@
                 if (photos.length > 0) {
                     photoHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + photos.map(p => `
                         <div class="inline-flex items-center bg-slate-100 p-0.5 rounded border border-slate-200">
-                            <img src="${p.data || p.fileUrl}" onclick="openPhotoModal('${p.data || p.fileUrl}')" class="w-8 h-8 object-cover rounded cursor-pointer hover:opacity-80 transition">
+                            <img src="${p.data || p.fileUrl}" onload="if(window.fitArchiveDesktopTableToScreen) window.fitArchiveDesktopTableToScreen();" onclick="openPhotoModal('${p.data || p.fileUrl}')" class="w-8 h-8 object-cover rounded cursor-pointer hover:opacity-80 transition">
                         </div>
                     `).join('') + `</div>`;
                 }
