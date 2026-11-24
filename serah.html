@@ -44,10 +44,17 @@
                 width: 100% !important;
                 min-width: 0 !important;
             }
-            .archive-desktop-force {
-                min-width: 0 !important;
+            .archive-fit-outer,
+            .archive-fit-inner {
+                height: auto !important;
                 width: 100% !important;
                 overflow: visible !important;
+            }
+            .archive-desktop-canvas {
+                transform: none !important;
+                -webkit-transform: none !important;
+                width: 100% !important;
+                min-width: 0 !important;
             }
         }
 
@@ -55,26 +62,35 @@
             border: 1px solid #111827;
         }
 
-        /* Paksa tampilan bagian Arsip & Rekapitulasi terlihat mode desktop */
-        .archive-desktop-scroll {
+        /* Paksa bagian Arsip & Rekapitulasi muat penuh tanpa geser horizontal maupun zoom */
+        .archive-fit-outer {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .archive-desktop-force {
-            min-width: 1140px;
-            width: 1140px;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Memaksa tampilan tabel seluas desktop */
+        .archive-fit-inner {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .archive-desktop-canvas {
+            width: 1140px;
+            min-width: 1140px;
+            transform-origin: top left;
+            -webkit-transform-origin: top left;
+        }
+
         .desktop-view-container {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: visible;
         }
+
         .desktop-view-table {
-            min-width: 1100px;
             width: 100%;
+            table-layout: fixed;
+            word-wrap: break-word;
         }
 
         /* Halaman peringatan jaringan lelet */
@@ -262,99 +278,101 @@
                 </form>
             </div>
 
-            <!-- BAGIAN ARSIP & EKSPOR (DIPAKSA MODE DESKTOP AGAR TERLIHAT SEMUA) -->
-            <div id="archive-section" class="archive-desktop-scroll">
-                <div class="archive-desktop-force bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
-                    <div class="flex flex-row justify-between items-center gap-4 border-b border-gray-100 pb-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Data Serah Terima</h2>
-                            <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
-                        </div>
-                        <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
-                            <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                                🖨️ Cetak / Print
-                            </button>
-                            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                                📊 Ekspor Excel
-                            </button>
-                            <button onclick="exportToPNG()" class="bg-[#0047AB] hover:bg-[#003380] text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                                🖼️ Ekspor PNG
-                            </button>
-                            <button onclick="exportToPDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                                📄 Ekspor PDF
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Filter Tanggal (Layout Desktop) -->
-                    <div class="grid grid-cols-3 gap-4 items-end no-print bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Dari Tanggal</label>
-                            <input type="date" id="filter-start" onchange="renderUnifiedTable()"
-                                class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Sampai Tanggal</label>
-                            <input type="date" id="filter-end" onchange="renderUnifiedTable()"
-                                class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
-                        </div>
-                        <div>
-                            <button onclick="resetFilter()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-xl transition text-sm">
-                                Reset ke Hari Ini
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- AREA CETAK TERPADU DENGAN WRAPPER DESKTOP FULL -->
-                    <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6">
-                        <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
-                            <h3 class="text-lg font-bold text-gray-900 tracking-wider">SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN</h3>
-                            <h4 class="text-lg font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
-                            <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE TANGGAL HARI INI</p>
-                        </div>
-
-                        <!-- TABEL TERPADU DIBUNGKUS CONTAINER RESPONSIF AGAR TIDAK TERPOTONG -->
-                        <div class="desktop-view-container">
-                            <table class="w-full text-left text-xs border-collapse unified-table desktop-view-table">
-                                <thead>
-                                    <tr class="bg-gray-100 text-center font-bold text-gray-900">
-                                        <th class="p-2 border border-gray-800 w-16 text-center align-middle bg-gray-100 font-bold text-gray-900">NO</th>
-                                        <th colspan="3" class="p-2 border border-gray-800 bg-amber-100">TIM PERSIAPAN</th>
-                                        <th colspan="3" class="p-2 border border-gray-800 bg-blue-100">TIM PENGOLAHAN</th>
-                                        <th colspan="3" class="p-2 border border-gray-800 bg-indigo-100">TIM PEMORSIAN</th>
-                                        <th class="p-2 border border-gray-800 w-24 action-col hidden">Aksi</th>
-                                    </tr>
-                                    <tr class="bg-gray-50 text-center font-semibold text-gray-800">
-                                        <th class="p-2 border border-gray-800 bg-gray-100"></th>
-                                        <th class="p-2 border border-gray-800">Bahan Baku</th>
-                                        <th class="p-2 border border-gray-800 w-20">Jumlah Awal</th>
-                                        <th class="p-2 border border-gray-800 w-24">Ket</th>
-                                        <th class="p-2 border border-gray-800">Menu Makanan</th>
-                                        <th class="p-2 border border-gray-800 w-20">Jumlah Diberikan</th>
-                                        <th class="p-2 border border-gray-800 w-24">Ket</th>
-                                        <th class="p-2 border border-gray-800">Menu Makanan</th>
-                                        <th class="p-2 border border-gray-800 w-20">Jumlah Diterima</th>
-                                        <th class="p-2 border border-gray-800 w-24">Sisa Makanan</th>
-                                        <th class="p-2 border border-gray-800 action-col hidden"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="unified-table-body" class="divide-y divide-gray-200">
-                                    <!-- Baris data disuntikkan via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Tanda Tangan -->
-                        <div class="grid grid-cols-2 pt-10 text-center text-xs font-semibold text-gray-800 mt-8 border-t border-gray-200">
+            <!-- BAGIAN ARSIP & EKSPOR (MODE DESKTOP PENUH TANPA GESER & TANPA ZOOM) -->
+            <div id="archive-section" class="archive-fit-outer">
+                <div id="archive-fit-inner" class="archive-fit-inner">
+                    <div id="archive-desktop-canvas" class="archive-desktop-canvas bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
+                        <div class="flex flex-row justify-between items-center gap-4 border-b border-gray-100 pb-4">
                             <div>
-                                <p class="mb-14">PENANGGUNG JAWAB</p>
-                                <p class="font-bold underline">NURHAJANAH</p>
-                                <p class="text-[11px] text-gray-600 font-normal">KOKI</p>
+                                <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Data Serah Terima</h2>
+                                <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
+                            </div>
+                            <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
+                                <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    🖨️ Cetak / Print
+                                </button>
+                                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    📊 Ekspor Excel
+                                </button>
+                                <button onclick="exportToPNG()" class="bg-[#0047AB] hover:bg-[#003380] text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    🖼️ Ekspor PNG
+                                </button>
+                                <button onclick="exportToPDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    📄 Ekspor PDF
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Tanggal (Layout Desktop) -->
+                        <div class="grid grid-cols-3 gap-4 items-end no-print bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Dari Tanggal</label>
+                                <input type="date" id="filter-start" onchange="renderUnifiedTable(); fitArchiveToScreen();"
+                                    class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
                             </div>
                             <div>
-                                <p class="mb-14">MENGETAHUI</p>
-                                <p class="font-bold underline">FAJAR RIZKI RAMADHAN</p>
-                                <p class="text-[11px] text-gray-600 font-normal">ASLAP</p>
+                                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Sampai Tanggal</label>
+                                <input type="date" id="filter-end" onchange="renderUnifiedTable(); fitArchiveToScreen();"
+                                    class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
+                            </div>
+                            <div>
+                                <button onclick="resetFilter()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-xl transition text-sm">
+                                    Reset ke Hari Ini
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AREA CETAK TERPADU -->
+                        <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6">
+                            <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
+                                <h3 class="text-lg font-bold text-gray-900 tracking-wider">SERAH TERIMA BAHAN BAKU DAN MENU MAKANAN</h3>
+                                <h4 class="text-lg font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
+                                <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE TANGGAL HARI INI</p>
+                            </div>
+
+                            <!-- TABEL TERPADU FULL TANPA GESER -->
+                            <div class="desktop-view-container">
+                                <table class="w-full text-left text-xs border-collapse unified-table desktop-view-table">
+                                    <thead>
+                                        <tr class="bg-gray-100 text-center font-bold text-gray-900">
+                                            <th class="p-2 border border-gray-800 w-14 text-center align-middle bg-gray-100 font-bold text-gray-900">NO</th>
+                                            <th colspan="3" class="p-2 border border-gray-800 bg-amber-100">TIM PERSIAPAN</th>
+                                            <th colspan="3" class="p-2 border border-gray-800 bg-blue-100">TIM PENGOLAHAN</th>
+                                            <th colspan="3" class="p-2 border border-gray-800 bg-indigo-100">TIM PEMORSIAN</th>
+                                            <th class="p-2 border border-gray-800 w-24 action-col hidden">Aksi</th>
+                                        </tr>
+                                        <tr class="bg-gray-50 text-center font-semibold text-gray-800">
+                                            <th class="p-2 border border-gray-800 bg-gray-100"></th>
+                                            <th class="p-2 border border-gray-800">Bahan Baku</th>
+                                            <th class="p-2 border border-gray-800 w-24">Jumlah Awal</th>
+                                            <th class="p-2 border border-gray-800 w-28">Ket</th>
+                                            <th class="p-2 border border-gray-800">Menu Makanan</th>
+                                            <th class="p-2 border border-gray-800 w-24">Jumlah Diberikan</th>
+                                            <th class="p-2 border border-gray-800 w-28">Ket</th>
+                                            <th class="p-2 border border-gray-800">Menu Makanan</th>
+                                            <th class="p-2 border border-gray-800 w-24">Jumlah Diterima</th>
+                                            <th class="p-2 border border-gray-800 w-28">Sisa Makanan</th>
+                                            <th class="p-2 border border-gray-800 action-col hidden"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="unified-table-body" class="divide-y divide-gray-200">
+                                        <!-- Baris data disuntikkan via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Tanda Tangan -->
+                            <div class="grid grid-cols-2 pt-10 text-center text-xs font-semibold text-gray-800 mt-8 border-t border-gray-200">
+                                <div>
+                                    <p class="mb-14">PENANGGUNG JAWAB</p>
+                                    <p class="font-bold underline">NURHAJANAH</p>
+                                    <p class="text-[11px] text-gray-600 font-normal">KOKI</p>
+                                </div>
+                                <div>
+                                    <p class="mb-14">MENGETAHUI</p>
+                                    <p class="font-bold underline">FAJAR RIZKI RAMADHAN</p>
+                                    <p class="text-[11px] text-gray-600 font-normal">ASLAP</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -369,6 +387,47 @@
     <footer class="bg-white border-t border-gray-200 mt-12 py-4 text-center text-xs text-gray-400 no-print">
         Sistem Informasi Serah Terima Bahan Baku & Menu Makanan &copy; 2026 - Badan Gizi Nasional
     </footer>
+
+    <!-- PENYESUAIAN UKURAN ARSIP AGAR MUAT PENUH TANPA GESER & TANPA ZOOM -->
+    <script>
+        (function () {
+            var DESKTOP_WIDTH = 1140;
+
+            window.fitArchiveToScreen = function () {
+                var outer = document.getElementById('archive-section');
+                var inner = document.getElementById('archive-fit-inner');
+                var canvas = document.getElementById('archive-desktop-canvas');
+                if (!outer || !inner || !canvas) return;
+
+                var availableWidth = outer.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+                if (availableWidth <= 0) return;
+
+                var scale = availableWidth < DESKTOP_WIDTH ? (availableWidth / DESKTOP_WIDTH) : 1;
+
+                canvas.style.width = DESKTOP_WIDTH + 'px';
+                canvas.style.minWidth = DESKTOP_WIDTH + 'px';
+                canvas.style.transform = 'scale(' + scale + ')';
+                canvas.style.webkitTransform = 'scale(' + scale + ')';
+
+                // Ukur tinggi asli lalu sesuaikan tinggi wadah agar tidak ada ruang kosong berlebih maupun terpotong
+                var naturalHeight = canvas.offsetHeight || canvas.scrollHeight || 0;
+                var scaledHeight = Math.ceil(naturalHeight * scale);
+                inner.style.height = scaledHeight > 0 ? (scaledHeight + 'px') : 'auto';
+                inner.style.width = availableWidth + 'px';
+            };
+
+            window.addEventListener('resize', function () {
+                window.fitArchiveToScreen();
+            });
+            window.addEventListener('orientationchange', function () {
+                setTimeout(window.fitArchiveToScreen, 150);
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                window.fitArchiveToScreen();
+                setTimeout(window.fitArchiveToScreen, 300);
+            });
+        })();
+    </script>
 
     <!-- DETEKSI JARINGAN LELET & KOMPATIBILITAS PERANGKAT -->
     <script>
@@ -425,6 +484,9 @@
             window.dismissSlowNetworkWarning = function () {
                 slowDismissedByUser = true;
                 window.hideSlowNetworkScreen();
+                if (typeof window.fitArchiveToScreen === 'function') {
+                    window.fitArchiveToScreen();
+                }
             };
 
             window.retryNetworkConnection = function () {
@@ -455,7 +517,6 @@
                 }
             }
 
-            // Pantau perubahan status online/offline dan kualitas koneksi
             window.addEventListener('offline', function () {
                 slowDismissedByUser = false;
                 checkNetworkStatus();
@@ -469,10 +530,8 @@
                 conn.addEventListener('change', checkNetworkStatus);
             }
 
-            // Cek awal saat halaman dibuka
             checkNetworkStatus();
 
-            // Jika dalam 5 detik pemuatan awal belum selesai, tampilkan peringatan jaringan lelet
             setTimeout(function () {
                 if (!initialDataReady) {
                     var info = getConnectionInfo();
@@ -516,7 +575,6 @@
         const TELEGRAM_BOT_TOKEN = "9031682305:AAE5wB1jzkWNZlX0sfXHQVplkPqsnZDybAg";
         const TELEGRAM_CHAT_ID = "9212263609";
 
-        // Konversi format YYYY-MM-DD menjadi DD-MM-YYYY (contoh: 23-11-2026)
         function formatDateID(dateStr) {
             if (!dateStr) return '';
             const parts = String(dateStr).split('-');
@@ -631,7 +689,6 @@
             }, 200);
         };
 
-        // Fungsi penentuan tanggal otomatis: jika sudah lewat jam 19:00, tanggal otomatis maju 1 hari
         function getSmartTargetDate() {
             const now = new Date();
             if (now.getHours() >= 19) {
@@ -685,6 +742,9 @@
             }
 
             initRealtimeListeners();
+            if (typeof window.fitArchiveToScreen === 'function') {
+                window.fitArchiveToScreen();
+            }
         });
 
         window.togglePasswordVisibility = function() {
@@ -744,6 +804,9 @@
             }
 
             renderUnifiedTable();
+            if (typeof window.fitArchiveToScreen === 'function') {
+                setTimeout(window.fitArchiveToScreen, 50);
+            }
         }
 
         window.toggleAdminEditMode = function() {
@@ -932,6 +995,9 @@
             document.getElementById('filter-start').value = todayStr;
             document.getElementById('filter-end').value = todayStr;
             renderUnifiedTable();
+            if (typeof window.fitArchiveToScreen === 'function') {
+                window.fitArchiveToScreen();
+            }
         };
 
         window.renderUnifiedTable = function() {
@@ -1015,6 +1081,10 @@
                 `;
                 tbody.appendChild(tr);
             }
+
+            if (typeof window.fitArchiveToScreen === 'function') {
+                setTimeout(window.fitArchiveToScreen, 20);
+            }
         };
 
         window.exportToExcel = function() {
@@ -1071,11 +1141,16 @@
 
         window.exportToPNG = function() {
             const printableArea = document.getElementById('printable-area');
+            const canvasEl = document.getElementById('archive-desktop-canvas');
             const originalWidth = printableArea.style.width;
+            const originalTransform = canvasEl ? canvasEl.style.transform : '';
+            if (canvasEl) canvasEl.style.transform = 'none';
             printableArea.style.width = '1200px';
 
             html2canvas(printableArea, { scale: 1.5, windowWidth: 1300 }).then(canvas => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
                 const link = document.createElement('a');
                 link.download = 'Laporan_Serah_Terima_Terpadu.png';
                 link.href = canvas.toDataURL('image/png');
@@ -1083,17 +1158,24 @@
                 showModal('Ekspor Berhasil', 'Gambar PNG laporan terpadu berhasil diunduh secara penuh.', 'success');
             }).catch(() => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
             });
         };
 
         window.exportToPDF = function() {
             const { jsPDF } = window.jspdf;
             const printableArea = document.getElementById('printable-area');
+            const canvasEl = document.getElementById('archive-desktop-canvas');
             const originalWidth = printableArea.style.width;
+            const originalTransform = canvasEl ? canvasEl.style.transform : '';
+            if (canvasEl) canvasEl.style.transform = 'none';
             printableArea.style.width = '1200px';
 
             html2canvas(printableArea, { scale: 1.5, windowWidth: 1300 }).then(canvas => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('l', 'mm', 'a4');
                 const imgWidth = 277;
@@ -1116,6 +1198,8 @@
                 showModal('Ekspor Berhasil', 'Dokumen PDF laporan terpadu berhasil diunduh secara penuh.', 'success');
             }).catch(() => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
             });
         };
 
