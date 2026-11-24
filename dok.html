@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Sistem Laporan Dokumentasi Kerja</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,11 +23,60 @@
             }
         }
     </script>
+    <style>
+        /* Mode hemat memori & animasi ringan untuk perangkat RAM rendah / Android lama */
+        .low-spec-mode *,
+        .low-spec-mode *::before,
+        .low-spec-mode *::after {
+            animation: none !important;
+            transition: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
+    <!-- HALAMAN KHUSUS PERINGATAN JARINGAN LELET -->
+    <section id="slow-network-page" class="fixed inset-0 z-[9999] bg-slate-900/95 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl border border-rose-200 p-6 sm:p-8 text-center space-y-5">
+            <div class="w-20 h-20 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-4xl">
+                <i class="fa-solid fa-wifi"></i>
+            </div>
+
+            <div class="space-y-2">
+                <span class="inline-block bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                    Peringatan Koneksi
+                </span>
+                <h2 class="text-2xl font-bold text-slate-900">Jaringan Anda Lelet</h2>
+                <p id="slow-network-detail" class="text-sm text-slate-600 leading-relaxed">
+                    Koneksi internet terdeteksi lambat atau tidak stabil. Daripada memaksa upload foto yang berisiko gagal terkirim atau menggantung, silakan perbaiki jaringan terlebih dahulu.
+                </p>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-left text-xs text-amber-800 space-y-1.5">
+                <div class="font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info text-amber-600"></i>
+                    <span>Saran Agar Foto Lancar Terkirim:</span>
+                </div>
+                <p>1. Pindah ke area dengan sinyal lebih kuat atau dekat router Wi-Fi.</p>
+                <p>2. Matikan/nyalakan Mode Pesawat sebentar untuk menyegarkan jaringan.</p>
+                <p>3. Hindari mengirim banyak foto sekaligus saat jaringan masih lelet.</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <button type="button" onclick="recheckNetworkNow(true)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> Cek Ulang Jaringan
+                </button>
+                <button type="button" onclick="hideSlowNetworkPage()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition">
+                    Kembali ke Halaman
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- HEADER / NAVBAR -->
-    <header id="header-nav" class="bg-white shadow-sm hidden sticky top-0 z-50">
+    <header id="header-nav" class="bg-white shadow-sm hidden sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
@@ -40,8 +90,8 @@
             
             <div class="flex items-center space-x-4">
                 <!-- Indikator Kecepatan Jaringan -->
-                <div class="hidden sm:flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full text-xs font-medium text-slate-600">
-                    <span id="network-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div onclick="recheckNetworkNow(true)" title="Klik untuk cek kecepatan jaringan" class="cursor-pointer hidden sm:flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full text-xs font-medium text-slate-600">
+                    <span id="network-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                     <span id="network-status">Memeriksa Jaringan...</span>
                 </div>
                 
@@ -108,7 +158,7 @@
                     <h2 id="welcome-message" class="text-2xl font-bold">Selamat Datang</h2>
                     <p class="text-blue-100 text-sm mt-1">Sistem Pengunggahan & Arsip Dokumentasi Kerja Harian</p>
                 </div>
-                <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-medium border border-white/20">
+                <div class="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium border border-white/20">
                     <span id="current-date-label"></span>
                 </div>
             </div>
@@ -135,9 +185,12 @@
             <div id="user-panel" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Form Upload User / Admin -->
                 <div id="upload-form-container" class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-lg text-slate-900 mb-4 flex items-center">
+                    <h3 class="font-bold text-lg text-slate-900 mb-2 flex items-center">
                         <i class="fa-solid fa-cloud-arrow-up text-blue-600 mr-2"></i> Upload Dokumentasi
                     </h3>
+                    <p id="device-profile-info" class="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 mb-4">
+                        Mode Kompresi Otomatis Aktif
+                    </p>
                     <form id="upload-form" onsubmit="handleUpload(event)" class="space-y-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Pilih Tanggal Laporan</label>
@@ -239,7 +292,6 @@
                                     <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
                                     <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
                                     <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
-                                    
                                 </select>
                             </div>
                             <div class="flex items-end space-x-1 pt-3">
@@ -273,58 +325,57 @@
                             <select id="filter-kategori" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                                 <option value="">Semua Jenis Dokumentasi</option>
                                 <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
-                                    <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
-                                    <option value="PERSIAPAN (Limbah Sisa Pangan & Rijek)">PERSIAPAN (Limbah Sisa Pangan & Rijek)</option>
-                                    <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
-                                    <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
-                                    <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
-                                    <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
-                                    <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
-                                    <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
-                                    <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
-                                    <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
-                                    <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
-                                    <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
-                                    <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
-                                    <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
-                                    <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
-                                    <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
-                                    <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
-                                    <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
-                                    <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
-                                    <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
-                                    <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
-                                    <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
-                                    <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
-                                    <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
-                                    <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
-                                    <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
-                                    <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
-                                    <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
-                                    <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
-                                    <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
-                                    <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
-                                    <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
-                                    <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
-                                    <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
-                                    <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
-                                    <option value="SCURITY (Isi Galon)">SCURITY (Isi Galon)</option>
-                                    <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
-                                    <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
-                                    <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
-                                    <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
-                                    <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
-                                    
+                                <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
+                                <option value="PERSIAPAN (Limbah Sisa Pangan & Rijek)">PERSIAPAN (Limbah Sisa Pangan & Rijek)</option>
+                                <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
+                                <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
+                                <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
+                                <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
+                                <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
+                                <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
+                                <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
+                                <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
+                                <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
+                                <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
+                                <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
+                                <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
+                                <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
+                                <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
+                                <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
+                                <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
+                                <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
+                                <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
+                                <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
+                                <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
+                                <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
+                                <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
+                                <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
+                                <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
+                                <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
+                                <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
+                                <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
+                                <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
+                                <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
+                                <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
+                                <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
+                                <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
+                                <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
+                                <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
+                                <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
+                                <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
+                                <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
+                                <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
+                                <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
+                                <option value="SCURITY (Isi Galon)">SCURITY (Isi Galon)</option>
+                                <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
+                                <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
+                                <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
+                                <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
+                                <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
+                                <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
                             </select>
                         </div>
                         <div class="flex items-end space-x-2">
@@ -444,6 +495,187 @@
         let isSyncingActive = false; 
         let isDateManuallyModified = false; 
         let allGlobalReports = []; 
+
+        // Profil perangkat & jaringan adaptif (RAM 1GB+ / Android 1+ s/d terbaru)
+        let deviceSpec = {
+            isLowMemory: true,
+            isLegacyAndroid: false,
+            maxWidth: 640,
+            quality: 0.45,
+            chunkSize: 3,
+            isNetworkSlow: false,
+            networkReason: ""
+        };
+
+        function detectDeviceAndSpec() {
+            const ua = navigator.userAgent || "";
+            const mem = typeof navigator.deviceMemory === "number" ? navigator.deviceMemory : null;
+            const cores = typeof navigator.hardwareConcurrency === "number" ? navigator.hardwareConcurrency : 2;
+
+            // Deteksi versi Android lama (Android 1 - Android 7 / WebView lama)
+            let isLegacyAndroid = false;
+            const androidMatch = ua.match(/Android\s+([0-9]+(?:\.[0-9]+)?)/i);
+            if (androidMatch && parseFloat(androidMatch[1]) < 7.0) {
+                isLegacyAndroid = true;
+            }
+            if (!window.Promise || !window.fetch || !window.AbortController) {
+                isLegacyAndroid = true;
+            }
+
+            // Jika deviceMemory tidak tersedia (umum di Android lama/WebView), anggap aman/RAM kecil
+            const isLowMemory = (mem !== null && mem <= 2) || (mem === null) || cores <= 2 || isLegacyAndroid;
+
+            if (isLegacyAndroid) {
+                deviceSpec.maxWidth = 540;
+                deviceSpec.quality = 0.42;
+                deviceSpec.chunkSize = 2;
+            } else if (isLowMemory) {
+                deviceSpec.maxWidth = 640;
+                deviceSpec.quality = 0.45;
+                deviceSpec.chunkSize = 3;
+            } else if (mem >= 6 && cores >= 6) {
+                deviceSpec.maxWidth = 960;
+                deviceSpec.quality = 0.6;
+                deviceSpec.chunkSize = 8;
+            } else {
+                deviceSpec.maxWidth = 800;
+                deviceSpec.quality = 0.52;
+                deviceSpec.chunkSize = 5;
+            }
+
+            deviceSpec.isLowMemory = isLowMemory;
+            deviceSpec.isLegacyAndroid = isLegacyAndroid;
+
+            if (isLowMemory || isLegacyAndroid) {
+                document.documentElement.classList.add("low-spec-mode");
+            } else {
+                document.documentElement.classList.remove("low-spec-mode");
+            }
+
+            const profileEl = document.getElementById("device-profile-info");
+            if (profileEl) {
+                const ramLabel = mem ? `RAM ~${mem}GB` : "Mode Hemat RAM";
+                const netLabel = deviceSpec.isNetworkSlow ? "Jaringan Lelet" : "Siap Kirim";
+                profileEl.innerText = `${ramLabel} • Resolusi Maks ${deviceSpec.maxWidth}px • Status: ${netLabel}`;
+            }
+        }
+
+        function showSlowNetworkPage(reasonText) {
+            const page = document.getElementById("slow-network-page");
+            const detail = document.getElementById("slow-network-detail");
+            if (detail && reasonText) {
+                detail.innerText = reasonText;
+            }
+            if (page) {
+                page.classList.remove("hidden");
+            }
+        }
+
+        function hideSlowNetworkPage() {
+            const page = document.getElementById("slow-network-page");
+            if (page) {
+                page.classList.add("hidden");
+            }
+        }
+
+        async function measureActualNetworkLatency() {
+            if (navigator.onLine === false) {
+                return { slow: true, reason: "Perangkat sedang offline atau tidak ada koneksi internet. Jangan memaksa upload foto karena tidak akan terkirim." };
+            }
+
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn) {
+                const eff = (conn.effectiveType || "").toLowerCase();
+                const downlink = typeof conn.downlink === "number" ? conn.downlink : null;
+                const rtt = typeof conn.rtt === "number" ? conn.rtt : null;
+
+                if (eff === "slow-2g" || eff === "2g") {
+                    return { slow: true, reason: `Koneksi terdeteksi sangat lambat (${eff.toUpperCase()}). Upload foto berisiko gagal terkirim.` };
+                }
+                if (downlink !== null && downlink > 0 && downlink < 0.75) {
+                    return { slow: true, reason: `Kecepatan unduh/kirim hanya ${downlink} Mbps (lelet). Sebaiknya tunggu jaringan membaik sebelum mengirim foto.` };
+                }
+                if (rtt !== null && rtt > 1500) {
+                    return { slow: true, reason: `Respons jaringan sangat lambat (ping ${rtt} ms). Upload foto berisiko gagal.` };
+                }
+            }
+
+            // Uji latensi aktual ke server ringan (fallback untuk Android lama / WebView)
+            try {
+                const startTs = new Date().getTime();
+                const testUrl = `${APPS_SCRIPT_URL}?ping=1&_t=${startTs}`;
+                if (typeof AbortController !== "undefined" && typeof fetch !== "undefined") {
+                    const ctrl = new AbortController();
+                    const timer = setTimeout(function() { ctrl.abort(); }, 4500);
+                    await fetch(testUrl, { method: "GET", mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+                    clearTimeout(timer);
+                }
+                const elapsed = new Date().getTime() - startTs;
+                if (elapsed > 3500) {
+                    return { slow: true, reason: `Waktu respons jaringan lambat (${(elapsed / 1000).toFixed(1)} detik). Daripada memaksa upload foto tidak terkirim, silakan pindah ke jaringan yang lebih stabil.` };
+                }
+                return { slow: false, reason: "" };
+            } catch (err) {
+                return { slow: true, reason: "Koneksi ke server lambat atau terputus saat diperiksa. Jangan paksa upload foto agar tidak gagal terkirim." };
+            }
+        }
+
+        async function recheckNetworkNow(showPopupIfSlow) {
+            const statusText = document.getElementById("network-status");
+            const dot = document.getElementById("network-dot");
+
+            if (navigator.onLine === false) {
+                deviceSpec.isNetworkSlow = true;
+                deviceSpec.networkReason = "Koneksi internet terputus / Offline.";
+                if (statusText) statusText.innerText = "Jaringan Lelet / Offline";
+                if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+                detectDeviceAndSpec();
+                if (showPopupIfSlow) {
+                    showSlowNetworkPage(deviceSpec.networkReason);
+                }
+                return false;
+            }
+
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && typeof conn.downlink === "number") {
+                const speed = conn.downlink;
+                if (speed > 5 && conn.effectiveType !== "2g" && conn.effectiveType !== "slow-2g") {
+                    if (statusText) statusText.innerText = `Jaringan Cepat (${speed} Mbps)`;
+                    if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+                    deviceSpec.isNetworkSlow = false;
+                    deviceSpec.networkReason = "";
+                    detectDeviceAndSpec();
+                    return true;
+                } else if (speed >= 0.75 && conn.effectiveType !== "2g" && conn.effectiveType !== "slow-2g") {
+                    if (statusText) statusText.innerText = `Jaringan Stabil (${speed} Mbps)`;
+                    if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
+                    deviceSpec.isNetworkSlow = false;
+                    deviceSpec.networkReason = "";
+                    detectDeviceAndSpec();
+                    return true;
+                }
+            }
+
+            const check = await measureActualNetworkLatency();
+            if (check.slow) {
+                deviceSpec.isNetworkSlow = true;
+                deviceSpec.networkReason = check.reason;
+                if (statusText) statusText.innerText = "Jaringan Anda Lelet";
+                if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+                detectDeviceAndSpec();
+                if (showPopupIfSlow) {
+                    showSlowNetworkPage(check.reason);
+                }
+                return false;
+            } else {
+                deviceSpec.isNetworkSlow = false;
+                deviceSpec.networkReason = "";
+                if (statusText) statusText.innerText = "Online (Normal)";
+                if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+                detectDeviceAndSpec();
+                return true;
+            }
+        }
 
         const ALL_CATEGORIES = [
             "PERSIAPAN (Absensi Relawan)",
@@ -583,6 +815,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            detectDeviceAndSpec();
             const inputTanggal = document.getElementById('input-tanggal-laporan');
             if (inputTanggal) {
                 inputTanggal.addEventListener('change', () => {
@@ -590,32 +823,32 @@
                     updateCategoryDropdownOptions();
                 });
             }
+
+            window.addEventListener("offline", () => {
+                deviceSpec.isNetworkSlow = true;
+                deviceSpec.networkReason = "Koneksi internet terputus (Offline). Jangan memaksa kirim foto agar tidak gagal.";
+                recheckNetworkNow(true);
+            });
+
+            window.addEventListener("online", () => {
+                recheckNetworkNow(false);
+            });
+
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && typeof conn.addEventListener === "function") {
+                conn.addEventListener("change", () => {
+                    recheckNetworkNow(false);
+                });
+            }
         });
 
         setInterval(setTodayDate, 1000);
         setTodayDate();
+        detectDeviceAndSpec();
         checkNetworkSpeed();
 
         function checkNetworkSpeed() {
-            const statusText = document.getElementById('network-status');
-            const dot = document.getElementById('network-dot');
-            
-            if (navigator.connection) {
-                const speed = navigator.connection.downlink;
-                if (speed > 5) {
-                    statusText.innerText = `Jaringan Cepat (${speed} Mbps)`;
-                    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-                } else if (speed > 2) {
-                    statusText.innerText = `Jaringan Stabil (${speed} Mbps)`;
-                    dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
-                } else {
-                    statusText.innerText = `Jaringan Lambat (${speed} Mbps)`;
-                    dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse";
-                }
-            } else {
-                statusText.innerText = "Online (Normal)";
-                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-            }
+            recheckNetworkNow(false);
         }
 
         function togglePassword() {
@@ -644,7 +877,9 @@
                     user: currentUser,
                     expiry: now.getTime() + (7 * 24 * 60 * 60 * 1000)
                 };
-                localStorage.setItem('currentUserSession', JSON.stringify(item));
+                try {
+                    localStorage.setItem('currentUserSession', JSON.stringify(item));
+                } catch (err) {}
 
                 errBox.classList.add('hidden');
                 loadDashboard();
@@ -655,7 +890,10 @@
         }
 
         function initializeAppState() {
-            const savedStr = localStorage.getItem('currentUserSession');
+            let savedStr = null;
+            try {
+                savedStr = localStorage.getItem('currentUserSession');
+            } catch (e) {}
             if (savedStr) {
                 try {
                     const savedItem = JSON.parse(savedStr);
@@ -667,7 +905,7 @@
                         localStorage.removeItem('currentUserSession');
                     }
                 } catch (err) {
-                    localStorage.removeItem('currentUserSession');
+                    try { localStorage.removeItem('currentUserSession'); } catch (e2) {}
                 }
             }
         }
@@ -702,6 +940,7 @@
         }
 
         function loadDashboard() {
+            detectDeviceAndSpec();
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('header-nav').classList.remove('hidden');
             document.getElementById('dashboard-section').classList.remove('hidden');
@@ -757,7 +996,7 @@
         }
 
         function logout() {
-            localStorage.removeItem('currentUserSession');
+            try { localStorage.removeItem('currentUserSession'); } catch (e) {}
             location.reload();
         }
 
@@ -783,53 +1022,88 @@
             });
         }
 
-        async function compressImageAndGetBase64(file, maxWidth = 800, quality = 0.5) {
+        async function compressImageAndGetBase64(file, maxWidth, quality) {
+            const targetMaxWidth = maxWidth || deviceSpec.maxWidth;
+            const targetQuality = typeof quality === "number" ? quality : deviceSpec.quality;
+
             return new Promise((resolve) => {
+                if (!file) {
+                    resolve("");
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = (event) => {
+                    const rawDataUrl = event.target ? event.target.result : "";
+                    if (!rawDataUrl || typeof rawDataUrl !== "string") {
+                        resolve("");
+                        return;
+                    }
+
                     const img = new Image();
                     img.onload = () => {
+                        let canvas = null;
                         try {
-                            const canvas = document.createElement('canvas');
-                            let width = img.width;
-                            let height = img.height;
+                            let width = img.naturalWidth || img.width;
+                            let height = img.naturalHeight || img.height;
 
                             if (!width || !height) {
-                                resolve(event.target.result);
+                                resolve(rawDataUrl);
                                 return;
                             }
 
-                            if (width > maxWidth) {
-                                height = Math.round((height * maxWidth) / width);
-                                width = maxWidth;
+                            if (width > targetMaxWidth) {
+                                height = Math.round((height * targetMaxWidth) / width);
+                                width = targetMaxWidth;
                             }
 
+                            canvas = document.createElement('canvas');
                             canvas.width = width;
                             canvas.height = height;
 
                             const ctx = canvas.getContext('2d');
                             if (!ctx) {
-                                resolve(event.target.result);
+                                resolve(rawDataUrl);
                                 return;
                             }
 
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = deviceSpec.isLowMemory ? "low" : "medium";
                             ctx.drawImage(img, 0, 0, width, height);
-                            const base64String = canvas.toDataURL('image/jpeg', quality);
+
+                            const base64String = canvas.toDataURL('image/jpeg', targetQuality);
+
+                            // Lepaskan memori canvas & image segera untuk perangkat RAM kecil
+                            canvas.width = 0;
+                            canvas.height = 0;
+                            img.src = "";
+
                             resolve(base64String);
                         } catch (err) {
                             console.warn("Gagal kompres canvas, menggunakan file mentah:", err);
-                            resolve(event.target.result);
+                            try {
+                                if (canvas) {
+                                    canvas.width = 0;
+                                    canvas.height = 0;
+                                }
+                                img.src = "";
+                            } catch (e2) {}
+                            resolve(rawDataUrl);
                         }
                     };
                     img.onerror = () => {
-                        resolve(event.target.result);
+                        resolve(rawDataUrl);
                     };
-                    img.src = event.target.result;
+                    img.src = rawDataUrl;
                 };
                 reader.onerror = () => {
                     resolve(""); 
                 };
-                reader.readAsDataURL(file);
+                try {
+                    reader.readAsDataURL(file);
+                } catch (e) {
+                    resolve("");
+                }
             });
         }
 
@@ -865,6 +1139,16 @@
 
         async function handleUpload(e) {
             e.preventDefault();
+
+            // Cek jaringan sebelum memproses / mengirim foto
+            const isNetworkOk = await recheckNetworkNow(false);
+            if (!isNetworkOk || deviceSpec.isNetworkSlow) {
+                showSlowNetworkPage(
+                    deviceSpec.networkReason ||
+                    "Jaringan Anda terdeteksi lelet! Daripada memaksa upload foto tidak terkirim, silakan perbaiki koneksi terlebih dahulu."
+                );
+                return;
+            }
 
             if (isSyncingActive) {
                 Swal.fire({
@@ -918,6 +1202,7 @@
             btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses Foto...`;
 
             try {
+                detectDeviceAndSpec();
                 const parts = tanggalPilih.split('-');
                 let dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
                 if (isNaN(dateObj.getTime())) {
@@ -933,8 +1218,15 @@
                 let allCompressedFiles = [];
 
                 for (let i = 0; i < rawFilesArray.length; i++) {
+                    // Cek ulang jaringan di sela pemrosesan bila file banyak
+                    if (i > 0 && i % 3 === 0 && navigator.onLine === false) {
+                        showSlowNetworkPage("Koneksi terputus saat menyiapkan foto. Upload dihentikan agar tidak gagal.");
+                        return;
+                    }
+
+                    btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses Foto ${i + 1}/${rawFilesArray.length}...`;
                     const file = rawFilesArray[i];
-                    const base64 = await compressImageAndGetBase64(file);
+                    const base64 = await compressImageAndGetBase64(file, deviceSpec.maxWidth, deviceSpec.quality);
                     
                     if (base64) {
                         allCompressedFiles.push({
@@ -950,7 +1242,17 @@
                     throw new Error("Gagal memproses file foto yang dipilih.");
                 }
 
-                const CHUNK_SIZE = 8;
+                // Cek kembali koneksi sebelum kirim ke server
+                const stillGoodNet = await recheckNetworkNow(false);
+                if (!stillGoodNet || deviceSpec.isNetworkSlow) {
+                    showSlowNetworkPage(
+                        deviceSpec.networkReason ||
+                        "Jaringan Anda lelet saat akan mengirim foto! Daripada memaksa kirim dan gagal terkirim, silakan perbaiki jaringan dulu."
+                    );
+                    return;
+                }
+
+                const CHUNK_SIZE = deviceSpec.chunkSize || 5;
                 const batchGroups = [];
                 for (let i = 0; i < allCompressedFiles.length; i += CHUNK_SIZE) {
                     batchGroups.push(allCompressedFiles.slice(i, i + CHUNK_SIZE));
@@ -991,7 +1293,7 @@
                 Swal.fire({
                     html: `
                         <div class="py-4">
-                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner animate-bounce">
+                            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
                             </div>
                             <h2 class="text-2xl font-bold text-slate-800 mb-2">BERHASIL!</h2>
@@ -1016,12 +1318,16 @@
 
             } catch (error) {
                 console.error("Gagal Dikirim:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kesalahan Upload',
-                    text: 'Terjadi kesalahan saat memproses atau menyimpan foto. Pastikan ukuran file tidak melebihi batas memori perangkat.',
-                    confirmButtonColor: '#2563eb'
-                });
+                if (navigator.onLine === false || (error && error.name === "AbortError")) {
+                    showSlowNetworkPage("Jaringan terganggu atau lelet saat memproses/mengirim laporan. Silakan cek jaringan Anda.");
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kesalahan Upload',
+                        text: 'Terjadi kesalahan saat memproses atau menyimpan foto. Pastikan ukuran file tidak melebihi batas memori perangkat.',
+                        confirmButtonColor: '#2563eb'
+                    });
+                }
             } finally {
                 btnUpload.disabled = false;
                 btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
@@ -1029,25 +1335,35 @@
         }
 
         async function syncToDriveInBackground(docId, reportPayload, formattedDateFolder, totalFoto) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 40000);
+            const timeoutMs = deviceSpec.isLowMemory ? 55000 : 40000;
+            let controller = null;
+            let timeoutId = null;
+
+            if (typeof AbortController !== "undefined") {
+                controller = new AbortController();
+                timeoutId = setTimeout(function() { controller.abort(); }, timeoutMs);
+            }
 
             try {
-                fetch(APPS_SCRIPT_URL, {
+                const fetchOpts = {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reportPayload),
-                    signal: controller.signal
-                }).then(async () => {
-                    clearTimeout(timeoutId);
+                    body: JSON.stringify(reportPayload)
+                };
+                if (controller) {
+                    fetchOpts.signal = controller.signal;
+                }
+
+                fetch(APPS_SCRIPT_URL, fetchOpts).then(async () => {
+                    if (timeoutId) clearTimeout(timeoutId);
                     const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
                     await window.updateDoc(targetRef, { 
                         syncedToDrive: true,
                         syncFailed: false 
                     });
                 }).catch(async () => {
-                    clearTimeout(timeoutId);
+                    if (timeoutId) clearTimeout(timeoutId);
                     const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
                     await window.updateDoc(targetRef, { 
                         syncedToDrive: false,
@@ -1058,7 +1374,7 @@
                     sendTelegramAlertAdmin(reportPayload.uploader, reportPayload.kategori, formattedDateFolder);
                 });
             } catch (syncErr) {
-                clearTimeout(timeoutId);
+                if (timeoutId) clearTimeout(timeoutId);
                 const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
                 await window.updateDoc(targetRef, { 
                     syncedToDrive: false,
@@ -1087,6 +1403,9 @@
         }
 
         async function retrySyncGroup(encodedDocIds) {
+            const okNet = await recheckNetworkNow(true);
+            if (!okNet) return;
+
             try {
                 const docIds = JSON.parse(decodeURIComponent(encodedDocIds));
                 Swal.fire({
@@ -1218,7 +1537,7 @@
 
             const groupedData = groupReports(rawList);
             
-            // PERBAIKAN: Urutkan tanggal dari terkecil ke terbesar (Ascending)
+            // Urutkan tanggal dari terkecil ke terbesar (Ascending)
             groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
             
             if (currentUser && currentUser.role === 'user') {
@@ -1292,7 +1611,7 @@
 
             const groupedData = groupReports(rawList);
             
-            // PERBAIKAN: Urutkan tanggal dari terkecil ke terbesar (Ascending)
+            // Urutkan tanggal dari terkecil ke terbesar (Ascending)
             groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
             checkGlobalSyncStatus(groupedData);
@@ -1309,7 +1628,7 @@
                 let photosHtml = `<div class="flex space-x-1 overflow-x-auto py-1 max-w-xs">`;
                 if (data.files && data.files.length > 0) {
                     data.files.forEach(f => {
-                        photosHtml += `<img src="${f.fileData}" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border hover:scale-105 transition cursor-pointer shadow-sm" title="Klik untuk lihat pratinjau jernih">`;
+                        photosHtml += `<img src="${f.fileData}" loading="lazy" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border hover:scale-105 transition cursor-pointer shadow-sm" title="Klik untuk lihat pratinjau jernih">`;
                     });
                 }
                 photosHtml += `</div>`;
