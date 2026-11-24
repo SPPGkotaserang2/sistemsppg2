@@ -64,70 +64,44 @@
             animation: none !important;
         }
 
-        /* KHUSUS BAGIAN DAFTAR RIWAYAT DATA: PAKSA MODE DESKTOP PAS, TANPA GESER & TANPA ZOOM */
+        /* KHUSUS BAGIAN DAFTAR RIWAYAT DATA: TAMPIL LUAS, PANJANG & BEBAS SEPERTI MODE DESKTOP */
         #archiveContainer {
             -webkit-text-size-adjust: none;
             text-size-adjust: none;
-            touch-action: manipulation;
         }
 
         #archiveDesktopViewport {
             width: 100%;
-            overflow-x: hidden !important;
+            overflow-x: auto !important;
             overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
         }
 
         #archiveDesktopTable {
             width: 100% !important;
-            min-width: 100% !important;
-            table-layout: fixed !important;
+            min-width: 1100px !important;
+            table-layout: auto !important;
             border-collapse: collapse;
-            font-size: 8.5px !important;
-            line-height: 1.25 !important;
-        }
-
-        @media (min-width: 640px) {
-            #archiveDesktopTable {
-                font-size: 11px !important;
-                line-height: 1.35 !important;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            #archiveDesktopTable {
-                font-size: 13px !important;
-                line-height: 1.45 !important;
-            }
+            font-size: 13px !important;
+            line-height: 1.45 !important;
         }
 
         #archiveDesktopTable th,
         #archiveDesktopTable td {
-            padding: 4px 3px !important;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
+            padding: 12px 14px !important;
             vertical-align: top;
+            white-space: normal;
         }
 
-        @media (min-width: 640px) {
-            #archiveDesktopTable th,
-            #archiveDesktopTable td {
-                padding: 8px 6px !important;
-            }
+        #archiveDesktopTable th {
+            white-space: nowrap;
         }
 
-        @media (min-width: 1024px) {
-            #archiveDesktopTable th,
-            #archiveDesktopTable td {
-                padding: 12px 10px !important;
-            }
-        }
-
-        #archiveDesktopTable .col-no { width: 5%; }
-        #archiveDesktopTable .col-tgl { width: 12%; }
-        #archiveDesktopTable .col-kat { width: 14%; }
-        #archiveDesktopTable .col-tot { width: 10%; }
-        #archiveDesktopTable .col-aksi { width: 13%; }
+        #archiveDesktopTable .col-no { width: 55px; white-space: nowrap; }
+        #archiveDesktopTable .col-tgl { width: 125px; white-space: nowrap; }
+        #archiveDesktopTable .col-kat { min-width: 165px; }
+        #archiveDesktopTable .col-tot { width: 115px; white-space: nowrap; }
+        #archiveDesktopTable .col-aksi { width: 110px; white-space: nowrap; }
 
         /* Halaman Peringatan Jaringan Lelet */
         #slow-network-page {
@@ -292,25 +266,40 @@
                 </div>
             </div>
 
-            <!-- INFORMASI SPESIFIKASI DEVICE YANG SEDANG DIGUNAKAN -->
-            <div id="deviceSpecCard" class="bg-white p-5 sm:p-6 rounded-3xl card-glow border border-sky-100 space-y-4">
-                <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-100 pb-3">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">
-                            <i class="fa-solid fa-mobile-screen-button text-biruAsinDark mr-2"></i>Spesifikasi Perangkat Digunakan
-                        </h3>
-                        <p class="text-xs text-slate-500">Data real yang terbaca dari perangkat, layar, koneksi, dan browser aktif.</p>
+            <!-- INFORMASI SPESIFIKASI DEVICE YANG SEDANG DIGUNAKAN (BISA DICIUTKAN AGAR TIDAK RAMAI) -->
+            <div id="deviceSpecCard" class="bg-white p-4 sm:p-5 rounded-3xl card-glow border border-sky-100">
+                <div class="flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-biruAsinDark">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-slate-900">Spesifikasi Perangkat Digunakan</h3>
+                            <p class="text-[11px] text-slate-500">Klik tombol di samping untuk menampilkan atau menciutkan detail perangkat.</p>
+                        </div>
                     </div>
-                    <button type="button" onclick="renderDeviceSpecifications()" class="bg-sky-50 hover:bg-sky-100 text-biruAsinDark text-xs font-bold px-3 py-1.5 rounded-xl border border-sky-200">
-                        <i class="fa-solid fa-rotate mr-1"></i> Segarkan Info
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btnToggleDeviceSpec" onclick="toggleDeviceSpecifications()" class="bg-biruAsinDark hover:bg-biruAsinHover text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition flex items-center space-x-1.5">
+                            <i id="iconToggleDeviceSpec" class="fa-solid fa-chevron-down"></i>
+                            <span id="textToggleDeviceSpec">Lihat Spesifikasi Perangkat</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div id="deviceSpecGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs"></div>
+                <!-- Konten Spesifikasi (Tersembunyi secara default agar tampilan ringkas) -->
+                <div id="deviceSpecDetailsWrapper" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-4">
+                    <div class="flex justify-end">
+                        <button type="button" onclick="renderDeviceSpecifications()" class="bg-sky-50 hover:bg-sky-100 text-biruAsinDark text-xs font-bold px-3 py-1.5 rounded-xl border border-sky-200 transition">
+                            <i class="fa-solid fa-rotate mr-1"></i> Segarkan Info
+                        </button>
+                    </div>
 
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-600">
-                    <span class="font-bold text-slate-700">User-Agent Browser:</span>
-                    <span id="deviceUserAgentText" class="break-all font-mono">-</span>
+                    <div id="deviceSpecGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs"></div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-600">
+                        <span class="font-bold text-slate-700">User-Agent Browser:</span>
+                        <span id="deviceUserAgentText" class="break-all font-mono">-</span>
+                    </div>
                 </div>
             </div>
 
@@ -477,7 +466,7 @@
                 </form>
             </div>
 
-            <!-- BAGIAN ARSIP (PAKSA MODE DESKTOP PAS, TANPA GESER & TANPA ZOOM, TULISAN RAPI TIDAK TERPOTONG) -->
+            <!-- BAGIAN ARSIP (TAMPIL LUAS & PANJANG SEPERTI MODE DESKTOP, TIDAK MENUMPUK) -->
             <div id="archiveContainer" class="bg-white p-4 sm:p-8 rounded-3xl card-glow border border-sky-100 space-y-5">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-slate-100 pb-4">
                     <div>
@@ -649,21 +638,43 @@
             } catch (e) {}
         })();
 
-        // Cegah pinch-to-zoom di dalam area Daftar Riwayat Data agar tampil mode desktop pas
-        (function lockArchiveZoom() {
-            try {
-                var arch = document.getElementById("archiveContainer");
-                if (!arch) return;
-                arch.addEventListener("touchstart", function (e) {
-                    if (e.touches && e.touches.length > 1) {
-                        e.preventDefault();
-                    }
-                }, { passive: false });
-                arch.addEventListener("gesturestart", function (e) {
-                    e.preventDefault();
-                }, { passive: false });
-            } catch (e) {}
-        })();
+        // Toggle tampil / ciutkan spesifikasi perangkat
+        function toggleDeviceSpecifications() {
+            var wrapper = document.getElementById("deviceSpecDetailsWrapper");
+            var btn = document.getElementById("btnToggleDeviceSpec");
+            var icon = document.getElementById("iconToggleDeviceSpec");
+            var text = document.getElementById("textToggleDeviceSpec");
+            if (!wrapper) return;
+
+            var isHidden = wrapper.classList.contains("hidden");
+            if (isHidden) {
+                renderDeviceSpecifications();
+                wrapper.classList.remove("hidden");
+                if (btn) {
+                    btn.classList.remove("bg-biruAsinDark", "hover:bg-biruAsinHover", "text-white");
+                    btn.classList.add("bg-slate-200", "hover:bg-slate-300", "text-slate-800");
+                }
+                if (icon) {
+                    icon.className = "fa-solid fa-chevron-up";
+                }
+                if (text) {
+                    text.innerText = "Ciutkan Spesifikasi";
+                }
+            } else {
+                wrapper.classList.add("hidden");
+                if (btn) {
+                    btn.classList.remove("bg-slate-200", "hover:bg-slate-300", "text-slate-800");
+                    btn.classList.add("bg-biruAsinDark", "hover:bg-biruAsinHover", "text-white");
+                }
+                if (icon) {
+                    icon.className = "fa-solid fa-chevron-down";
+                }
+                if (text) {
+                    text.innerText = "Lihat Spesifikasi Perangkat";
+                }
+            }
+        }
+        window.toggleDeviceSpecifications = toggleDeviceSpecifications;
 
         // Spesifikasi real & lengkap perangkat yang sedang digunakan
         function detectRealDeviceSpecs() {
@@ -1680,15 +1691,15 @@
                 let photoHtml = '';
                 let photos = item.fotos || [];
                 if (photos.length > 0) {
-                    photoHtml = `<div class="flex flex-wrap gap-1 mt-1">` + photos.map(p => `
+                    photoHtml = `<div class="flex flex-wrap gap-1.5 mt-1.5">` + photos.map(p => `
                         <div class="inline-flex items-center bg-slate-100 p-0.5 rounded border border-slate-200">
-                            <img src="${p.data || p.fileUrl}" onclick="openPhotoModal('${p.data || p.fileUrl}')" class="w-5 h-5 sm:w-7 sm:h-7 object-cover rounded cursor-pointer hover:opacity-80 transition">
+                            <img src="${p.data || p.fileUrl}" onclick="openPhotoModal('${p.data || p.fileUrl}')" class="w-8 h-8 object-cover rounded cursor-pointer hover:opacity-80 transition">
                         </div>
                     `).join('') + `</div>`;
                 }
 
                 return `
-                    <div class="mb-1.5 pb-1 border-b border-slate-100 last:border-none last:mb-0 last:pb-0">
+                    <div class="mb-2 pb-1.5 border-b border-slate-100 last:border-none last:mb-0 last:pb-0">
                         <div class="font-bold text-slate-800">${ketDisplay}: <span class="text-biruAsinDark">${kgDisplay}</span></div>
                         ${photoHtml}
                     </div>
@@ -1702,22 +1713,22 @@
             
             let actionTd = currentUser.role === 'admin' ? `
                 <td class="text-center action-col">
-                    <div class="flex flex-col items-center justify-center gap-1">
-                        <button onclick="openEditModal('${record.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-1.5 py-1 rounded-lg font-bold transition shadow-sm" title="Edit Laporan"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteRecord('${record.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-600 px-1.5 py-1 rounded-lg font-bold transition shadow-sm" title="Hapus Laporan"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex items-center justify-center gap-1.5">
+                        <button onclick="openEditModal('${record.id}')" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-2.5 py-1.5 rounded-lg font-bold transition shadow-sm" title="Edit Laporan"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteRecord('${record.id}')" class="bg-rose-100 hover:bg-rose-200 text-rose-600 px-2.5 py-1.5 rounded-lg font-bold transition shadow-sm" title="Hapus Laporan"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </td>
             ` : `<td class="text-center action-col" style="display:none;"></td>`;
 
             tr.innerHTML = `
                 <td class="text-center font-bold text-slate-500">${no}</td>
-                <td class="font-bold text-slate-900">${formatDateID(record.tanggal)}</td>
+                <td class="font-bold text-slate-900 whitespace-nowrap">${formatDateID(record.tanggal)}</td>
                 <td>${formatCategoryCell(record.karbo)}</td>
                 <td>${formatCategoryCell(record.protein)}</td>
                 <td>${formatCategoryCell(record.sayur)}</td>
                 <td>${formatCategoryCell(record.buah)}</td>
                 <td>${formatCategoryCell(record.lainnya)}</td>
-                <td class="font-extrabold text-slate-800">${record.totalKg || '0 Kg'}</td>
+                <td class="font-extrabold text-slate-800 whitespace-nowrap">${record.totalKg || '0 Kg'}</td>
                 ${actionTd}
             `;
             return tr;
