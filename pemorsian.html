@@ -269,7 +269,6 @@
         <section id="dashboardSection" class="hidden space-y-6">
 
             <!-- NOTIFIKASI PERINGATAN LAPORAN TERTUNDA (MUNCUL DI PALING ATAS UNTUK USER & ADMIN) -->
-            <!-- Untuk User: Tidak akan hilang selama belum dikerjakan (Sabtu & Minggu libur diabaikan) -->
             <div id="userMissingReportBanner" class="hidden bg-rose-50 border-2 border-rose-400 rounded-3xl p-5 sm:p-6 shadow-lg space-y-3">
                 <div class="flex items-start space-x-3.5">
                     <div class="w-11 h-11 rounded-2xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow">
@@ -286,7 +285,7 @@
                 </div>
             </div>
 
-            <!-- Untuk Admin: Beritahu siapa saja user yang belum laporan pada hari kerja (Senin-Jumat) -->
+            <!-- Untuk Admin: Beritahu siapa saja user yang belum laporan & tombol setujui sudah laporan -->
             <div id="adminMissingReportBanner" class="hidden bg-amber-50 border-2 border-amber-400 rounded-3xl p-5 sm:p-6 shadow-lg space-y-3">
                 <div class="flex items-start space-x-3.5">
                     <div class="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow">
@@ -297,8 +296,8 @@
                             <h3 class="text-base sm:text-lg font-extrabold text-amber-950">Monitoring Laporan User Belum Masuk (Admin)</h3>
                             <span class="bg-amber-600 text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase">Sabtu &amp; Minggu Libur</span>
                         </div>
-                        <p class="text-xs text-amber-800 mt-0.5 font-medium">Daftar petugas/koordinator yang belum mengirim laporan pada hari kerja:</p>
-                        <div id="adminMissingReportList" class="mt-3 space-y-2"></div>
+                        <p class="text-xs text-amber-800 mt-0.5 font-medium">Daftar petugas/koordinator yang belum mengirim laporan pada hari kerja. Klik "Setujui Sudah Laporan" untuk menandai selesai dan menghilangkan peringatan.</p>
+                        <div id="adminMissingReportList" class="mt-3 space-y-2.5"></div>
                     </div>
                 </div>
             </div>
@@ -312,7 +311,7 @@
                 </div>
             </div>
 
-            <!-- INFORMASI SPESIFIKASI DEVICE YANG SEDANG DIGUNAKAN (BISA DICIUTKAN AGAR TIDAK RAMAI) -->
+            <!-- INFORMASI SPESIFIKASI DEVICE YANG SEDANG DIGUNAKAN -->
             <div id="deviceSpecCard" class="bg-white p-4 sm:p-5 rounded-3xl card-glow border border-sky-100">
                 <div class="flex flex-wrap justify-between items-center gap-2">
                     <div class="flex items-center space-x-2.5">
@@ -332,7 +331,6 @@
                     </div>
                 </div>
 
-                <!-- Konten Spesifikasi (Tersembunyi secara default agar tampilan ringkas) -->
                 <div id="deviceSpecDetailsWrapper" class="hidden mt-4 pt-4 border-t border-slate-100 space-y-4">
                     <div class="flex justify-end">
                         <button type="button" onclick="renderDeviceSpecifications()" class="bg-sky-50 hover:bg-sky-100 text-biruAsinDark text-xs font-bold px-3 py-1.5 rounded-xl border border-sky-200 transition">
@@ -366,7 +364,6 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Karbohidrat Admin Task -->
                         <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-wheat-awn text-amber-500 text-lg"></i><span>Karbohidrat</span></h4>
@@ -375,7 +372,6 @@
                             <div id="adminKarboContainer" class="space-y-3"></div>
                         </div>
 
-                        <!-- Protein Admin Task -->
                         <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-drumstick-bite text-rose-500 text-lg"></i><span>Protein</span></h4>
@@ -384,7 +380,6 @@
                             <div id="adminProteinContainer" class="space-y-3"></div>
                         </div>
 
-                        <!-- Sayur Admin Task -->
                         <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-carrot text-emerald-500 text-lg"></i><span>Sayur (Bisa Banyak)</span></h4>
@@ -393,7 +388,6 @@
                             <div id="adminSayurContainer" class="space-y-3"></div>
                         </div>
 
-                        <!-- Buah Admin Task -->
                         <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-apple-whole text-orange-500 text-lg"></i><span>Buah</span></h4>
@@ -402,7 +396,6 @@
                             <div id="adminBuahContainer" class="space-y-3"></div>
                         </div>    
 
-                        <!-- Lainnya Admin Task -->
                         <div class="p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-4">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2"><i class="fa-solid fa-plate-whole text-orange-500 text-lg"></i><span>Lainnya</span></h4>
@@ -410,7 +403,6 @@
                             </div>
                             <div id="adminLainnyaContainer" class="space-y-3"></div>
                         </div>
-                        
                     </div>
 
                     <button type="submit" id="saveTaskBtn" class="py-3.5 px-8 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg transition duration-200 text-sm flex items-center space-x-2">
@@ -521,7 +513,7 @@
                     </div>
 
                     <div id="archiveSentLockBadge" class="hidden bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-extrabold px-3.5 py-2 rounded-xl">
-                        <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Laporan berhasil dikirim (Data Terkunci)
+                        <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Laporan berhasil (Data Terkunci)
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
@@ -1123,6 +1115,8 @@
         let currentUser = null;
         let archiveRowsData = [];
         let currentLoadedTask = null;
+        let cachedAllRows = [];
+        let cachedApprovedSet = new Set();
 
         function formatDateID(dateStr) {
             if (!dateStr) return '';
@@ -1140,7 +1134,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // Helper nama hari Indonesia dari string tanggal YYYY-MM-DD
         function getHariIndonesia(dateStr) {
             const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
             const parts = String(dateStr).split('-');
@@ -1148,13 +1141,53 @@
             return namaHari[d.getDay()];
         }
 
-        // Cek apakah tanggal adalah hari libur akhir pekan (Sabtu = 6, Minggu = 0)
+        // Sabtu (6) & Minggu (0) libur
         function isWeekendDate(dateObj) {
             const day = dateObj.getDay();
             return day === 0 || day === 6;
         }
 
-        // Klik tombol "Laporkan Tgl ... Sekarang" dari notifikasi laporan tertunda
+        function getApprovalKey(username, dateStr) {
+            return `${username}__${dateStr}`;
+        }
+
+        async function loadAdminApprovals() {
+            const approvedSet = new Set();
+            try {
+                const snap = await getDocs(collection(db, "persetujuan_laporan_pemorsian"));
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data && data.username && data.tanggal) {
+                        approvedSet.add(getApprovalKey(data.username, data.tanggal));
+                    }
+                });
+            } catch (err) {
+                console.error("Gagal memuat persetujuan laporan:", err);
+            }
+            cachedApprovedSet = approvedSet;
+            return approvedSet;
+        }
+
+        // Admin menyetujui bahwa user sudah laporan pada tanggal tertentu -> peringatan hilang
+        window.approveUserMissingReport = async function(username, dateStr) {
+            try {
+                const docId = getApprovalKey(username, dateStr);
+                await setDoc(doc(db, "persetujuan_laporan_pemorsian", docId), {
+                    username: username,
+                    userName: accounts[username]?.name || username,
+                    tanggal: dateStr,
+                    approvedBy: currentUser?.name || "Admin",
+                    approvedAt: new Date().toISOString()
+                });
+                cachedApprovedSet.add(docId);
+                updateMissingReportsNotifications(cachedAllRows);
+                showModalAlert('Disetujui', `Laporan ${accounts[username]?.name || username} tanggal ${formatDateID(dateStr)} telah disetujui.`, 'success');
+            } catch (err) {
+                console.error(err);
+                showModalAlert('Gagal', 'Gagal menyetujui status laporan.', 'error');
+            }
+        };
+
         window.fillMissingReportDate = function(dateStr) {
             const inputTgl = document.getElementById('inputTanggal');
             const inputCard = document.getElementById('inputCardWrapper');
@@ -1167,8 +1200,9 @@
             }
         };
 
-        // Pemeriksaan & Tampilan Notifikasi User Belum Lapor + Admin Monitoring (Kecuali Sabtu & Minggu Libur)
+        // Pemeriksaan & Tampilan Notifikasi User Belum Lapor + Admin Monitoring (Sabtu & Minggu libur)
         function updateMissingReportsNotifications(allRows) {
+            cachedAllRows = allRows || [];
             const userBanner = document.getElementById('userMissingReportBanner');
             const userListEl = document.getElementById('userMissingReportList');
             const adminBanner = document.getElementById('adminMissingReportBanner');
@@ -1183,24 +1217,20 @@
             const yesterdayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
             const yesterdayStr = getLocalDateString(yesterdayDate);
 
-            // Daftar akun user yang wajib mengirim laporan
             const userAccounts = Object.keys(accounts)
                 .filter(uKey => accounts[uKey].role === 'user')
                 .map(uKey => ({ username: uKey, name: accounts[uKey].name }));
 
-            // Batas paling awal pengecekan berdasarkan data yang sudah ada di database
             let earliestSystemDate = null;
-            allRows.forEach(r => {
+            cachedAllRows.forEach(r => {
                 if (r.tanggal && (!earliestSystemDate || r.tanggal < earliestSystemDate)) {
                     earliestSystemDate = r.tanggal;
                 }
             });
-
             if (!earliestSystemDate) {
                 earliestSystemDate = yesterdayStr;
             }
 
-            // Cek hingga 14 hari ke belakang (dari kemarin mundur), KECUALI Sabtu & Minggu (libur)
             let workdaysToCheck = [];
             for (let i = 1; i <= 14; i++) {
                 const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
@@ -1216,14 +1246,15 @@
                 }
             }
 
-            // 1. LOGIKA NOTIFIKASI UNTUK USER (Tidak akan hilang selama belum dikerjakan)
+            // 1. NOTIFIKASI USER (Tidak akan hilang kecuali sudah dikerjakan atau disetujui admin)
             if (currentUser.role === 'user') {
                 if (adminBanner) adminBanner.classList.add('hidden');
 
                 let missingForCurrentUser = [];
                 workdaysToCheck.forEach(wd => {
-                    const hasSubmitted = allRows.some(r => r.username === currentUser.username && r.tanggal === wd.dateStr);
-                    if (!hasSubmitted) {
+                    const hasSubmitted = cachedAllRows.some(r => r.username === currentUser.username && r.tanggal === wd.dateStr);
+                    const isApproved = cachedApprovedSet.has(getApprovalKey(currentUser.username, wd.dateStr));
+                    if (!hasSubmitted && !isApproved) {
                         missingForCurrentUser.push(wd);
                     }
                 });
@@ -1233,9 +1264,9 @@
                     missingForCurrentUser.forEach(m => {
                         let pesanTeks = '';
                         if (m.isYesterday) {
-                            pesanTeks = `Kemarin tanggal ${m.dayNum}, sekarang tanggal ${todayDayNum}, kamu belum kirim laporan hari ${m.hariName} tanggal ${m.dayNum} (${formatDateID(m.dateStr)}), segera laporkan!`;
+                            pesanTeks = `Kemarin tanggal ${m.dayNum}, sekarang tanggal ${todayDayNum}, kamu belum kirim laporan hari ${m.hariName} tanggal ${m.dayNum}, segera laporkan!`;
                         } else {
-                            pesanTeks = `Sekarang tanggal ${todayDayNum}, kamu belum kirim laporan hari ${m.hariName} tanggal ${m.dayNum} (${formatDateID(m.dateStr)}), segera laporkan!`;
+                            pesanTeks = `Sekarang tanggal ${todayDayNum}, kamu belum kirim laporan hari ${m.hariName} tanggal ${m.dayNum}, segera laporkan!`;
                         }
 
                         html += `
@@ -1259,7 +1290,7 @@
                 }
             }
 
-            // 2. LOGIKA NOTIFIKASI UNTUK ADMIN (Beritahu siapa saja user yang belum laporan)
+            // 2. NOTIFIKASI ADMIN (Beritahu siapa yang belum laporan + tombol setujui sudah laporan)
             if (currentUser.role === 'admin') {
                 if (userBanner) userBanner.classList.add('hidden');
 
@@ -1277,8 +1308,9 @@
                 userAccounts.forEach(uAcc => {
                     let userMissingDates = [];
                     adminCheckDates.forEach(dItem => {
-                        const done = allRows.some(r => r.username === uAcc.username && r.tanggal === dItem.dateStr);
-                        if (!done) {
+                        const done = cachedAllRows.some(r => r.username === uAcc.username && r.tanggal === dItem.dateStr);
+                        const approved = cachedApprovedSet.has(getApprovalKey(uAcc.username, dItem.dateStr));
+                        if (!done && !approved) {
                             userMissingDates.push(dItem);
                         }
                     });
@@ -1294,12 +1326,19 @@
                 if (missingEntriesForAdmin.length > 0 && adminBanner && adminListEl) {
                     let html = '';
                     missingEntriesForAdmin.forEach(entry => {
-                        const badges = entry.dates.map(d => {
+                        const itemsHtml = entry.dates.map(d => {
                             const labelStatus = d.isToday ? 'Hari Ini' : (d.isYesterday ? 'Kemarin' : 'Tertunda');
-                            return `<span class="inline-flex items-center bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold px-2.5 py-1 rounded-lg mr-1.5 mb-1">
-                                <i class="fa-solid fa-calendar-xmark mr-1.5 text-rose-600"></i>
-                                ${d.hariName}, ${formatDateID(d.dateStr)} (${labelStatus})
-                            </span>`;
+                            return `
+                                <div class="inline-flex flex-wrap items-center gap-2 bg-rose-50 border border-rose-200 rounded-xl px-3 py-1.5 mr-2 mb-2">
+                                    <span class="text-xs font-bold text-rose-900">
+                                        <i class="fa-solid fa-calendar-xmark mr-1 text-rose-600"></i>
+                                        ${d.hariName}, ${formatDateID(d.dateStr)} (${labelStatus})
+                                    </span>
+                                    <button type="button" onclick="approveUserMissingReport('${entry.user.username}', '${d.dateStr}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm transition">
+                                        <i class="fa-solid fa-check mr-1"></i>Setujui Sudah Laporan
+                                    </button>
+                                </div>
+                            `;
                         }).join('');
 
                         html += `
@@ -1309,9 +1348,9 @@
                                         <i class="fa-solid fa-user-circle text-amber-600 text-base"></i>
                                         <span>${entry.user.name} <span class="text-xs font-semibold text-slate-500">(@${entry.user.username})</span></span>
                                     </div>
-                                    <span class="text-xs font-extrabold text-rose-600">Belum Mengirim Laporan (${entry.dates.length} hari)</span>
+                                    <span class="text-xs font-extrabold text-rose-600">Belum Laporan (${entry.dates.length} hari)</span>
                                 </div>
-                                <div class="flex flex-wrap">${badges}</div>
+                                <div class="flex flex-wrap">${itemsHtml}</div>
                             </div>
                         `;
                     });
@@ -1342,7 +1381,7 @@
                     editBtnFromNotice.setAttribute('onclick', `openEditModal('${reportId}')`);
                 }
                 if (archiveLockBadge) {
-                    archiveLockBadge.innerHTML = `<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Laporan berhasil dikirim (Tabel Terkunci)`;
+                    archiveLockBadge.innerHTML = `<i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Laporan berhasil (Tabel Terkunci)`;
                     archiveLockBadge.classList.remove('hidden');
                 }
                 if (archiveViewport) {
@@ -1463,7 +1502,7 @@
             document.getElementById('loginForm').reset();
         }
 
-        function initDashboard() {
+        async function initDashboard() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
             document.getElementById('appHeader').classList.remove('hidden');
@@ -1502,6 +1541,7 @@
                 window.fitArchiveDesktopTableToScreen();
             }
 
+            await loadAdminApprovals();
             loadAdminTaskForDate();
             loadArchives();
         }
@@ -1788,7 +1828,6 @@
             for (let idx = 0; idx < items.length; idx++) {
                 const baseMenuName = items[idx];
                 const customKet = document.querySelector(`input[name="user_${categoryName}_ket_${idx}"]`)?.value.trim() || '';
-                
                 const finalKet = customKet ? `${baseMenuName} (${customKet})` : baseMenuName;
 
                 const kgVal = document.querySelector(`input[name="user_${categoryName}_kg_${idx}"]`)?.value || '0';
@@ -1833,13 +1872,32 @@
 
         async function executeSubmitReportCore() {
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-xl"></i><span>Mengirim Laporan...</span>`;
+            const originalBtnHtml = `<i class="fa-solid fa-cloud-arrow-up text-xl"></i><span>Kirim Laporan Sisa Makanan Pemorsian</span>`;
+
+            // Validasi foto wajib sebelum menampilkan notifikasi berhasil
+            for (const cat of ['karbo', 'protein', 'sayur', 'buah', 'lainnya']) {
+                const items = currentLoadedTask[cat] || [];
+                for (let idx = 0; idx < items.length; idx++) {
+                    const kgVal = document.querySelector(`input[name="user_${cat}_kg_${idx}"]`)?.value || '0';
+                    const fileInput = document.querySelector(`input[name="user_${cat}_foto_${idx}"]`);
+                    const files = fileInput ? fileInput.files : [];
+                    if (parseFloat(kgVal) > 0 && files.length === 0) {
+                        showModalAlert('Peringatan', `Menu "${items[idx]}" (${cat}) diisi beratnya, wajib menyertakan foto bukti!`, 'error');
+                        return;
+                    }
+                }
+            }
+
+            const tgl = document.getElementById('inputTanggal').value;
+            const tglFormatted = formatDateID(tgl);
+            const totalKgVal = document.getElementById('totalKg').value;
+
+            // Langsung tampilkan notifikasi "Laporan Berhasil" tanpa status muter terus
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+            showModalAlert('Laporan Berhasil', 'Laporan berhasil', 'success');
 
             try {
-                const tgl = document.getElementById('inputTanggal').value;
-                const tglFormatted = formatDateID(tgl);
-                
                 const reportDataTemp = {
                     tanggal : tgl,
                     uploader : currentUser.name,
@@ -1849,7 +1907,7 @@
                     sayur : [],
                     buah : [],
                     lainnya : [],
-                    totalKg : document.getElementById('totalKg').value,
+                    totalKg : totalKgVal,
                     createdAt : new Date().toISOString()
                 };
 
@@ -1870,7 +1928,7 @@
                     lainnya: lainnyaItems
                 });
 
-                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MAKANAN PEMORSIAN* 🚨\n\nTanggal: ${tglFormatted}\nOleh: ${currentUser.name}\nTotal: ${reportDataTemp.totalKg}\n\nLaporan berhasil.`;
+                const telegramMessage = `🚨 *LAPORAN PENDATAAN SISA MAKANAN PEMORSIAN* 🚨\n\nTanggal: ${tglFormatted}\nOleh: ${currentUser.name}\nTotal: ${totalKgVal}\n\nLaporan berhasil.`;
                 
                 fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
@@ -1881,10 +1939,6 @@
                         parse_mode: 'Markdown'
                     })
                 }).catch(err => console.log('Telegram Error:', err));
-
-                // Hilangkan status muter terus dan langsung tampilkan notifikasi "Laporan Berhasil"
-                resetSubmitButtonState();
-                showModalAlert('Laporan Berhasil', `Laporan tanggal ${tglFormatted} berhasil dikirim.`, 'success');
 
                 document.getElementById('pemorsianForm').reset();
                 document.getElementById('inputTanggal').value = getLocalDateString();
@@ -1923,11 +1977,11 @@
             }
 
             try {
+                await loadAdminApprovals();
                 const querySnapshot = await getDocs(collection(db, "sisa_makanan"));
                 let allRows = [];
                 querySnapshot.forEach(docSnap => allRows.push({ id: docSnap.id, ...docSnap.data() }));
 
-                // Perbarui notifikasi laporan tertunda untuk User & Admin (Sabtu & Minggu libur dikecualikan)
                 updateMissingReportsNotifications(allRows);
 
                 let rows = [...allRows];
