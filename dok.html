@@ -33,6 +33,26 @@
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
         }
+
+        /* Paksa mode desktop muat penuh tanpa geser & tanpa zoom khusus Riwayat Laporan, Panel Kontrol & Arsip Full Admin */
+        .desktop-fit-outer {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .desktop-fit-inner {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .desktop-fit-canvas {
+            width: 1120px;
+            min-width: 1120px;
+            transform-origin: top left;
+            -webkit-transform-origin: top left;
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-between">
@@ -222,189 +242,191 @@
                     </form>
                 </div>
 
-                <!-- Riwayat Arsip User -->
-                <div id="user-archive-container" class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
-                        <h3 class="font-bold text-lg text-slate-900 flex items-center">
-                            <span><i class="fa-solid fa-box-archive text-blue-600 mr-2"></i> Riwayat Laporan</span>
-                            <span id="user-count-badge" class="ml-2 text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-medium">0 Laporan</span>
-                        </h3>
-                        
-                        <!-- Filter User -->
-                        <div class="flex flex-wrap gap-2 items-center">
-                            <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 uppercase">Tanggal Laporan</label>
-                                <input type="date" id="user-filter-date" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                <!-- Riwayat Arsip User (DIPAKSA MODE DESKTOP PENUH TANPA GESER & TANPA ZOOM) -->
+                <div id="user-archive-container" class="lg:col-span-2 desktop-fit-outer">
+                    <div id="user-archive-fit-inner" class="desktop-fit-inner">
+                        <div id="user-archive-fit-canvas" class="desktop-fit-canvas bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                            <div class="flex flex-row justify-between items-center gap-4 border-b pb-4">
+                                <h3 class="font-bold text-lg text-slate-900 flex items-center">
+                                    <span><i class="fa-solid fa-box-archive text-blue-600 mr-2"></i> Riwayat Laporan</span>
+                                    <span id="user-count-badge" class="ml-2 text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-medium">0 Laporan</span>
+                                </h3>
+                                
+                                <!-- Filter User -->
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 uppercase">Tanggal Laporan</label>
+                                        <input type="date" id="user-filter-date" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-500 uppercase">Jenis Dokumentasi</label>
+                                        <select id="user-filter-kategori" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                                            <option value="">Semua Jenis</option>
+                                            <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
+                                            <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
+                                            <option value="PERSIAPAN (Limbah Sisa Pangan & Rijek)">PERSIAPAN (Limbah Sisa Pangan & Rijek)</option>
+                                            <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
+                                            <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                            <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
+                                            <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
+                                            <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
+                                            <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
+                                            <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
+                                            <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                            <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
+                                            <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
+                                            <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
+                                            <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
+                                            <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
+                                            <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
+                                            <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                            <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
+                                            <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
+                                            <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
+                                            <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
+                                            <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
+                                            <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
+                                            <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
+                                            <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
+                                            <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
+                                            <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
+                                            <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
+                                            <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
+                                            <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
+                                            <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
+                                            <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
+                                            <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
+                                            <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
+                                            <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
+                                            <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
+                                            <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
+                                            <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
+                                            <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
+                                            <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
+                                            <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
+                                            <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
+                                            <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
+                                            <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
+                                            <option value="SCURITY (Isi Galon)">SCURITY (Isi Galon)</option>
+                                            <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
+                                            <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
+                                            <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
+                                            <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
+                                            <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
+                                            <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-end space-x-1 pt-3">
+                                        <button onclick="applyUserFilter()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-xs font-medium transition">Cari</button>
+                                        <button onclick="resetUserFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded-lg text-xs font-medium transition">Reset</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-[10px] font-semibold text-slate-500 uppercase">Jenis Dokumentasi</label>
-                                <select id="user-filter-kategori" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
-                                    <option value="">Semua Jenis</option>
-                                    <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
-                                    <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
-                                    <option value="PERSIAPAN (Limbah Sisa Pangan & Rijek)">PERSIAPAN (Limbah Sisa Pangan & Rijek)</option>
-                                    <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
-                                    <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
-                                    <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
-                                    <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
-                                    <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
-                                    <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
-                                    <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
-                                    <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
-                                    <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
-                                    <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
-                                    <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
-                                    <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
-                                    <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
-                                    <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
-                                    <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
-                                    <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
-                                    <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
-                                    <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
-                                    <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
-                                    <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
-                                    <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
-                                    <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
-                                    <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
-                                    <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
-                                    <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
-                                    <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
-                                    <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
-                                    <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
-                                    <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
-                                    <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
-                                    <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
-                                    <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
-                                    <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
-                                    <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
-                                    <option value="SCURITY (Isi Galon)">SCURITY (Isi Galon)</option>
-                                    <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
-                                    <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
-                                    <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
-                                    <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
-                                    <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
-                                    <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
-                                </select>
-                            </div>
-                            <div class="flex items-end space-x-1 pt-3">
-                                <button onclick="applyUserFilter()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-xs font-medium transition">Cari</button>
-                                <button onclick="resetUserFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded-lg text-xs font-medium transition">Reset</button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div id="user-archive-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-2">
-                        <p class="text-center text-slate-400 py-10 text-sm">Memuat riwayat...</p>
+                            <div id="user-archive-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-2"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ADMIN PANEL FULL -->
-            <div id="admin-panel" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hidden space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
-                    <h3 class="font-bold text-xl text-slate-900 flex items-center">
-                        <i class="fa-solid fa-shield-halved text-blue-600 mr-2"></i> Panel Kontrol & Arsip Full Admin
-                    </h3>
-                    
-                    <!-- Filter Admin -->
-                    <div class="flex flex-wrap gap-3 items-center">
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 uppercase">Tanggal Laporan</label>
-                            <input type="date" id="filter-date" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+            <!-- ADMIN PANEL FULL (DIPAKSA MODE DESKTOP PENUH TANPA GESER & TANPA ZOOM) -->
+            <div id="admin-panel" class="hidden desktop-fit-outer">
+                <div id="admin-fit-inner" class="desktop-fit-inner">
+                    <div id="admin-fit-canvas" class="desktop-fit-canvas bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+                        <div class="flex flex-row justify-between items-center gap-4 border-b pb-4">
+                            <h3 class="font-bold text-xl text-slate-900 flex items-center">
+                                <i class="fa-solid fa-shield-halved text-blue-600 mr-2"></i> Panel Kontrol & Arsip Full Admin
+                            </h3>
+                            
+                            <!-- Filter Admin -->
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-500 uppercase">Tanggal Laporan</label>
+                                    <input type="date" id="filter-date" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-500 uppercase">Jenis Dokumentasi</label>
+                                    <select id="filter-kategori" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                                        <option value="">Semua Jenis Dokumentasi</option>
+                                        <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
+                                        <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
+                                        <option value="PERSIAPAN (Limbah Sisa Pangan & Rijek)">PERSIAPAN (Limbah Sisa Pangan & Rijek)</option>
+                                        <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
+                                        <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                        <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
+                                        <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
+                                        <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
+                                        <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
+                                        <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
+                                        <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                        <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
+                                        <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
+                                        <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
+                                        <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
+                                        <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
+                                        <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
+                                        <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
+                                        <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
+                                        <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
+                                        <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
+                                        <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
+                                        <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
+                                        <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
+                                        <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
+                                        <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
+                                        <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
+                                        <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
+                                        <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
+                                        <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
+                                        <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
+                                        <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
+                                        <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
+                                        <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
+                                        <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
+                                        <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
+                                        <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
+                                        <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
+                                        <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
+                                        <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
+                                        <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
+                                        <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
+                                        <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
+                                        <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
+                                        <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
+                                        <option value="SCURITY (Isi Galon)">SCURITY (Isi Galon)</option>
+                                        <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
+                                        <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
+                                        <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
+                                        <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
+                                        <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
+                                        <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-end space-x-2">
+                                    <button onclick="applyAdminFilter()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-xs font-medium transition">Cari</button>
+                                    <button onclick="resetAdminFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition">Reset</button>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Tabel Data Arsip Admin -->
                         <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 uppercase">Jenis Dokumentasi</label>
-                            <select id="filter-kategori" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
-                                <option value="">Semua Jenis Dokumentasi</option>
-                                <option value="PERSIAPAN (Absensi Relawan)">PERSIAPAN (Absensi Relawan)</option>
-                                <option value="PERSIAPAN (Kegiatan Tim Persiapan)">PERSIAPAN (Kegiatan Tim Persiapan)</option>
-                                <option value="PERSIAPAN (Limbah Sisa Pangan & Rijek)">PERSIAPAN (Limbah Sisa Pangan & Rijek)</option>
-                                <option value="PERSIAPAN (Limbah B3)">PERSIAPAN (Limbah B3)</option>
-                                <option value="PERSIAPAN (Foto Ruangan Selesai Pekerjaan)">PERSIAPAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                <option value="PERSIAPAN (Peralatan Rusak/Baru (jika ada))">PERSIAPAN (Peralatan Rusak/Baru (jika ada))</option>
-                                <option value="PERSIAPAN (Serah Terima Persiapan - Pengolahan)">PERSIAPAN (Serah Terima Persiapan - Pengolahan)</option>
-                                <option value="PENGOLAHAN (Absensi Relawan)">PENGOLAHAN (Absensi Relawan)</option>
-                                <option value="PENGOLAHAN (Kegiatan Tim Pengolahan)">PENGOLAHAN (Kegiatan Tim Pengolahan)</option>
-                                <option value="PENGOLAHAN (Limbah B3)">PENGOLAHAN (Limbah B3)</option>
-                                <option value="PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)">PENGOLAHAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                <option value="PENGOLAHAN (Peralatan Rusak/Baru (jika ada))">PENGOLAHAN (Peralatan Rusak/Baru (jika ada))</option>
-                                <option value="PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)">PENGOLAHAN (Serah Terima Pengolahan - Pemorsian)</option>
-                                <option value="PEMORSIAN (Absensi Relawan)">PEMORSIAN (Absensi Relawan)</option>
-                                <option value="PEMORSIAN (Kegiatan Tim Pemorsian)">PEMORSIAN (Kegiatan Tim Pemorsian)</option>
-                                <option value="PEMORSIAN (Foto Sisa Makanan Pemorsian)">PEMORSIAN (Foto Sisa Makanan Pemorsian)</option>
-                                <option value="PEMORSIAN (Limbah B3)">PEMORSIAN (Limbah B3)</option>
-                                <option value="PEMORSIAN (Foto Ruangan Selesai Pekerjaan)">PEMORSIAN (Foto Ruangan Selesai Pekerjaan)</option>
-                                <option value="PEMORSIAN (Peralatan Baru/Rusak (jika ada))">PEMORSIAN (Peralatan Baru/Rusak (jika ada))</option>
-                                <option value="PEMORSIAN (Serah Terima Pemorsian - Distribusi)">PEMORSIAN (Serah Terima Pemorsian - Distribusi)</option>
-                                <option value="DISTRIBUSI (Absensi Relawan)">DISTRIBUSI (Absensi Relawan)</option>
-                                <option value="DISTRIBUSI (Limbah B3 (jika ada))">DISTRIBUSI (Limbah B3 (jika ada))</option>
-                                <option value="DISTRIBUSI (Cuci Kendaraan)">DISTRIBUSI (Cuci Kendaraan)</option>
-                                <option value="DISTRIBUSI (Foto Kendaraan)">DISTRIBUSI (Foto Kendaraan)</option>
-                                <option value="DISTRIBUSI (Service Kendaraan jika ada)">DISTRIBUSI (Service Kendaraan jika ada)</option>
-                                <option value="DISTRIBUSI (Peralatan Baru/Rusak (jika ada))">DISTRIBUSI (Peralatan Baru/Rusak (jika ada))</option>
-                                <option value="FOODTRAY (Absensi Relawan)">FOODTRAY (Absensi Relawan)</option>
-                                <option value="FOODTRAY (Kegiatan Tim Pencuci Ompreng)">FOODTRAY (Kegiatan Tim Pencuci Ompreng)</option>
-                                <option value="FOODTRAY (Sisa Makanan Ompreng)">FOODTRAY (Sisa Makanan Ompreng)</option>
-                                <option value="FOODTRAY (Limbah B3)">FOODTRAY (Limbah B3)</option>
-                                <option value="FOODTRAY (Foto Ruangan Selesai Pekerjaan)">FOODTRAY (Foto Ruangan Selesai Pekerjaan)</option>
-                                <option value="FOODTRAY (Peralatan Baru/Rusak (jika ada))">FOODTRAY (Peralatan Baru/Rusak (jika ada))</option>
-                                <option value="FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)">FOODTRAY (Serah Terima Pencuci Foodtray - Aslap)</option>
-                                <option value="CLEANING SERVICE (Absensi)">CLEANING SERVICE (Absensi)</option>
-                                <option value="CLEANING SERVICE (Kegiatan Saat Kebersihan)">CLEANING SERVICE (Kegiatan Saat Kebersihan)</option>
-                                <option value="CLEANING SERVICE (Limbah B3)">CLEANING SERVICE (Limbah B3)</option>
-                                <option value="CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)">CLEANING SERVICE (Foto Ruangan Selesai Pekerjaan)</option>
-                                <option value="CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))">CLEANING SERVICE (Peralatan Baru/Rusak (jika ada))</option>
-                                <option value="CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)">CLEANING SERVICE (Serah Terima Cleaning Service - Scurity)</option>
-                                <option value="SCURITY (Absensi)">SCURITY (Absensi)</option>
-                                <option value="SCURITY (Area Depan Dapur/Parkiran)">SCURITY (Area Depan Dapur/Parkiran)</option>
-                                <option value="SCURITY (Bahan Baku Datang)">SCURITY (Bahan Baku Datang)</option>
-                                <option value="SCURITY (Limbah B3 (jika ada))">SCURITY (Limbah B3 (jika ada))</option>
-                                <option value="SCURITY (Saat Pengambilan Sampah/Limbah)">SCURITY (Saat Pengambilan Sampah/Limbah)</option>
-                                <option value="SCURITY (Isi Tabung Gas (Jika ada))">SCURITY (Isi Tabung Gas (Jika ada))</option>
-                                <option value="SCURITY (Isi Galon)">SCURITY (Isi Galon)</option>
-                                <option value="SCURITY (Terima Paket indomaret/Shope)">SCURITY (Terima Paket indomaret/Shope)</option>
-                                <option value="SCURITY (Peralatan Baru/Rusak (jika ada))">SCURITY (Peralatan Baru/Rusak (jika ada))</option>
-                                <option value="SCURITY (Perbaikan Dapur/Lainnya)">SCURITY (Perbaikan Dapur/Lainnya)</option>
-                                <option value="SCURITY (Serah Terima Scurity - Cleaning Service)">SCURITY (Serah Terima Scurity - Cleaning Service)</option>
-                                <option value="ASLAP (Foto Per Bahan Baku)">ASLAP (Foto Per Bahan Baku)</option>
-                                <option value="ADMIN SO (Foto SO Per Bahan Baku)">Admin SO (Foto SO Per Bahan Baku)</option>
-                            </select>
-                        </div>
-                        <div class="flex items-end space-x-2">
-                            <button onclick="applyAdminFilter()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-xs font-medium transition">Cari</button>
-                            <button onclick="resetAdminFilter()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition">Reset</button>
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase border-b border-slate-200">
+                                        <th class="py-3 px-4">Tanggal & Waktu</th>
+                                        <th class="py-3 px-4">Pengguna (Uploader)</th>
+                                        <th class="py-3 px-4">Instansi</th>
+                                        <th class="py-3 px-4">Jenis Dokumentasi</th>
+                                        <th class="py-3 px-4">Foto (Preview)</th>
+                                        <th class="py-3 px-4 text-center">Status Drive</th>
+                                        <th class="py-3 px-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-archive-list" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
-
-                <!-- Tabel Data Arsip Admin -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase border-b border-slate-200">
-                                <th class="py-3 px-4">Tanggal & Waktu</th>
-                                <th class="py-3 px-4">Pengguna (Uploader)</th>
-                                <th class="py-3 px-4">Instansi</th>
-                                <th class="py-3 px-4">Jenis Dokumentasi</th>
-                                <th class="py-3 px-4">Foto (Preview)</th>
-                                <th class="py-3 px-4 text-center">Status Drive</th>
-                                <th class="py-3 px-4 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-archive-list" class="divide-y divide-slate-100 text-sm">
-                            <tr>
-                                <td colspan="7" class="text-center text-slate-400 py-8">Memuat data arsip...</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </section>
@@ -435,6 +457,52 @@
     <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
         &copy; 2026 Sistem Dokumentasi Kerja. All rights reserved.
     </footer>
+
+    <!-- PENYESUAIAN MODE DESKTOP MUAT PENUH TANPA GESER & TANPA ZOOM -->
+    <script>
+        (function () {
+            var DESKTOP_WIDTH = 1120;
+
+            function fitSingleSection(outerId, innerId, canvasId) {
+                var outer = document.getElementById(outerId);
+                var inner = document.getElementById(innerId);
+                var canvas = document.getElementById(canvasId);
+                if (!outer || !inner || !canvas) return;
+                if (outer.classList.contains('hidden')) return;
+
+                var availableWidth = outer.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+                if (availableWidth <= 0) return;
+
+                var scale = availableWidth < DESKTOP_WIDTH ? (availableWidth / DESKTOP_WIDTH) : 1;
+
+                canvas.style.width = DESKTOP_WIDTH + 'px';
+                canvas.style.minWidth = DESKTOP_WIDTH + 'px';
+                canvas.style.transform = 'scale(' + scale + ')';
+                canvas.style.webkitTransform = 'scale(' + scale + ')';
+
+                var naturalHeight = canvas.offsetHeight || canvas.scrollHeight || 0;
+                var scaledHeight = Math.ceil(naturalHeight * scale);
+                inner.style.height = scaledHeight > 0 ? (scaledHeight + 'px') : 'auto';
+                inner.style.width = availableWidth + 'px';
+            }
+
+            window.fitDesktopSections = function () {
+                fitSingleSection('user-archive-container', 'user-archive-fit-inner', 'user-archive-fit-canvas');
+                fitSingleSection('admin-panel', 'admin-fit-inner', 'admin-fit-canvas');
+            };
+
+            window.addEventListener('resize', function () {
+                window.fitDesktopSections();
+            });
+            window.addEventListener('orientationchange', function () {
+                setTimeout(window.fitDesktopSections, 150);
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                window.fitDesktopSections();
+                setTimeout(window.fitDesktopSections, 250);
+            });
+        })();
+    </script>
 
     <!-- FIREBASE SDK & SKRIP UTAMA -->
     <script type="module">
@@ -473,6 +541,7 @@
         const TELEGRAM_BOT_TOKEN = "9100109980:AAEQG88G-OAESTF0nxgKFhxORo9I3ZtACnU";
         const TELEGRAM_CHAT_ID = "9212263609";
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-tiExkycqhueEVFrhgNYuT02mIBLz-fL2uWnqW6J7YX__H8WVau6dDUFhfUsqBPO3/exec";
+        const REPORTS_CACHE_KEY = "cached_laporan_dokumentasi_v1";
 
         const usersDB = {
             "Serang": { pass: "Mandiri02srg", role: "admin", name: "Admin" },
@@ -494,7 +563,79 @@
         let currentUser = null;
         let isSyncingActive = false; 
         let isDateManuallyModified = false; 
-        let allGlobalReports = []; 
+        let allGlobalReports = [];
+        let realtimeUnsubscribe = null;
+
+        // Baca & simpan cache lokal agar riwayat muncul instan bahkan saat internet lelet
+        function loadCachedReports() {
+            try {
+                const raw = localStorage.getItem(REPORTS_CACHE_KEY);
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveCachedReports(list) {
+            try {
+                const lightweight = (Array.isArray(list) ? list : []).slice(0, 250).map(item => {
+                    const copy = Object.assign({}, item);
+                    if (Array.isArray(copy.files) && copy.files.length > 0) {
+                        copy.files = copy.files.map(f => ({
+                            fileName: f.fileName || "dokumentasi.jpg",
+                            fileData: f.fileData || "",
+                            category: f.category || copy.kategori || "",
+                            dateFolder: f.dateFolder || ""
+                        }));
+                    }
+                    if (copy.createdAt && typeof copy.createdAt === "object" && typeof copy.createdAt.toMillis === "function") {
+                        copy.createdAt = copy.createdAt.toMillis();
+                    } else if (copy.createdAt && typeof copy.createdAt === "object" && typeof copy.createdAt.seconds === "number") {
+                        copy.createdAt = copy.createdAt.seconds * 1000;
+                    }
+                    return copy;
+                });
+                localStorage.setItem(REPORTS_CACHE_KEY, JSON.stringify(lightweight));
+            } catch (e) {
+                // Jika kuota localStorage penuh di perangkat kecil, simpan versi tanpa base64 berat
+                try {
+                    const minimal = (Array.isArray(list) ? list : []).slice(0, 150).map(item => ({
+                        id: item.id,
+                        uploader: item.uploader,
+                        instansi: item.instansi,
+                        kategori: item.kategori,
+                        tanggal: item.tanggal,
+                        createdAt: typeof item.createdAt === "number" ? item.createdAt : Date.now(),
+                        syncStartTime: item.syncStartTime || Date.now(),
+                        syncedToDrive: item.syncedToDrive === true,
+                        syncFailed: item.syncFailed === true,
+                        files: Array.isArray(item.files) ? item.files.map(f => ({ fileName: f.fileName || "", fileData: "" })) : []
+                    }));
+                    localStorage.setItem(REPORTS_CACHE_KEY, JSON.stringify(minimal));
+                } catch (e2) {}
+            }
+        }
+
+        function applyReportsListToView(list) {
+            allGlobalReports = Array.isArray(list) ? list : [];
+            updateCategoryDropdownOptions();
+
+            if (currentUser && currentUser.role === 'admin') {
+                const dateFilter = document.getElementById('filter-date') ? document.getElementById('filter-date').value : '';
+                const kategoriFilter = document.getElementById('filter-kategori') ? document.getElementById('filter-kategori').value : '';
+                renderAdminArchiveView({ date: dateFilter, kategori: kategoriFilter });
+            } else if (currentUser) {
+                const dateFilter = document.getElementById('user-filter-date') ? document.getElementById('user-filter-date').value : '';
+                const kategori = document.getElementById('user-filter-kategori') ? document.getElementById('user-filter-kategori').value : '';
+                renderUserArchiveView({ date: dateFilter, kategori: kategori });
+            }
+
+            if (typeof window.fitDesktopSections === "function") {
+                setTimeout(window.fitDesktopSections, 10);
+            }
+        }
 
         // Profil perangkat & jaringan adaptif (RAM 1GB+ / Android 1+ s/d terbaru)
         let deviceSpec = {
@@ -512,7 +653,6 @@
             const mem = typeof navigator.deviceMemory === "number" ? navigator.deviceMemory : null;
             const cores = typeof navigator.hardwareConcurrency === "number" ? navigator.hardwareConcurrency : 2;
 
-            // Deteksi versi Android lama (Android 1 - Android 7 / WebView lama)
             let isLegacyAndroid = false;
             const androidMatch = ua.match(/Android\s+([0-9]+(?:\.[0-9]+)?)/i);
             if (androidMatch && parseFloat(androidMatch[1]) < 7.0) {
@@ -522,7 +662,6 @@
                 isLegacyAndroid = true;
             }
 
-            // Jika deviceMemory tidak tersedia (umum di Android lama/WebView), anggap aman/RAM kecil
             const isLowMemory = (mem !== null && mem <= 2) || (mem === null) || cores <= 2 || isLegacyAndroid;
 
             if (isLegacyAndroid) {
@@ -576,6 +715,9 @@
             if (page) {
                 page.classList.add("hidden");
             }
+            if (typeof window.fitDesktopSections === "function") {
+                window.fitDesktopSections();
+            }
         }
 
         async function measureActualNetworkLatency() {
@@ -600,18 +742,17 @@
                 }
             }
 
-            // Uji latensi aktual ke server ringan (fallback untuk Android lama / WebView)
             try {
                 const startTs = new Date().getTime();
                 const testUrl = `${APPS_SCRIPT_URL}?ping=1&_t=${startTs}`;
                 if (typeof AbortController !== "undefined" && typeof fetch !== "undefined") {
                     const ctrl = new AbortController();
-                    const timer = setTimeout(function() { ctrl.abort(); }, 4500);
+                    const timer = setTimeout(function() { ctrl.abort(); }, 2500);
                     await fetch(testUrl, { method: "GET", mode: "no-cors", cache: "no-store", signal: ctrl.signal });
                     clearTimeout(timer);
                 }
                 const elapsed = new Date().getTime() - startTs;
-                if (elapsed > 3500) {
+                if (elapsed > 2200) {
                     return { slow: true, reason: `Waktu respons jaringan lambat (${(elapsed / 1000).toFixed(1)} detik). Daripada memaksa upload foto tidak terkirim, silakan pindah ke jaringan yang lebih stabil.` };
                 }
                 return { slow: false, reason: "" };
@@ -733,7 +874,6 @@
             "ADMIN SO (Foto SO Per Bahan Baku)"
         ];
 
-        // FUNGSI MEMPERBARUI DROPDOWN & STATUS PERINGATAN KATEGORI
         function updateCategoryDropdownOptions() {
             const selectEl = document.getElementById('input-kategori');
             const selectedDateInput = document.getElementById('input-tanggal-laporan');
@@ -832,6 +972,9 @@
 
             window.addEventListener("online", () => {
                 recheckNetworkNow(false);
+                if (window.db && window.getDocs && window.collection) {
+                    fetchReportsFast();
+                }
             });
 
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -890,6 +1033,11 @@
         }
 
         function initializeAppState() {
+            const cached = loadCachedReports();
+            if (cached.length > 0) {
+                allGlobalReports = cached;
+            }
+
             let savedStr = null;
             try {
                 savedStr = localStorage.getItem('currentUserSession');
@@ -961,6 +1109,7 @@
                 document.getElementById('user-archive-container').classList.add('hidden');
                 
                 document.getElementById('filter-date').value = todayStr;
+                applyReportsListToView(allGlobalReports);
                 initRealtimeListener();
             } else if (currentUser.role === 'viewer') {
                 document.getElementById('user-role-badge').innerText = `Viewer - ${currentUser.name}`;
@@ -975,6 +1124,7 @@
                 userArchiveContainer.classList.add('lg:col-span-3');
 
                 document.getElementById('user-filter-date').value = todayStr;
+                applyReportsListToView(allGlobalReports);
                 initRealtimeListener();
             } else {
                 document.getElementById('user-role-badge').innerText = `User - ${currentUser.name}`;
@@ -991,7 +1141,12 @@
                 userArchiveContainer.classList.add('lg:col-span-2');
 
                 document.getElementById('user-filter-date').value = todayStr;
+                applyReportsListToView(allGlobalReports);
                 initRealtimeListener();
+            }
+
+            if (typeof window.fitDesktopSections === "function") {
+                setTimeout(window.fitDesktopSections, 10);
             }
         }
 
@@ -1000,26 +1155,52 @@
             location.reload();
         }
 
-        function initRealtimeListener() {
-            window.onSnapshot(window.collection(window.db, "laporan_dokumentasi"), (snapshot) => {
+        async function fetchReportsFast() {
+            if (!window.db || !window.getDocs || !window.collection) return;
+            try {
+                const snap = await window.getDocs(window.collection(window.db, "laporan_dokumentasi"));
                 let list = [];
-                snapshot.forEach(docSnap => {
+                snap.forEach(docSnap => {
                     list.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                allGlobalReports = list;
+                saveCachedReports(list);
+                applyReportsListToView(list);
+            } catch (e) {
+                // Jika jaringan lelet, biarkan cache tetap tampil tanpa mengganggu UI
+            }
+        }
 
-                updateCategoryDropdownOptions();
+        function initRealtimeListener() {
+            if (!window.db || !window.onSnapshot || !window.collection) return;
 
-                if (currentUser && currentUser.role === 'admin') {
-                    const dateFilter = document.getElementById('filter-date').value;
-                    const kategoriFilter = document.getElementById('filter-kategori').value;
-                    renderAdminArchiveView({ date: dateFilter, kategori: kategoriFilter });
-                } else if (currentUser) {
-                    const dateFilter = document.getElementById('user-filter-date').value;
-                    const kategori = document.getElementById('user-filter-kategori').value;
-                    renderUserArchiveView({ date: dateFilter, kategori: kategori });
+            // Tampilkan cache lokal segera sebelum request jaringan selesai
+            const cached = loadCachedReports();
+            if (cached.length > 0) {
+                applyReportsListToView(cached);
+            }
+
+            // Ambil snapshot sekali secepat mungkin agar data langsung muncul meski listener lambat
+            fetchReportsFast();
+
+            if (typeof realtimeUnsubscribe === "function") {
+                try { realtimeUnsubscribe(); } catch (e) {}
+            }
+
+            realtimeUnsubscribe = window.onSnapshot(
+                window.collection(window.db, "laporan_dokumentasi"),
+                { includeMetadataChanges: true },
+                (snapshot) => {
+                    let list = [];
+                    snapshot.forEach(docSnap => {
+                        list.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    saveCachedReports(list);
+                    applyReportsListToView(list);
+                },
+                () => {
+                    // Tetap pertahankan data cache lokal bila terjadi gangguan jaringan
                 }
-            });
+            );
         }
 
         async function compressImageAndGetBase64(file, maxWidth, quality) {
@@ -1073,7 +1254,6 @@
 
                             const base64String = canvas.toDataURL('image/jpeg', targetQuality);
 
-                            // Lepaskan memori canvas & image segera untuk perangkat RAM kecil
                             canvas.width = 0;
                             canvas.height = 0;
                             img.src = "";
@@ -1140,7 +1320,6 @@
         async function handleUpload(e) {
             e.preventDefault();
 
-            // Cek jaringan sebelum memproses / mengirim foto
             const isNetworkOk = await recheckNetworkNow(false);
             if (!isNetworkOk || deviceSpec.isNetworkSlow) {
                 showSlowNetworkPage(
@@ -1218,7 +1397,6 @@
                 let allCompressedFiles = [];
 
                 for (let i = 0; i < rawFilesArray.length; i++) {
-                    // Cek ulang jaringan di sela pemrosesan bila file banyak
                     if (i > 0 && i % 3 === 0 && navigator.onLine === false) {
                         showSlowNetworkPage("Koneksi terputus saat menyiapkan foto. Upload dihentikan agar tidak gagal.");
                         return;
@@ -1242,7 +1420,6 @@
                     throw new Error("Gagal memproses file foto yang dipilih.");
                 }
 
-                // Cek kembali koneksi sebelum kirim ke server
                 const stillGoodNet = await recheckNetworkNow(false);
                 if (!stillGoodNet || deviceSpec.isNetworkSlow) {
                     showSlowNetworkPage(
@@ -1277,10 +1454,17 @@
                         totalBatches: batchGroups.length
                     };
 
+                    const tempId = `local_${syncStartTime}_${i + 1}`;
+                    allGlobalReports.unshift(Object.assign({ id: tempId, createdAt: syncStartTime }, reportPayload));
+                    saveCachedReports(allGlobalReports);
+                    applyReportsListToView(allGlobalReports);
+
                     const docRef = await window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
                         ...reportPayload,
                         createdAt: window.serverTimestamp()
                     });
+                    allGlobalReports = allGlobalReports.map(item => item.id === tempId ? Object.assign({}, item, { id: docRef.id }) : item);
+                    saveCachedReports(allGlobalReports);
                     createdDocIds.push({ id: docRef.id, payload: reportPayload });
                 }
 
@@ -1370,7 +1554,6 @@
                         syncFailed: true 
                     });
                     
-                    // Kirim notifikasi gagal ke Telegram agar admin tahu
                     sendTelegramAlertAdmin(reportPayload.uploader, reportPayload.kategori, formattedDateFolder);
                 });
             } catch (syncErr) {
@@ -1536,8 +1719,6 @@
             });
 
             const groupedData = groupReports(rawList);
-            
-            // Urutkan tanggal dari terkecil ke terbesar (Ascending)
             groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
             
             if (currentUser && currentUser.role === 'user') {
@@ -1563,7 +1744,7 @@
                 }
 
                 html += `
-                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm hover:border-blue-300 transition">
+                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-row justify-between items-center gap-2 shadow-sm hover:border-blue-300 transition">
                         <div>
                             <div class="flex items-center space-x-2 mb-1">
                                 <span class="text-xs font-bold uppercase tracking-wide text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg">${item.kategori}</span>
@@ -1576,7 +1757,11 @@
             });
 
             document.getElementById('user-count-badge').innerText = `${groupedData.length} Laporan`;
-            archiveList.innerHTML = html || `<p class="text-center text-slate-400 py-10 text-sm">Belum ada riwayat dokumen diunggah untuk tanggal tersebut.</p>`;
+            archiveList.innerHTML = html;
+
+            if (typeof window.fitDesktopSections === "function") {
+                setTimeout(window.fitDesktopSections, 10);
+            }
         }
 
         function applyUserFilter() {
@@ -1610,8 +1795,6 @@
             });
 
             const groupedData = groupReports(rawList);
-            
-            // Urutkan tanggal dari terkecil ke terbesar (Ascending)
             groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
             checkGlobalSyncStatus(groupedData);
@@ -1628,7 +1811,9 @@
                 let photosHtml = `<div class="flex space-x-1 overflow-x-auto py-1 max-w-xs">`;
                 if (data.files && data.files.length > 0) {
                     data.files.forEach(f => {
-                        photosHtml += `<img src="${f.fileData}" loading="lazy" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border hover:scale-105 transition cursor-pointer shadow-sm" title="Klik untuk lihat pratinjau jernih">`;
+                        if (f.fileData) {
+                            photosHtml += `<img src="${f.fileData}" loading="eager" decoding="async" onclick="openPhotoModal('${f.fileData}', '${f.fileName}')" class="w-12 h-12 object-cover rounded-lg border hover:scale-105 transition cursor-pointer shadow-sm" title="Klik untuk lihat pratinjau jernih">`;
+                        }
                     });
                 }
                 photosHtml += `</div>`;
@@ -1680,7 +1865,11 @@
                 `;
             });
 
-            tbody.innerHTML = rows || `<tr><td colspan="7" class="text-center text-slate-400 py-8">Tidak ada data arsip yang ditemukan untuk tanggal tersebut.</td></tr>`;
+            tbody.innerHTML = rows;
+
+            if (typeof window.fitDesktopSections === "function") {
+                setTimeout(window.fitDesktopSections, 10);
+            }
         }
 
         function openPhotoModal(imgSrc, fileName = 'dokumentasi.jpg') {
@@ -1717,6 +1906,11 @@
                             docIds = [];
                             fileNames = [];
                         }
+
+                        const deletedSet = new Set(docIds);
+                        allGlobalReports = allGlobalReports.filter(item => !deletedSet.has(item.id));
+                        saveCachedReports(allGlobalReports);
+                        applyReportsListToView(allGlobalReports);
 
                         for (const id of docIds) {
                             await window.deleteDoc(window.doc(window.db, "laporan_dokumentasi", id));
