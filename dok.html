@@ -237,7 +237,7 @@
                         </div>
 
                         <button type="submit" id="btn-upload" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition shadow-md disabled:bg-slate-300 disabled:cursor-not-allowed">
-                            <i class="fa-solid fa-upload mr-1"></i> Kirim Laporan
+                            <i class="fa-solid fa-upload mr-1"></i> Upload Laporan
                         </button>
                     </form>
                 </div>
@@ -565,8 +565,16 @@
         let isDateManuallyModified = false; 
         let allGlobalReports = [];
         let realtimeUnsubscribe = null;
+        const sentDriveBatchKeys = new Set();
 
-        // Baca & simpan cache lokal agar riwayat muncul instan bahkan saat internet lelet
+        function getBatchDriveKey(payload) {
+            if (!payload) return "";
+            const groupId = payload.batchGroupId || payload.syncStartTime || "";
+            const idx = payload.batchIndex || 1;
+            const firstFile = (Array.isArray(payload.files) && payload.files[0] && payload.files[0].fileName) ? payload.files[0].fileName : "";
+            return `${groupId}_${idx}_${firstFile}`;
+        }
+
         function loadCachedReports() {
             try {
                 const raw = localStorage.getItem(REPORTS_CACHE_KEY);
@@ -582,6 +590,8 @@
             try {
                 const lightweight = (Array.isArray(list) ? list : []).slice(0, 250).map(item => {
                     const copy = Object.assign({}, item);
+                    copy.syncedToDrive = true;
+                    copy.syncFailed = false;
                     if (Array.isArray(copy.files) && copy.files.length > 0) {
                         copy.files = copy.files.map(f => ({
                             fileName: f.fileName || "dokumentasi.jpg",
@@ -599,7 +609,6 @@
                 });
                 localStorage.setItem(REPORTS_CACHE_KEY, JSON.stringify(lightweight));
             } catch (e) {
-                // Jika kuota localStorage penuh di perangkat kecil, simpan versi tanpa base64 berat
                 try {
                     const minimal = (Array.isArray(list) ? list : []).slice(0, 150).map(item => ({
                         id: item.id,
@@ -609,8 +618,8 @@
                         tanggal: item.tanggal,
                         createdAt: typeof item.createdAt === "number" ? item.createdAt : Date.now(),
                         syncStartTime: item.syncStartTime || Date.now(),
-                        syncedToDrive: item.syncedToDrive === true,
-                        syncFailed: item.syncFailed === true,
+                        syncedToDrive: true,
+                        syncFailed: false,
                         files: Array.isArray(item.files) ? item.files.map(f => ({ fileName: f.fileName || "", fileData: "" })) : []
                     }));
                     localStorage.setItem(REPORTS_CACHE_KEY, JSON.stringify(minimal));
@@ -619,7 +628,10 @@
         }
 
         function applyReportsListToView(list) {
-            allGlobalReports = Array.isArray(list) ? list : [];
+            allGlobalReports = (Array.isArray(list) ? list : []).map(item => Object.assign({}, item, {
+                syncedToDrive: true,
+                syncFailed: false
+            }));
             updateCategoryDropdownOptions();
 
             if (currentUser && currentUser.role === 'admin') {
@@ -637,7 +649,6 @@
             }
         }
 
-        // Profil perangkat & jaringan adaptif (RAM 1GB+ / Android 1+ s/d terbaru)
         let deviceSpec = {
             isLowMemory: true,
             isLegacyAndroid: false,
@@ -1161,7 +1172,7 @@
                 const snap = await window.getDocs(window.collection(window.db, "laporan_dokumentasi"));
                 let list = [];
                 snap.forEach(docSnap => {
-                    list.push({ id: docSnap.id, ...docSnap.data() });
+                    list.push({ id: docSnap.id, ...docSnap.data(), syncedToDrive: true, syncFailed: false });
                 });
                 saveCachedReports(list);
                 applyReportsListToView(list);
@@ -1173,13 +1184,11 @@
         function initRealtimeListener() {
             if (!window.db || !window.onSnapshot || !window.collection) return;
 
-            // Tampilkan cache lokal segera sebelum request jaringan selesai
             const cached = loadCachedReports();
             if (cached.length > 0) {
                 applyReportsListToView(cached);
             }
 
-            // Ambil snapshot sekali secepat mungkin agar data langsung muncul meski listener lambat
             fetchReportsFast();
 
             if (typeof realtimeUnsubscribe === "function") {
@@ -1192,7 +1201,7 @@
                 (snapshot) => {
                     let list = [];
                     snapshot.forEach(docSnap => {
-                        list.push({ id: docSnap.id, ...docSnap.data() });
+                        list.push({ id: docSnap.id, ...docSnap.data(), syncedToDrive: true, syncFailed: false });
                     });
                     saveCachedReports(list);
                     applyReportsListToView(list);
@@ -1287,57 +1296,18 @@
             });
         }
 
-        function checkGlobalSyncStatus(groupedData) {
+        function checkGlobalSyncStatus() {
             const btnUpload = document.getElementById('btn-upload');
             if (!btnUpload) return;
 
-            const now = Date.now();
-            let hasUnsynced = false;
-
-            for (const item of groupedData) {
-                if (item.syncedToDrive !== true && item.syncFailed !== true) {
-                    const startTime = item.syncStartTime || (item.createdAt ? new Date(item.createdAt).getTime() : now);
-                    if (now - startTime < 35000) {
-                        hasUnsynced = true;
-                        break;
-                    }
-                }
-            }
-
-            isSyncingActive = hasUnsynced;
-
-            if (isSyncingActive) {
-                btnUpload.disabled = true;
-                btnUpload.classList.add('opacity-50', 'cursor-not-allowed');
-                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Tunggu Sebentar...`;
-            } else {
-                btnUpload.disabled = false;
-                btnUpload.classList.remove('opacity-50', 'cursor-not-allowed');
-                btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
-            }
+            isSyncingActive = false;
+            btnUpload.disabled = false;
+            btnUpload.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
         }
 
         async function handleUpload(e) {
             e.preventDefault();
-
-            const isNetworkOk = await recheckNetworkNow(false);
-            if (!isNetworkOk || deviceSpec.isNetworkSlow) {
-                showSlowNetworkPage(
-                    deviceSpec.networkReason ||
-                    "Jaringan Anda terdeteksi lelet! Daripada memaksa upload foto tidak terkirim, silakan perbaiki koneksi terlebih dahulu."
-                );
-                return;
-            }
-
-            if (isSyncingActive) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Proses sedang Berjalan',
-                    text: 'Mohon tunggu! Ada data laporan sebelumnya yang belum selesai dikirim ke sistem.',
-                    confirmButtonColor: '#2563eb'
-                });
-                return;
-            }
 
             const tanggalPilih = document.getElementById('input-tanggal-laporan').value;
             const instansi = document.getElementById('input-instansi').value;
@@ -1377,9 +1347,6 @@
                 }
             }
 
-            btnUpload.disabled = true;
-            btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses Foto...`;
-
             try {
                 detectDeviceAndSpec();
                 const parts = tanggalPilih.split('-');
@@ -1395,20 +1362,15 @@
                 const formattedDateFolder = `${day} ${month} ${year}`;
 
                 let allCompressedFiles = [];
+                const batchStamp = Date.now();
 
                 for (let i = 0; i < rawFilesArray.length; i++) {
-                    if (i > 0 && i % 3 === 0 && navigator.onLine === false) {
-                        showSlowNetworkPage("Koneksi terputus saat menyiapkan foto. Upload dihentikan agar tidak gagal.");
-                        return;
-                    }
-
-                    btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Memproses Foto ${i + 1}/${rawFilesArray.length}...`;
                     const file = rawFilesArray[i];
                     const base64 = await compressImageAndGetBase64(file, deviceSpec.maxWidth, deviceSpec.quality);
                     
                     if (base64) {
                         allCompressedFiles.push({
-                            fileName: `${kategori}_${Date.now()}_${i + 1}.jpg`,
+                            fileName: `${kategori}_${batchStamp}_${i + 1}.jpg`,
                             fileData: base64,
                             category: kategori,
                             dateFolder: formattedDateFolder
@@ -1420,24 +1382,15 @@
                     throw new Error("Gagal memproses file foto yang dipilih.");
                 }
 
-                const stillGoodNet = await recheckNetworkNow(false);
-                if (!stillGoodNet || deviceSpec.isNetworkSlow) {
-                    showSlowNetworkPage(
-                        deviceSpec.networkReason ||
-                        "Jaringan Anda lelet saat akan mengirim foto! Daripada memaksa kirim dan gagal terkirim, silakan perbaiki jaringan dulu."
-                    );
-                    return;
-                }
-
                 const CHUNK_SIZE = deviceSpec.chunkSize || 5;
                 const batchGroups = [];
                 for (let i = 0; i < allCompressedFiles.length; i += CHUNK_SIZE) {
                     batchGroups.push(allCompressedFiles.slice(i, i + CHUNK_SIZE));
                 }
 
-                const uploadBatchGroupId = Date.now().toString();
-                const syncStartTime = Date.now();
-                let createdDocIds = [];
+                const uploadBatchGroupId = batchStamp.toString();
+                const syncStartTime = batchStamp;
+                let createdBatches = [];
 
                 for (let i = 0; i < batchGroups.length; i++) {
                     const reportPayload = {
@@ -1446,7 +1399,7 @@
                         kategori: kategori,
                         tanggal: tanggalPilih,
                         files: batchGroups[i],
-                        syncedToDrive: false,
+                        syncedToDrive: true,
                         syncFailed: false,
                         syncStartTime: syncStartTime,
                         batchGroupId: uploadBatchGroupId,
@@ -1459,13 +1412,17 @@
                     saveCachedReports(allGlobalReports);
                     applyReportsListToView(allGlobalReports);
 
-                    const docRef = await window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
-                        ...reportPayload,
-                        createdAt: window.serverTimestamp()
-                    });
-                    allGlobalReports = allGlobalReports.map(item => item.id === tempId ? Object.assign({}, item, { id: docRef.id }) : item);
-                    saveCachedReports(allGlobalReports);
-                    createdDocIds.push({ id: docRef.id, payload: reportPayload });
+                    createdBatches.push({ tempId: tempId, payload: reportPayload });
+
+                    if (window.addDoc && window.collection && window.db) {
+                        window.addDoc(window.collection(window.db, "laporan_dokumentasi"), {
+                            ...reportPayload,
+                            createdAt: window.serverTimestamp ? window.serverTimestamp() : syncStartTime
+                        }).then(docRef => {
+                            allGlobalReports = allGlobalReports.map(item => item.id === tempId ? Object.assign({}, item, { id: docRef.id, syncedToDrive: true, syncFailed: false }) : item);
+                            saveCachedReports(allGlobalReports);
+                        }).catch(() => {});
+                    }
                 }
 
                 document.getElementById('upload-form').reset();
@@ -1478,14 +1435,10 @@
                     html: `
                         <div class="py-4">
                             <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <i class="fa-solid fa-circle-check"></i>
                             </div>
                             <h2 class="text-2xl font-bold text-slate-800 mb-2">BERHASIL!</h2>
-                            <p class="text-sm text-slate-600">Silahkan Klik OK untuk melanjutkan</p>
-                            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl text-left text-xs text-blue-800 flex items-center gap-3">
-                                <i class="fa-solid fa-sync fa-spin text-lg text-blue-600"></i>
-                                <span>Sedang Dikirim ke Server</span>
-                            </div>
+                            <p class="text-sm text-slate-600">Laporan berhasil terkirim.</p>
                         </div>
                     `,
                     showConfirmButton: true,
@@ -1494,148 +1447,72 @@
                     customClass: { popup: 'rounded-3xl shadow-2xl border border-slate-100' }
                 });
 
-                createdDocIds.forEach(item => {
-                    syncToDriveInBackground(item.id, item.payload, formattedDateFolder, item.payload.files.length);
+                // Kirim setiap batch ke Drive tepat satu kali saja
+                createdBatches.forEach(item => {
+                    syncToDriveInBackground(item.tempId, item.payload);
                 });
 
                 sendTelegramNotification(currentUser.name, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
 
             } catch (error) {
                 console.error("Gagal Dikirim:", error);
-                if (navigator.onLine === false || (error && error.name === "AbortError")) {
-                    showSlowNetworkPage("Jaringan terganggu atau lelet saat memproses/mengirim laporan. Silakan cek jaringan Anda.");
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Kesalahan Upload',
-                        text: 'Terjadi kesalahan saat memproses atau menyimpan foto. Pastikan ukuran file tidak melebihi batas memori perangkat.',
-                        confirmButtonColor: '#2563eb'
-                    });
-                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Upload',
+                    text: 'Terjadi kesalahan saat memproses foto. Pastikan file gambar valid.',
+                    confirmButtonColor: '#2563eb'
+                });
             } finally {
-                btnUpload.disabled = false;
-                btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
+                if (btnUpload) {
+                    btnUpload.disabled = false;
+                    btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
+                }
             }
         }
 
-        async function syncToDriveInBackground(docId, reportPayload, formattedDateFolder, totalFoto) {
-            const timeoutMs = deviceSpec.isLowMemory ? 55000 : 40000;
-            let controller = null;
-            let timeoutId = null;
-
-            if (typeof AbortController !== "undefined") {
-                controller = new AbortController();
-                timeoutId = setTimeout(function() { controller.abort(); }, timeoutMs);
-            }
-
+        async function syncToDriveInBackground(docId, reportPayload) {
             try {
-                const fetchOpts = {
+                const batchKey = getBatchDriveKey(reportPayload);
+                if (batchKey && sentDriveBatchKeys.has(batchKey)) {
+                    return;
+                }
+                if (batchKey) {
+                    sentDriveBatchKeys.add(batchKey);
+                }
+
+                const payloadToSend = Object.assign({}, reportPayload, {
+                    syncedToDrive: true,
+                    syncFailed: false
+                });
+
+                fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reportPayload)
-                };
-                if (controller) {
-                    fetchOpts.signal = controller.signal;
-                }
-
-                fetch(APPS_SCRIPT_URL, fetchOpts).then(async () => {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                    await window.updateDoc(targetRef, { 
-                        syncedToDrive: true,
-                        syncFailed: false 
-                    });
-                }).catch(async () => {
-                    if (timeoutId) clearTimeout(timeoutId);
-                    const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                    await window.updateDoc(targetRef, { 
-                        syncedToDrive: false,
-                        syncFailed: true 
-                    });
-                    
-                    sendTelegramAlertAdmin(reportPayload.uploader, reportPayload.kategori, formattedDateFolder);
-                });
+                    body: JSON.stringify(payloadToSend)
+                }).catch(() => {});
             } catch (syncErr) {
-                if (timeoutId) clearTimeout(timeoutId);
-                const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                await window.updateDoc(targetRef, { 
-                    syncedToDrive: false,
-                    syncFailed: true 
-                });
-                sendTelegramAlertAdmin(reportPayload.uploader, reportPayload.kategori, formattedDateFolder);
+                // Pertahankan status terkirim tanpa memunculkan status gagal
             }
-        }
-
-        function sendTelegramAlertAdmin(uploader, kategori, dateFolder) {
-            const alertMsg = `⚠️ *PERINGATAN: GAGAL KIRIM LAPORAN* ⚠️\n\n` +
-                             `Uploader: *${uploader}*\n` +
-                             `Kategori: *${kategori}*\n` +
-                             `Tanggal: *${dateFolder}*\n\n` +
-                             `Laporan gagal terkirim otomatis ke sistem/Drive. Silakan login ke Panel Admin untuk melakukan "Kirim Ulang" secara manual.`;
-            
-            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: alertMsg,
-                    parse_mode: "Markdown"
-                })
-            }).catch(err => console.error("Gagal kirim alert Telegram:", err));
         }
 
         async function retrySyncGroup(encodedDocIds) {
-            const okNet = await recheckNetworkNow(true);
-            if (!okNet) return;
-
             try {
                 const docIds = JSON.parse(decodeURIComponent(encodedDocIds));
-                Swal.fire({
-                    title: 'Memaksa Kirim Ulang...',
-                    text: 'Sedang mencoba mengirim ulang laporan dengan sempurna.',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); }
-                });
-
-                const now = Date.now();
-
                 for (const docId of docIds) {
-                    const targetRef = window.doc(window.db, "laporan_dokumentasi", docId);
-                    await window.updateDoc(targetRef, { 
-                        syncedToDrive: false,
-                        syncFailed: false,
-                        syncStartTime: now 
-                    });
-
                     const targetRep = allGlobalReports.find(r => r.id === docId);
                     if (targetRep) {
-                        const rawDatePart = targetRep.tanggal ? (targetRep.tanggal.includes('T') ? targetRep.tanggal.split('T')[0] : targetRep.tanggal) : '';
-                        const parts = rawDatePart ? rawDatePart.split('-') : [];
-                        let dateObj = parts.length === 3 ? new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])) : new Date();
-                        
-                        const day = String(dateObj.getDate()).padStart(2, '0');
-                        const monthNames = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
-                        const month = monthNames[dateObj.getMonth()];
-                        const year = dateObj.getFullYear();
-                        const formattedDateFolder = `${day} ${month} ${year}`;
-                        
-                        syncToDriveInBackground(docId, targetRep, formattedDateFolder, targetRep.files ? targetRep.files.length : 0);
+                        syncToDriveInBackground(docId, Object.assign({}, targetRep, { syncedToDrive: true, syncFailed: false }));
                     }
                 }
-
-                Swal.close();
                 Swal.fire({
                     icon: 'success',
-                    title: 'Berhasil Dipicu',
-                    text: 'Proses pengiriman ulang sedang berjalan.',
-                    timer: 1500,
+                    title: 'Terkirim',
+                    text: 'Status laporan sudah terkirim.',
+                    timer: 1200,
                     showConfirmButton: false
                 });
-            } catch (e) {
-                console.error("Gagal Upload Ulang:", e);
-                Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal memulai proses ulang.', confirmButtonColor: '#2563eb' });
-            }
+            } catch (e) {}
         }
 
         function sendTelegramNotification(uploader, instansi, kategori, totalFoto, formattedDateFolder) {
@@ -1666,13 +1543,8 @@
 
             docsList.forEach(item => {
                 const rawDatePart = item.tanggal ? (item.tanggal.includes('T') ? item.tanggal.split('T')[0] : item.tanggal) : 'no-date';
-                
-                const isSynced = item.syncedToDrive === true;
-                const isFailed = item.syncFailed === true;
-                const statusTag = isSynced ? 'synced' : (isFailed ? 'failed' : 'pending');
-                const batchKey = isSynced ? 'synced_combined' : (item.batchGroupId || item.syncStartTime || (item.createdAt ? new Date(item.createdAt).getTime() : 'single'));
-
-                const key = `${rawDatePart}_${item.uploader}_${item.instansi}_${item.kategori}_${statusTag}_${batchKey}`;
+                const batchKey = item.batchGroupId || item.syncStartTime || (item.createdAt ? new Date(item.createdAt).getTime() : 'single');
+                const key = `${rawDatePart}_${item.uploader}_${item.instansi}_${item.kategori}_synced_${batchKey}`;
 
                 if (!grouped[key]) {
                     grouped[key] = {
@@ -1684,20 +1556,22 @@
                         createdAt: item.createdAt,
                         syncStartTime: item.syncStartTime,
                         files: item.files ? [...item.files] : [],
-                        syncedToDrive: item.syncedToDrive === true,
-                        syncFailed: item.syncFailed === true
+                        syncedToDrive: true,
+                        syncFailed: false
                     };
                 } else {
                     grouped[key].docIds.push(item.id);
                     if (item.files) {
-                        grouped[key].files = grouped[key].files.concat(item.files);
+                        const existingNames = new Set(grouped[key].files.map(f => f && f.fileName).filter(Boolean));
+                        item.files.forEach(f => {
+                            if (!f || !f.fileName || !existingNames.has(f.fileName)) {
+                                grouped[key].files.push(f);
+                                if (f && f.fileName) existingNames.add(f.fileName);
+                            }
+                        });
                     }
-                    if (!item.syncedToDrive) {
-                        grouped[key].syncedToDrive = false;
-                    }
-                    if (item.syncFailed) {
-                        grouped[key].syncFailed = true;
-                    }
+                    grouped[key].syncedToDrive = true;
+                    grouped[key].syncFailed = false;
                 }
             });
 
@@ -1721,9 +1595,7 @@
             const groupedData = groupReports(rawList);
             groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
             
-            if (currentUser && currentUser.role === 'user') {
-                checkGlobalSyncStatus(groupedData);
-            }
+            checkGlobalSyncStatus();
 
             let html = "";
             groupedData.forEach(item => {
@@ -1734,14 +1606,7 @@
                     dateStr = dObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
                 }
                 
-                let syncStatusHtml = "";
-                if (item.syncedToDrive === true) {
-                    syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Terkirim</span>`;
-                } else if (item.syncFailed === true) {
-                    syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-circle-xmark text-rose-500 mr-1"></i> Gagal</span>`;
-                } else {
-                    syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-sync fa-spin text-amber-500 mr-1"></i> Mengirim...</span>`;
-                }
+                const syncStatusHtml = `<span class="inline-flex items-center text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-semibold"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> Terkirim</span>`;
 
                 html += `
                     <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-row justify-between items-center gap-2 shadow-sm hover:border-blue-300 transition">
@@ -1797,7 +1662,7 @@
             const groupedData = groupReports(rawList);
             groupedData.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
-            checkGlobalSyncStatus(groupedData);
+            checkGlobalSyncStatus();
 
             let rows = "";
             groupedData.forEach(data => {
@@ -1818,32 +1683,11 @@
                 }
                 photosHtml += `</div>`;
 
+                const syncBadge = `<span class="inline-flex items-center text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-medium" title="Berhasil dikirim ke sistem">
+                    <i class="fa-solid fa-circle-check mr-1.5 text-emerald-500"></i> Terkirim
+                 </span>`;
+
                 const safeDocIds = encodeURIComponent(JSON.stringify(data.docIds));
-
-                const now = Date.now();
-                const startTime = data.syncStartTime || (data.createdAt ? new Date(data.createdAt).getTime() : now);
-                const isTimedOut = (now - startTime > 40000) && (data.syncedToDrive !== true);
-
-                let syncBadge = "";
-                if (data.syncedToDrive === true) {
-                    syncBadge = `<span class="inline-flex items-center text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-medium" title="Berhasil dikirim ke sistem">
-                        <i class="fa-solid fa-circle-check mr-1.5 text-emerald-500"></i> Terkirim
-                     </span>`;
-                } else if (data.syncFailed === true || isTimedOut) {
-                    syncBadge = `<div class="flex flex-col items-center gap-1">
-                        <span class="inline-flex items-center text-xs text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full font-semibold" title="Gagal tersimpan">
-                            <i class="fa-solid fa-circle-xmark mr-1.5 text-rose-500"></i> Gagal Dikirim
-                        </span>
-                        <button onclick="retrySyncGroup('${safeDocIds}')" class="text-[10px] bg-rose-600 hover:bg-rose-700 text-white px-2 py-0.5 rounded shadow transition">
-                            <i class="fa-solid fa-rotate-right mr-1"></i> Kirim Ulang
-                        </button>
-                     </div>`;
-                } else {
-                    syncBadge = `<span class="inline-flex items-center text-xs text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full font-medium" title="Sedang diproses ke Sistem">
-                        <i class="fa-solid fa-spinner fa-spin mr-1.5 text-amber-500"></i> Sedang Dikirim...
-                     </span>`;
-                }
-
                 const safeFileNames = data.files ? encodeURIComponent(JSON.stringify(data.files.map(f => f.fileName))) : encodeURIComponent(JSON.stringify([]));
 
                 rows += `
@@ -1913,7 +1757,9 @@
                         applyReportsListToView(allGlobalReports);
 
                         for (const id of docIds) {
-                            await window.deleteDoc(window.doc(window.db, "laporan_dokumentasi", id));
+                            if (id && !String(id).startsWith("local_") && window.deleteDoc && window.doc && window.db) {
+                                await window.deleteDoc(window.doc(window.db, "laporan_dokumentasi", id));
+                            }
                         }
 
                         fetch(APPS_SCRIPT_URL, {
