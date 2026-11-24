@@ -562,6 +562,7 @@
 
         let currentUser = null;
         let isSyncingActive = false; 
+        let isUploadingInProgress = false;
         let isDateManuallyModified = false; 
         let allGlobalReports = [];
         let realtimeUnsubscribe = null;
@@ -1300,14 +1301,57 @@
             const btnUpload = document.getElementById('btn-upload');
             if (!btnUpload) return;
 
+            if (isUploadingInProgress) {
+                btnUpload.disabled = true;
+                btnUpload.classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
             isSyncingActive = false;
             btnUpload.disabled = false;
             btnUpload.classList.remove('opacity-50', 'cursor-not-allowed');
             btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
         }
 
+        function runUploadCountdown(seconds = 3) {
+            return new Promise((resolve) => {
+                let current = 1;
+                Swal.fire({
+                    html: `
+                        <div class="py-4">
+                            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl font-extrabold">
+                                <span id="upload-countdown-num">${current}</span>
+                            </div>
+                            <h2 class="text-xl font-bold text-slate-800 mb-1">Mengirim Laporan...</h2>
+                            <p class="text-xs text-slate-500">Mohon tunggu, jangan klik tombol berulang kali.</p>
+                        </div>
+                    `,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    customClass: { popup: 'rounded-3xl shadow-2xl border border-slate-100' },
+                    didOpen: () => {
+                        const timer = setInterval(() => {
+                            current += 1;
+                            const numEl = document.getElementById('upload-countdown-num');
+                            if (current <= seconds) {
+                                if (numEl) numEl.textContent = String(current);
+                            } else {
+                                clearInterval(timer);
+                                resolve();
+                            }
+                        }, 600);
+                    }
+                });
+            });
+        }
+
         async function handleUpload(e) {
             e.preventDefault();
+
+            if (isUploadingInProgress) {
+                return;
+            }
 
             const tanggalPilih = document.getElementById('input-tanggal-laporan').value;
             const instansi = document.getElementById('input-instansi').value;
@@ -1345,6 +1389,13 @@
                 for (let i = 0; i < fileInput.files.length; i++) {
                     rawFilesArray.push(fileInput.files[i]);
                 }
+            }
+
+            isUploadingInProgress = true;
+            if (btnUpload) {
+                btnUpload.disabled = true;
+                btnUpload.classList.add('opacity-50', 'cursor-not-allowed');
+                btnUpload.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Mengirim...`;
             }
 
             try {
@@ -1431,13 +1482,23 @@
                 setTodayDate();
                 renderDynamicUploadInputs();
 
+                // Kirim setiap batch ke Drive tepat satu kali saja
+                createdBatches.forEach(item => {
+                    syncToDriveInBackground(item.tempId, item.payload);
+                });
+
+                sendTelegramNotification(currentUser.name, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
+
+                // Hitungan 1, 2, 3 lalu langsung tampilkan notifikasi berhasil terkirim
+                await runUploadCountdown(3);
+
                 Swal.fire({
                     html: `
                         <div class="py-4">
                             <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
                                 <i class="fa-solid fa-circle-check"></i>
                             </div>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">BERHASIL!</h2>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">BERHASIL TERKIRIM!</h2>
                             <p class="text-sm text-slate-600">Laporan berhasil terkirim.</p>
                         </div>
                     `,
@@ -1446,13 +1507,6 @@
                     confirmButtonColor: '#2563eb',
                     customClass: { popup: 'rounded-3xl shadow-2xl border border-slate-100' }
                 });
-
-                // Kirim setiap batch ke Drive tepat satu kali saja
-                createdBatches.forEach(item => {
-                    syncToDriveInBackground(item.tempId, item.payload);
-                });
-
-                sendTelegramNotification(currentUser.name, instansi, kategori, allCompressedFiles.length, formattedDateFolder);
 
             } catch (error) {
                 console.error("Gagal Dikirim:", error);
@@ -1463,8 +1517,10 @@
                     confirmButtonColor: '#2563eb'
                 });
             } finally {
+                isUploadingInProgress = false;
                 if (btnUpload) {
                     btnUpload.disabled = false;
+                    btnUpload.classList.remove('opacity-50', 'cursor-not-allowed');
                     btnUpload.innerHTML = `<i class="fa-solid fa-upload mr-1"></i> Upload Laporan`;
                 }
             }
