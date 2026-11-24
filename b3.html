@@ -2,7 +2,11 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Pencatatan dan Penimbangan Sampah - SPPG KOTA SERANG SERANG SERANG 2</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,27 +18,126 @@
     <!-- jsPDF untuk Ekspor PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-text-size-adjust: 100%; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Optimasi perangkat RAM kecil / layar lama */
+        @media (max-width: 640px) {
+            .backdrop-blur-sm {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+        }
+
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; }
-            #printable-area { border: none !important; padding: 0 !important; box-shadow: none !important; width: 100% !important; }
+            #printable-area {
+                border: none !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .archive-fit-outer,
+            .archive-fit-inner {
+                height: auto !important;
+                width: 100% !important;
+                overflow: visible !important;
+            }
+            .archive-desktop-canvas {
+                transform: none !important;
+                -webkit-transform: none !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
         }
+
         table.unified-table th, table.unified-table td {
             border: 1px solid #111827;
         }
-        /* Memaksa tampilan tabel seluas desktop pada perangkat seluler */
+
+        /* Paksa bagian Arsip & Rekapitulasi terlihat mode desktop penuh tanpa geser & tanpa zoom */
+        .archive-fit-outer {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .archive-fit-inner {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .archive-desktop-canvas {
+            width: 1280px;
+            min-width: 1280px;
+            transform-origin: top left;
+            -webkit-transform-origin: top left;
+        }
+
         .desktop-view-container {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: visible;
         }
+
         .desktop-view-table {
-            min-width: 1100px;
+            width: 100%;
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        /* Halaman peringatan jaringan lelet */
+        #slow-network-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #f8fafc;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #slow-network-screen.active {
+            display: flex;
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+
+    <!-- HALAMAN PERINGATAN JARINGAN LELET -->
+    <div id="slow-network-screen" role="alert" aria-live="assertive">
+        <div class="bg-white rounded-2xl shadow-xl border border-amber-200 p-6 sm:p-8 max-w-md w-full text-center space-y-4">
+            <div class="w-16 h-16 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
+                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">Jaringan Anda Lelet</h2>
+                <p id="slow-network-reason" class="text-sm text-gray-600 mt-2 leading-relaxed">
+                    Koneksi internet Anda terdeteksi lambat atau tidak stabil. Daripada halaman macet atau gagal terbuka, sistem menampilkan halaman peringatan ini.
+                </p>
+                <p id="slow-network-detail" class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-3 font-medium">
+                    Status Koneksi: Memeriksa kualitas jaringan...
+                </p>
+            </div>
+            <div class="pt-2 space-y-2.5">
+                <button type="button" onclick="retryNetworkConnection()" class="w-full bg-[#0047AB] hover:bg-[#003380] text-white font-semibold py-2.5 px-4 rounded-xl transition text-sm">
+                    Coba Muat Ulang Sekarang
+                </button>
+                <button type="button" onclick="dismissSlowNetworkWarning()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-xl transition text-xs">
+                    Tetap Lanjutkan ke Halaman
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL NOTIFIKASI MEWAH & KEREN -->
     <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden transition-all duration-300">
@@ -59,13 +162,13 @@
     <header class="bg-white shadow-sm border-b border-gray-200 no-print">
         <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <img src="logo.png" alt="Logo" class="w-10 h-10 object-contain rounded-lg border border-gray-100 shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230047AB\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
+                <img src="logo.png" alt="Logo" loading="eager" decoding="async" class="w-10 h-10 object-contain rounded-lg border border-gray-100 shadow-sm" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230047AB\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
                 <div>
                     <h1 class="text-lg sm:text-2xl font-bold text-[#0047AB] tracking-tight">PENCATATAN & PENIMBANGAN SAMPAH / LIMBAH B3</h1>
                     <p class="text-xs sm:text-sm text-gray-500 mt-0.5" id="live-datetime">-</p>
                 </div>
             </div>
-            
+
             <div id="user-session-bar" class="hidden items-center gap-3 bg-blue-50 border border-blue-100 px-4 py-2 rounded-xl">
                 <div>
                     <p class="text-xs text-[#0047AB] font-medium">Masuk Sebagai :</p>
@@ -88,7 +191,7 @@
         <div id="login-container" class="max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 p-8 my-10">
             <div class="text-center mb-6">
                 <div class="flex justify-center mb-3">
-                    <img src="logo.png" alt="Logo Instansi" class="w-16 h-16 object-contain rounded-xl shadow-md border border-gray-100 p-1" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230047AB\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
+                    <img src="logo.png" alt="Logo Instansi" loading="eager" decoding="async" class="w-16 h-16 object-contain rounded-xl shadow-md border border-gray-100 p-1" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%230047AB\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><path d=\'M9 12h6m-3-3v6\'/></svg>'">
                 </div>
                 <h2 class="text-xl font-bold text-[#0047AB]">Masuk Sistem Input</h2>
                 <p class="text-sm text-gray-500 mt-1">SPPG KOTA SERANG SERANG SERANG 2</p>
@@ -104,13 +207,13 @@
             <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Username</label>
-                    <input type="text" id="login-user" required placeholder="Masukkan username..." 
+                    <input type="text" id="login-user" required placeholder="Masukkan username..."
                         class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Password</label>
                     <div class="relative">
-                        <input type="password" id="login-pass" required placeholder="Masukkan password..." 
+                        <input type="password" id="login-pass" required placeholder="Masukkan password..."
                             class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm pr-10">
                         <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
                             <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,12 +252,12 @@
                 <form id="dynamic-form" onsubmit="handleDataSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-5 items-end">
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Tanggal (DD-MM-YYYY)</label>
-                        <input type="date" id="input-tanggal" required 
+                        <input type="date" id="input-tanggal" required
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Koordinat</label>
-                        <input type="text" id="input-koordinat" value="-6.1265918, 106.1490035" readonly 
+                        <input type="text" id="input-koordinat" value="-6.1265918, 106.1490035" readonly
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-100 text-gray-600 cursor-not-allowed text-base font-medium">
                     </div>
                     <div>
@@ -166,47 +269,47 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Sisa Bahan Penyiapan Makanan (kg/hari)</label>
-                        <input type="text" id="input-sisa-bahan" placeholder="Contoh: 1.5 kg / -" 
+                        <input type="text" id="input-sisa-bahan" placeholder="Contoh: 1.5 kg / -"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Organik Sisa Makanan (kg/hari)</label>
-                        <input type="text" id="input-organik" placeholder="Contoh: 3 kg / -" 
+                        <input type="text" id="input-organik" placeholder="Contoh: 3 kg / -"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Kertas / Karton (Kg/hari)</label>
-                        <input type="text" id="input-kertas" placeholder="Contoh: 0.5 kg / -" 
+                        <input type="text" id="input-kertas" placeholder="Contoh: 0.5 kg / -"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Plastik (Kg/hari)</label>
-                        <input type="text" id="input-plastik" placeholder="Contoh: 2 kg / -" 
+                        <input type="text" id="input-plastik" placeholder="Contoh: 2 kg / -"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Anorganik Kaca (kg/hari)</label>
-                        <input type="text" id="input-kaca" placeholder="Contoh: - / 0.2 kg" 
+                        <input type="text" id="input-kaca" placeholder="Contoh: - / 0.2 kg"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Karet (Kg/hari)</label>
-                        <input type="text" id="input-karet" placeholder="Contoh: - / 0.1 kg" 
+                        <input type="text" id="input-karet" placeholder="Contoh: - / 0.1 kg"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">Residu (styrofoam, bungkus sasetan) (kg/hari)</label>
-                        <input type="text" id="input-residu" placeholder="Contoh: 12g/1renceng / 0.5 kg" 
+                        <input type="text" id="input-residu" placeholder="Contoh: 12g/1renceng / 0.5 kg"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">B3 (kg/hari)</label>
-                        <input type="text" id="input-b3" placeholder="Contoh: - / 0.05 kg" 
+                        <input type="text" id="input-b3" placeholder="Contoh: - / 0.05 kg"
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-700 mb-2">DIVISI YANG MENCATAT</label>
-                        <input type="text" id="input-keterangan" required placeholder="Nama divisi..." 
+                        <input type="text" id="input-keterangan" required placeholder="Nama divisi..."
                             class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-base bg-gray-50/50">
                     </div>
                     <div class="sm:col-span-3">
@@ -217,100 +320,103 @@
                 </form>
             </div>
 
-            <!-- BAGIAN ARSIP & EKSPOR -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-4">
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Pencatatan Sampah & Limbah B3</h2>
-                        <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
-                    </div>
-                    <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
-                        <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                            🖨️ Cetak / Print
-                        </button>
-                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                            📊 Ekspor Excel
-                        </button>
-                        <button onclick="exportToPNG()" class="bg-[#0047AB] hover:bg-[#003380] text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                            🖼️ Ekspor PNG
-                        </button>
-                        <button onclick="exportToPDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
-                            📄 Ekspor PDF
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Filter Tanggal -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end no-print bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Dari Tanggal</label>
-                        <input type="date" id="filter-start" onchange="renderUnifiedTable()" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Sampai Tanggal</label>
-                        <input type="date" id="filter-end" onchange="renderUnifiedTable()" 
-                            class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
-                    </div>
-                    <div>
-                        <button onclick="resetFilter()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-xl transition text-sm">
-                            Reset ke Hari Ini
-                        </button>
-                    </div>
-                </div>
-
-                <!-- AREA CETAK & TAMPILAN DESKTOP FULL (DIBUNGKUS CONTAINER RESPONSIF AGAR TIDAK TERPOTONG) -->
-                <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6">
-                    <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
-                        <h3 class="text-xs sm:text-sm font-bold text-gray-800 tracking-wider">FORMULIR</h3>
-                        <h3 class="text-sm sm:text-base font-bold text-gray-900 tracking-wider">PENCATATAN DAN PENIMBANGAN SAMPAH DARI PROGRAM MAKAN BERGIZI GRATIS (MBG)</h3>
-                        <h4 class="text-sm sm:text-base font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
-                        <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE TANGGAL HARI INI</p>
-                    </div>
-
-                    <!-- TABEL NORMAL SATU BARIS HEADER DENGAN WRAPPER DESKTOP FULL -->
-                    <div class="desktop-view-container">
-                        <table class="w-full text-left text-xs border-collapse unified-table desktop-view-table">
-                            <thead>
-                                <tr class="bg-gray-100 text-center font-bold text-gray-900 text-[11px]">
-                                    <th class="p-2 border border-gray-800 w-12">NO</th>
-                                    <th class="p-2 border border-gray-800 w-28">Tanggal</th>
-                                    <th class="p-2 border border-gray-800 w-36">Koordinat (*)</th>
-                                    <th class="p-2 border border-gray-800 w-16">Memilah (Sudah)</th>
-                                    <th class="p-2 border border-gray-800 w-16">Memilah (Belum)</th>
-                                    <th class="p-2 border border-gray-800">Sisa bahan penyiapan makanan (kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">Organik sisa makanan (kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">Kertas/Karton (Kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">Plastik (Kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">Anorganik Kaca (kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">Anorganik Karet (Kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">Residu (styrofoam, bungkus sasetan) (kg/hari)</th>
-                                    <th class="p-2 border border-gray-800 bg-amber-100">B3 (kg/hari)</th>
-                                    <th class="p-2 border border-gray-800">DIVISI YANG MENCATAT</th>
-                                    <th class="p-2 border border-gray-800 w-20 action-col hidden">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="unified-table-body" class="divide-y divide-gray-200">
-                                <!-- Baris data disuntikkan via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Tanda Tangan -->
-                    <div class="grid grid-cols-2 pt-10 text-center text-xs font-semibold text-gray-800 mt-8 border-t border-gray-200">
-                        <div>
-                            <p class="mb-14">PENANGGUNG JAWAB</p>
-                            <p class="font-bold underline">NURHAJANAH</p>
-                            <p class="text-[11px] text-gray-600 font-normal">KOKI</p>
+            <!-- BAGIAN ARSIP & EKSPOR (MODE DESKTOP PENUH TANPA GESER & TANPA ZOOM) -->
+            <div id="archive-section" class="archive-fit-outer">
+                <div id="archive-fit-inner" class="archive-fit-inner">
+                    <div id="archive-desktop-canvas" class="archive-desktop-canvas bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
+                        <div class="flex flex-row justify-between items-center gap-4 border-b border-gray-100 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900">Arsip & Rekapitulasi Pencatatan Sampah & Limbah B3</h2>
+                                <p class="text-xs text-gray-500" id="sync-status-text">Status : Terhubung ke Sistem (Real-time)</p>
+                            </div>
+                            <div id="export-buttons-container" class="hidden flex-wrap items-center gap-2 no-print">
+                                <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    🖨️ Cetak / Print
+                                </button>
+                                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    📊 Ekspor Excel
+                                </button>
+                                <button onclick="exportToPNG()" class="bg-[#0047AB] hover:bg-[#003380] text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    🖼️ Ekspor PNG
+                                </button>
+                                <button onclick="exportToPDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-sm">
+                                    📄 Ekspor PDF
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <p class="mb-14">MENGETAHUI</p>
-                            <p class="font-bold underline">FAJAR RIZKI RAMADHAN</p>
-                            <p class="text-[11px] text-gray-600 font-normal">ASLAP</p>
+
+                        <!-- Filter Tanggal (Layout Desktop) -->
+                        <div class="grid grid-cols-3 gap-4 items-end no-print bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Dari Tanggal</label>
+                                <input type="date" id="filter-start" onchange="renderUnifiedTable(); fitArchiveToScreen();"
+                                    class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Sampai Tanggal</label>
+                                <input type="date" id="filter-end" onchange="renderUnifiedTable(); fitArchiveToScreen();"
+                                    class="w-full px-3.5 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#0047AB] focus:outline-none text-sm bg-white">
+                            </div>
+                            <div>
+                                <button onclick="resetFilter()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded-xl transition text-sm">
+                                    Reset ke Hari Ini
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AREA CETAK & TAMPILAN DESKTOP FULL -->
+                        <div id="printable-area" class="bg-white p-6 rounded-xl border border-gray-200 space-y-6">
+                            <div class="text-center space-y-1 border-b-2 border-gray-800 pb-4">
+                                <h3 class="text-sm font-bold text-gray-800 tracking-wider">FORMULIR</h3>
+                                <h3 class="text-base font-bold text-gray-900 tracking-wider">PENCATATAN DAN PENIMBANGAN SAMPAH DARI PROGRAM MAKAN BERGIZI GRATIS (MBG)</h3>
+                                <h4 class="text-base font-bold text-gray-900 tracking-wider">SPPG KOTA SERANG SERANG SERANG 2</h4>
+                                <p class="text-xs text-gray-700 font-semibold pt-1" id="periode-label">PERIODE TANGGAL HARI INI</p>
+                            </div>
+
+                            <!-- TABEL NORMAL SATU BARIS HEADER FULL TANPA GESER -->
+                            <div class="desktop-view-container">
+                                <table class="w-full text-left text-xs border-collapse unified-table desktop-view-table">
+                                    <thead>
+                                        <tr class="bg-gray-100 text-center font-bold text-gray-900 text-[11px]">
+                                            <th class="p-2 border border-gray-800 w-12">NO</th>
+                                            <th class="p-2 border border-gray-800 w-24">Tanggal</th>
+                                            <th class="p-2 border border-gray-800 w-36">Koordinat (*)</th>
+                                            <th class="p-2 border border-gray-800 w-16">Memilah (Sudah)</th>
+                                            <th class="p-2 border border-gray-800 w-16">Memilah (Belum)</th>
+                                            <th class="p-2 border border-gray-800">Sisa bahan penyiapan makanan (kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">Organik sisa makanan (kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">Kertas/Karton (Kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">Plastik (Kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">Anorganik Kaca (kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">Anorganik Karet (Kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">Residu (styrofoam, bungkus sasetan) (kg/hari)</th>
+                                            <th class="p-2 border border-gray-800 bg-amber-100">B3 (kg/hari)</th>
+                                            <th class="p-2 border border-gray-800">DIVISI YANG MENCATAT</th>
+                                            <th class="p-2 border border-gray-800 w-20 action-col hidden">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="unified-table-body" class="divide-y divide-gray-200">
+                                        <!-- Baris data disuntikkan via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Tanda Tangan -->
+                            <div class="grid grid-cols-2 pt-10 text-center text-xs font-semibold text-gray-800 mt-8 border-t border-gray-200">
+                                <div>
+                                    <p class="mb-14">PENANGGUNG JAWAB</p>
+                                    <p class="font-bold underline">NURHAJANAH</p>
+                                    <p class="text-[11px] text-gray-600 font-normal">KOKI</p>
+                                </div>
+                                <div>
+                                    <p class="mb-14">MENGETAHUI</p>
+                                    <p class="font-bold underline">FAJAR RIZKI RAMADHAN</p>
+                                    <p class="text-[11px] text-gray-600 font-normal">ASLAP</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>
@@ -321,6 +427,161 @@
     <footer class="bg-white border-t border-gray-200 mt-12 py-4 text-center text-xs text-gray-400 no-print">
         Sistem Informasi Pencatatan Sampah & Limbah B3 &copy; 2026 - Badan Gizi Nasional
     </footer>
+
+    <!-- PENYESUAIAN UKURAN ARSIP AGAR MUAT PENUH TANPA GESER & TANPA ZOOM -->
+    <script>
+        (function () {
+            var DESKTOP_WIDTH = 1280;
+
+            window.fitArchiveToScreen = function () {
+                var outer = document.getElementById('archive-section');
+                var inner = document.getElementById('archive-fit-inner');
+                var canvas = document.getElementById('archive-desktop-canvas');
+                if (!outer || !inner || !canvas) return;
+
+                var availableWidth = outer.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+                if (availableWidth <= 0) return;
+
+                var scale = availableWidth < DESKTOP_WIDTH ? (availableWidth / DESKTOP_WIDTH) : 1;
+
+                canvas.style.width = DESKTOP_WIDTH + 'px';
+                canvas.style.minWidth = DESKTOP_WIDTH + 'px';
+                canvas.style.transform = 'scale(' + scale + ')';
+                canvas.style.webkitTransform = 'scale(' + scale + ')';
+
+                var naturalHeight = canvas.offsetHeight || canvas.scrollHeight || 0;
+                var scaledHeight = Math.ceil(naturalHeight * scale);
+                inner.style.height = scaledHeight > 0 ? (scaledHeight + 'px') : 'auto';
+                inner.style.width = availableWidth + 'px';
+            };
+
+            window.addEventListener('resize', function () {
+                window.fitArchiveToScreen();
+            });
+            window.addEventListener('orientationchange', function () {
+                setTimeout(window.fitArchiveToScreen, 150);
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+                window.fitArchiveToScreen();
+                setTimeout(window.fitArchiveToScreen, 300);
+            });
+        })();
+    </script>
+
+    <!-- DETEKSI JARINGAN LELET & KOMPATIBILITAS PERANGKAT -->
+    <script>
+        (function () {
+            var slowDismissedByUser = false;
+            var initialDataReady = false;
+
+            function getConnectionInfo() {
+                var nav = navigator || {};
+                var conn = nav.connection || nav.mozConnection || nav.webkitConnection || null;
+                var online = (typeof nav.onLine === 'boolean') ? nav.onLine : true;
+                var effectiveType = (conn && conn.effectiveType) ? String(conn.effectiveType) : '';
+                var rtt = (conn && typeof conn.rtt === 'number') ? conn.rtt : 0;
+                var downlink = (conn && typeof conn.downlink === 'number') ? conn.downlink : null;
+
+                var isSlow = false;
+                var reason = '';
+                var detail = '';
+
+                if (!online) {
+                    isSlow = true;
+                    reason = 'Perangkat sedang tidak terhubung ke internet (Offline).';
+                    detail = 'Status Koneksi: Terputus / Offline';
+                } else if (effectiveType === 'slow-2g' || effectiveType === '2g') {
+                    isSlow = true;
+                    reason = 'Kecepatan internet Anda terdeteksi sangat lambat (' + effectiveType.toUpperCase() + '). Daripada halaman macet, kami tampilkan peringatan ini.';
+                    detail = 'Tipe Koneksi: ' + effectiveType.toUpperCase() + (rtt ? ' | Latensi: ' + rtt + ' ms' : '');
+                } else if (rtt > 1200 || (downlink !== null && downlink > 0 && downlink < 0.25)) {
+                    isSlow = true;
+                    reason = 'Respon jaringan Anda lambat atau tidak stabil. Pemuatan halaman dapat tertunda.';
+                    detail = 'Latensi: ' + (rtt || '-') + ' ms' + (downlink !== null ? ' | Kecepatan: ' + downlink + ' Mbps' : '');
+                } else {
+                    detail = 'Status Koneksi: ' + (effectiveType ? effectiveType.toUpperCase() : 'Terhubung') + (rtt ? ' | Latensi: ' + rtt + ' ms' : '');
+                }
+
+                return { isSlow: isSlow, reason: reason, detail: detail };
+            }
+
+            window.showSlowNetworkScreen = function (customReason, customDetail) {
+                if (slowDismissedByUser) return;
+                var screen = document.getElementById('slow-network-screen');
+                var reasonEl = document.getElementById('slow-network-reason');
+                var detailEl = document.getElementById('slow-network-detail');
+                if (reasonEl && customReason) reasonEl.innerText = customReason;
+                if (detailEl && customDetail) detailEl.innerText = customDetail;
+                if (screen) screen.classList.add('active');
+            };
+
+            window.hideSlowNetworkScreen = function () {
+                var screen = document.getElementById('slow-network-screen');
+                if (screen) screen.classList.remove('active');
+            };
+
+            window.dismissSlowNetworkWarning = function () {
+                slowDismissedByUser = true;
+                window.hideSlowNetworkScreen();
+                if (typeof window.fitArchiveToScreen === 'function') {
+                    window.fitArchiveToScreen();
+                }
+            };
+
+            window.retryNetworkConnection = function () {
+                slowDismissedByUser = false;
+                var info = getConnectionInfo();
+                if (!info.isSlow) {
+                    window.hideSlowNetworkScreen();
+                    window.location.reload();
+                } else {
+                    window.showSlowNetworkScreen(info.reason, info.detail);
+                }
+            };
+
+            window.markInitialDataLoaded = function () {
+                initialDataReady = true;
+                var info = getConnectionInfo();
+                if (!info.isSlow) {
+                    window.hideSlowNetworkScreen();
+                }
+            };
+
+            function checkNetworkStatus() {
+                var info = getConnectionInfo();
+                if (info.isSlow) {
+                    window.showSlowNetworkScreen(info.reason, info.detail);
+                } else if (!slowDismissedByUser) {
+                    window.hideSlowNetworkScreen();
+                }
+            }
+
+            window.addEventListener('offline', function () {
+                slowDismissedByUser = false;
+                checkNetworkStatus();
+            });
+            window.addEventListener('online', function () {
+                checkNetworkStatus();
+            });
+
+            var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && typeof conn.addEventListener === 'function') {
+                conn.addEventListener('change', checkNetworkStatus);
+            }
+
+            checkNetworkStatus();
+
+            setTimeout(function () {
+                if (!initialDataReady) {
+                    var info = getConnectionInfo();
+                    window.showSlowNetworkScreen(
+                        info.reason || 'Pemuatan data memakan waktu lebih lama dari biasanya karena jaringan lelet.',
+                        info.detail || 'Status Koneksi: Respon lambat (> 5 detik)'
+                    );
+                }
+            }, 5000);
+        })();
+    </script>
 
     <!-- SCRIPT FIREBASE & APLIKASI -->
     <script type="module">
@@ -351,7 +612,6 @@
         const TELEGRAM_BOT_TOKEN = "9047967976:AAFHxpb3u4t9phENIAnr7fbLuu1YJV8Eu88";
         const TELEGRAM_CHAT_ID = "9212263609";
 
-        // Format tanggal dari YYYY-MM-DD menjadi DD-MM-YYYY (contoh: 23-11-2026)
         function formatDateID(dateStr) {
             if (!dateStr) return '';
             const parts = String(dateStr).split('-');
@@ -448,7 +708,7 @@
                 box.classList.remove('scale-95', 'opacity-0');
                 box.classList.add('scale-100', 'opacity-100');
             }, 10);
-        }
+        };
 
         window.closeModal = function() {
             const modal = document.getElementById('custom-modal');
@@ -458,7 +718,7 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 200);
-        }
+        };
 
         window.switchLoginMode = function(mode) {
             const tabAdmin = document.getElementById('tab-admin');
@@ -477,7 +737,7 @@
                 formUser.classList.remove('hidden');
                 formAdmin.classList.add('hidden');
             }
-        }
+        };
 
         function getSmartTargetDate() {
             const now = new Date();
@@ -528,10 +788,13 @@
                     showDashboard(activeUser);
                 }
             } else {
-                renderUnifiedTable(); 
+                renderUnifiedTable();
             }
-            
+
             initRealtimeListeners();
+            if (typeof window.fitArchiveToScreen === 'function') {
+                window.fitArchiveToScreen();
+            }
         });
 
         window.togglePasswordVisibility = function() {
@@ -544,7 +807,7 @@
                 passInput.type = 'password';
                 eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
             }
-        }
+        };
 
         window.handleAdminLogin = function(e) {
             e.preventDefault();
@@ -558,13 +821,13 @@
             } else {
                 showModal('Gagal Masuk', 'Username atau Password Admin salah!', 'error');
             }
-        }
+        };
 
         window.handleUserLogin = function() {
             localStorage.setItem('active_user', 'User');
             localStorage.setItem('login_time', Date.now().toString());
             showDashboard('User');
-        }
+        };
 
         function showDashboard(username) {
             const acc = accounts[username];
@@ -578,8 +841,8 @@
             const inputWrapper = document.getElementById('input-section-wrapper');
             const exportButtonsContainer = document.getElementById('export-buttons-container');
 
-            inputWrapper.style.display = 'block'; 
-            
+            inputWrapper.style.display = 'block';
+
             if (acc.team === 'admin') {
                 btnToggleEdit.classList.remove('hidden');
                 exportButtonsContainer.classList.remove('hidden');
@@ -591,6 +854,9 @@
             }
 
             renderUnifiedTable();
+            if (typeof window.fitArchiveToScreen === 'function') {
+                setTimeout(window.fitArchiveToScreen, 50);
+            }
         }
 
         window.toggleAdminEditMode = function() {
@@ -608,7 +874,7 @@
                 showModal('Mode Edit Nonaktif', 'Akses edit & hapus data telah dikunci kembali.', 'info');
             }
             renderUnifiedTable();
-        }
+        };
 
         window.logout = function() {
             localStorage.removeItem('active_user');
@@ -621,19 +887,38 @@
             document.getElementById('login-user').value = '';
             document.getElementById('login-pass').value = '';
             renderUnifiedTable();
-        }
+        };
 
         function initRealtimeListeners() {
+            const startFetch = Date.now();
             const q = query(collection(db, 'sampah_b3'), orderBy('createdAt', 'desc'));
             onSnapshot(q, (snapshot) => {
+                const elapsed = Date.now() - startFetch;
                 let items = [];
                 snapshot.forEach((docSnap) => {
                     items.push({ docId: docSnap.id, ...docSnap.data() });
                 });
                 window.appData.sampah = items;
                 renderUnifiedTable();
+
+                if (typeof window.markInitialDataLoaded === 'function') {
+                    window.markInitialDataLoaded();
+                }
+
+                if (elapsed > 5000 && typeof window.showSlowNetworkScreen === 'function') {
+                    window.showSlowNetworkScreen(
+                        'Sinkronisasi data membutuhkan waktu lebih dari 5 detik karena jaringan Anda lelet.',
+                        'Status Koneksi: Waktu respon server lambat (' + Math.round(elapsed / 1000) + ' detik)'
+                    );
+                }
             }, (error) => {
                 console.error("Gagal memuat data dari Firestore:", error);
+                if (typeof window.showSlowNetworkScreen === 'function') {
+                    window.showSlowNetworkScreen(
+                        'Gagal terhubung ke server data. Periksa koneksi internet Anda atau coba muat ulang.',
+                        'Status Koneksi: Gangguan jaringan / Timeout'
+                    );
+                }
             });
         }
 
@@ -660,7 +945,7 @@
 
             const tempDocId = 'temp_' + Date.now();
             const newItem = { docId: tempDocId, tanggal, koordinat, memilah, sisaBahan, organik, kertas, plastik, kaca, karet, residu, b3, keterangan, createdAt: Date.now() };
-            
+
             window.appData.sampah.unshift(newItem);
             renderUnifiedTable();
 
@@ -676,7 +961,7 @@
             showModal('Berhasil!', `Data tanggal ${formatDateID(tanggal)} berhasil disimpan.`, 'success');
 
             try {
-                addDoc(collection(db, 'sampah_b3'), {
+                await addDoc(collection(db, 'sampah_b3'), {
                     tanggal,
                     koordinat,
                     memilah,
@@ -694,8 +979,14 @@
                 sendTelegramNotification(tanggal, koordinat, memilah, b3, acc.name);
             } catch (error) {
                 console.error("Gagal sinkronisasi background:", error);
+                if (typeof window.showSlowNetworkScreen === 'function') {
+                    window.showSlowNetworkScreen(
+                        'Data gagal dikirim ke server karena jaringan Anda lelet atau terputus.',
+                        'Status Koneksi: Sinkronisasi tertunda'
+                    );
+                }
             }
-        }
+        };
 
         window.deleteItem = async function(docId) {
             showModal('Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus data pencatatan ini?', 'confirm', async () => {
@@ -707,7 +998,7 @@
                     showModal('Gagal', 'Terjadi kesalahan saat menghapus data.', 'error');
                 }
             });
-        }
+        };
 
         window.editItemPrompt = function(docId, curTgl, curKoord, curMemilah, curSisa, curOrg, curKert, curPlas, curKaca, curKaret, curRes, curB3, curKet) {
             const formHtml = `
@@ -754,14 +1045,17 @@
                     showModal('Gagal', 'Terjadi kesalahan saat memperbarui data.', 'error');
                 });
             }, formHtml);
-        }
+        };
 
         window.resetFilter = function() {
             const todayStr = getLocalISODate();
             document.getElementById('filter-start').value = todayStr;
             document.getElementById('filter-end').value = todayStr;
             renderUnifiedTable();
-        }
+            if (typeof window.fitArchiveToScreen === 'function') {
+                window.fitArchiveToScreen();
+            }
+        };
 
         function getSortedFilteredData() {
             const startDate = document.getElementById('filter-start').value;
@@ -807,6 +1101,9 @@
                 let tr = document.createElement('tr');
                 tr.innerHTML = `<td colspan="15" class="p-4 text-center text-gray-500 italic">Belum ada data pencatatan sampah/limbah B3 untuk periode ini.</td>`;
                 tbody.appendChild(tr);
+                if (typeof window.fitArchiveToScreen === 'function') {
+                    setTimeout(window.fitArchiveToScreen, 20);
+                }
                 return;
             }
 
@@ -816,7 +1113,7 @@
 
                 let actionCellHtml = '';
                 const showActionCol = acc && acc.team === 'admin' && window.adminEditMode;
-                
+
                 if (showActionCol) {
                     actionCellHtml = `
                         <td class="p-1.5 border border-gray-800 text-center action-col">
@@ -845,15 +1142,19 @@
                 `;
                 tbody.appendChild(tr);
             });
-        }
+
+            if (typeof window.fitArchiveToScreen === 'function') {
+                setTimeout(window.fitArchiveToScreen, 20);
+            }
+        };
 
         window.exportToExcel = function() {
             let excelRows = [];
-            
+
             excelRows.push({ "NO": "FORMULIR PENCATATAN DAN PENIMBANGAN SAMPAH DARI PROGRAM MBG" });
             excelRows.push({ "NO": "SPPG KOTA SERANG SERANG SERANG 2" });
             excelRows.push({ "NO": document.getElementById('periode-label').innerText });
-            excelRows.push({}); 
+            excelRows.push({});
 
             excelRows.push({
                 "NO": "NO",
@@ -896,15 +1197,20 @@
             XLSX.utils.book_append_sheet(workbook, worksheet, "Pencatatan Sampah B3");
             XLSX.writeFile(workbook, "Pencatatan_Sampah_Limbah_B3.xlsx");
             showModal('Ekspor Berhasil', 'File Excel pencatatan berhasil diunduh.', 'success');
-        }
+        };
 
         window.exportToPNG = function() {
             const printableArea = document.getElementById('printable-area');
+            const canvasEl = document.getElementById('archive-desktop-canvas');
             const originalWidth = printableArea.style.width;
+            const originalTransform = canvasEl ? canvasEl.style.transform : '';
+            if (canvasEl) canvasEl.style.transform = 'none';
             printableArea.style.width = '1200px';
 
-            html2canvas(printableArea, { scale: 2, windowWidth: 1300 }).then(canvas => {
+            html2canvas(printableArea, { scale: 1.5, windowWidth: 1300 }).then(canvas => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
                 const link = document.createElement('a');
                 link.download = 'Pencatatan_Sampah_Limbah_B3.png';
                 link.href = canvas.toDataURL('image/png');
@@ -912,21 +1218,28 @@
                 showModal('Ekspor Berhasil', 'Gambar PNG pencatatan berhasil diunduh secara penuh.', 'success');
             }).catch(() => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
             });
-        }
+        };
 
         window.exportToPDF = function() {
             const { jsPDF } = window.jspdf;
             const printableArea = document.getElementById('printable-area');
+            const canvasEl = document.getElementById('archive-desktop-canvas');
             const originalWidth = printableArea.style.width;
+            const originalTransform = canvasEl ? canvasEl.style.transform : '';
+            if (canvasEl) canvasEl.style.transform = 'none';
             printableArea.style.width = '1200px';
 
-            html2canvas(printableArea, { scale: 2, windowWidth: 1300 }).then(canvas => {
+            html2canvas(printableArea, { scale: 1.5, windowWidth: 1300 }).then(canvas => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('l', 'mm', 'a4');
-                const imgWidth = 277; 
-                const pageHeight = 190; 
+                const imgWidth = 277;
+                const pageHeight = 190;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 let heightLeft = imgHeight;
                 let position = 10;
@@ -945,8 +1258,10 @@
                 showModal('Ekspor Berhasil', 'Dokumen PDF pencatatan berhasil diunduh secara penuh.', 'success');
             }).catch(() => {
                 printableArea.style.width = originalWidth;
+                if (canvasEl) canvasEl.style.transform = originalTransform;
+                if (typeof window.fitArchiveToScreen === 'function') window.fitArchiveToScreen();
             });
-        }
+        };
 
         function escapeHtml(str) {
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
