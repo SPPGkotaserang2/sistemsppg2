@@ -359,6 +359,97 @@
         .badge-alpa { background: #ffcdd2; color: #c62828; }
         .badge-backup { background: #e1bee7; color: #6a1b9a; }
 
+        /* Styling Log Absensi Matriks */
+        .log-matrix-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
+        }
+        .log-matrix-table th,
+        .log-matrix-table td {
+            border-right: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 8px 10px;
+        }
+        .log-matrix-table th {
+            text-align: center;
+            white-space: nowrap;
+            background: var(--biru-telur-asin);
+            color: #004d40;
+        }
+        .log-matrix-table td.log-cell {
+            text-align: center;
+            min-width: 82px;
+            white-space: nowrap;
+        }
+        .sticky-col-no {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: #ffffff;
+            width: 45px;
+            min-width: 45px;
+            text-align: center;
+        }
+        .sticky-col-nama {
+            position: sticky;
+            left: 45px;
+            z-index: 3;
+            background: #ffffff;
+            min-width: 190px;
+            text-align: left !important;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.06);
+        }
+        .log-matrix-table thead th.sticky-col-no,
+        .log-matrix-table thead th.sticky-col-nama {
+            z-index: 5;
+            background: var(--biru-telur-asin);
+        }
+        .log-matrix-table tbody tr:hover td.sticky-col-no,
+        .log-matrix-table tbody tr:hover td.sticky-col-nama {
+            background: #f5f5f5;
+        }
+        .check-hadir {
+            color: #2e7d32;
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            line-height: 1.2;
+        }
+        .cross-absen {
+            color: #c62828;
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            line-height: 1.2;
+        }
+        .jam-masuk-sub {
+            display: block;
+            font-size: 10px;
+            color: #37474f;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .status-sub-ket {
+            display: block;
+            font-size: 9.5px;
+            color: #b71c1c;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+        .log-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            font-size: 12px;
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #d0ece9;
+        }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .export-group { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -571,14 +662,21 @@
                 </div>
                 <div class="date-picker-group">
                     <label><i class="fa-solid fa-briefcase"></i> Bagian/Posisi:</label>
-                    <select id="filterBagian" style="min-width: 190px;">
+                    <select id="filterBagian" style="min-width: 180px;">
                         <option value="">-- Semua Bagian/Posisi --</option>
                     </select>
                 </div>
                 <div class="date-picker-group">
                     <label><i class="fa-solid fa-user"></i> Nama:</label>
-                    <select id="filterNama" style="min-width: 190px;">
+                    <select id="filterNama" style="min-width: 180px;">
                         <option value="">-- Semua Relawan --</option>
+                    </select>
+                </div>
+                <div class="date-picker-group">
+                    <label><i class="fa-solid fa-table-columns"></i> Format:</label>
+                    <select id="filterFormat" onchange="loadHistory()">
+                        <option value="log" selected>Log Absensi (Ceklis & Jam)</option>
+                        <option value="detail">Daftar Harian Detail</option>
                     </select>
                 </div>
                 <button class="btn btn-primary" onclick="loadHistory()">
@@ -599,24 +697,27 @@
             </div>
         </div>
 
+        <div class="log-legend" id="logLegendBar">
+            <span><strong>Keterangan Log:</strong></span>
+            <span><strong style="color: #2e7d32;">✔</strong> Hadir / Backup (+ Jam Masuk)</span>
+            <span><strong style="color: #c62828;">✖</strong> Tidak Hadir / Belum Presensi</span>
+        </div>
+
         <div id="loadingSpinner" class="spinner"></div>
 
         <div class="table-responsive" id="exportArea">
-            <table id="tableHistory">
-                <thead>
+            <table id="tableHistory" class="log-matrix-table">
+                <thead id="theadHistory">
                     <tr>
                         <th style="width: 50px;">NO</th>
-                        <th>TANGGAL</th>
                         <th>NAMA RELAWAN</th>
                         <th>BAGIAN</th>
                         <th>STATUS</th>
-                        <th>KETERANGAN</th>
-                        <th>JAM MASUK</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyHistory">
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #888;">Silakan klik "Tampilkan" untuk memuat data.</td>
+                        <td colspan="4" style="text-align: center; color: #888;">Silakan klik "Tampilkan" untuk memuat data.</td>
                     </tr>
                 </tbody>
             </table>
@@ -1361,13 +1462,54 @@
         }
     }
 
+    // Menghasilkan array seluruh tanggal dari startDate sampai endDate (YYYY-MM-DD)
+    function generateDateRange(startStr, endStr) {
+        var list = [];
+        if (!startStr || !endStr) return list;
+
+        var startParts = startStr.split('-');
+        var endParts = endStr.split('-');
+        var cur = new Date(Number(startParts[0]), Number(startParts[1]) - 1, Number(startParts[2]));
+        var end = new Date(Number(endParts[0]), Number(endParts[1]) - 1, Number(endParts[2]));
+
+        if (cur > end) return list;
+
+        while (cur <= end) {
+            list.push(cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate()));
+            cur.setDate(cur.getDate() + 1);
+        }
+        return list;
+    }
+
+    function formatShortDateHeader(dateStr) {
+        var parts = dateStr.split('-');
+        var bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        var d = Number(parts[2]);
+        var m = bulanPendek[Number(parts[1]) - 1] || parts[1];
+        return pad2(d) + ' ' + m;
+    }
+
     function loadHistory() {
         var startDate = document.getElementById('filterStartDate').value;
         var endDate = document.getElementById('filterEndDate').value;
         var namaFilter = document.getElementById('filterNama').value;
         var bagianFilter = document.getElementById('filterBagian').value;
+        var formatMode = document.getElementById('filterFormat').value;
+
         var spinner = document.getElementById('loadingSpinner');
+        var thead = document.getElementById('theadHistory');
         var tbody = document.getElementById('tbodyHistory');
+        var tableEl = document.getElementById('tableHistory');
+        var legendBar = document.getElementById('logLegendBar');
+
+        if (!startDate || !endDate) {
+            showNotification("Peringatan", "Harap pilih tanggal awal dan tanggal akhir filter.", "error");
+            return;
+        }
+        if (startDate > endDate) {
+            showNotification("Peringatan", "Tanggal mulai tidak boleh lebih besar dari tanggal akhir.", "error");
+            return;
+        }
 
         spinner.style.display = 'block';
         tbody.innerHTML = '';
@@ -1375,26 +1517,158 @@
         window.ambilRiwayatFirebase(startDate, endDate, namaFilter, bagianFilter).then(function(data) {
             spinner.style.display = 'none';
 
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #888;">Tidak ada data presensi yang sesuai dengan filter.</td></tr>';
+            if (formatMode === 'detail') {
+                // FORMAT DAFTAR HARIAN DETAIL
+                tableEl.className = '';
+                legendBar.style.display = 'none';
+                thead.innerHTML =
+                    '<tr>' +
+                        '<th style="width: 50px;">NO</th>' +
+                        '<th>TANGGAL</th>' +
+                        '<th>NAMA RELAWAN</th>' +
+                        '<th>BAGIAN</th>' +
+                        '<th>STATUS</th>' +
+                        '<th>KETERANGAN</th>' +
+                        '<th>JAM MASUK</th>' +
+                    '</tr>';
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #888;">Tidak ada data presensi yang sesuai dengan filter.</td></tr>';
+                    return;
+                }
+
+                for (var index = 0; index < data.length; index++) {
+                    var item = data[index];
+                    var badgeClass = getBadgeClass(item.status);
+                    var jamMasukText = item.jamMasuk ? item.jamMasuk : '-';
+
+                    var tr = document.createElement('tr');
+                    tr.innerHTML =
+                        '<td>' + (index + 1) + '</td>' +
+                        '<td>' + (item.tanggal || '-') + '</td>' +
+                        '<td><strong>' + (item.nama || '-') + '</strong></td>' +
+                        '<td>' + (item.bagian || '-') + '</td>' +
+                        '<td><span class="badge ' + badgeClass + '">' + (item.status || '-') + '</span></td>' +
+                        '<td>' + (item.catatan || '-') + '</td>' +
+                        '<td><strong>' + jamMasukText + '</strong></td>';
+                    tbody.appendChild(tr);
+                }
                 return;
             }
 
-            for (var index = 0; index < data.length; index++) {
-                var item = data[index];
-                var badgeClass = getBadgeClass(item.status);
-                var jamMasukText = item.jamMasuk ? item.jamMasuk : '-';
+            // FORMAT LOG ABSENSI MATRIKS (NAMA DI KIRI, CEKLIS + JAM MASUK / SILANG MERAH PER TANGGAL)
+            tableEl.className = 'log-matrix-table';
+            legendBar.style.display = 'flex';
 
-                var tr = document.createElement('tr');
-                tr.innerHTML =
-                    '<td>' + (index + 1) + '</td>' +
-                    '<td>' + (item.tanggal || '-') + '</td>' +
-                    '<td><strong>' + (item.nama || '-') + '</strong></td>' +
-                    '<td>' + (item.bagian || '-') + '</td>' +
-                    '<td><span class="badge ' + badgeClass + '">' + (item.status || '-') + '</span></td>' +
-                    '<td>' + (item.catatan || '-') + '</td>' +
-                    '<td><strong>' + jamMasukText + '</strong></td>';
-                tbody.appendChild(tr);
+            var dateList = generateDateRange(startDate, endDate);
+            if (dateList.length > 62) {
+                showNotification("Rentang Terlalu Panjang", "Maksimal tampilan log matriks adalah 62 hari sekaligus.", "error");
+                return;
+            }
+
+            // Susun daftar relawan yang ditampilkan sesuai filter Nama / Bagian
+            var relawanList = [];
+            var mapRelawanSudahAda = {};
+            for (var r = 0; r < dataRelawan.length; r++) {
+                var rel = dataRelawan[r];
+                var okNama = !namaFilter || rel.nama === namaFilter;
+                var okBagian = !bagianFilter || (rel.bagian && rel.bagian.trim() === bagianFilter.trim());
+                if (okNama && okBagian) {
+                    relawanList.push({ nama: rel.nama, bagian: rel.bagian });
+                    mapRelawanSudahAda[rel.nama.trim().toLowerCase()] = true;
+                }
+            }
+
+            // Tambahkan relawan dari database jika ada nama di luar daftar default
+            for (var d = 0; d < data.length; d++) {
+                var rec = data[d];
+                var keyNama = String(rec.nama || '').trim().toLowerCase();
+                if (keyNama && !mapRelawanSudahAda[keyNama]) {
+                    relawanList.push({ nama: rec.nama, bagian: rec.bagian || '-' });
+                    mapRelawanSudahAda[keyNama] = true;
+                }
+            }
+
+            // Peta lookup: lookup[namaLower][tanggal] = record
+            var lookup = {};
+            for (var k = 0; k < data.length; k++) {
+                var itemRec = data[k];
+                var nKey = String(itemRec.nama || '').trim().toLowerCase();
+                var tKey = String(itemRec.tanggal || '').trim();
+                if (!lookup[nKey]) lookup[nKey] = {};
+                lookup[nKey][tKey] = itemRec;
+            }
+
+            // Render Header Tabel Matriks
+            var headHtml = '<tr>' +
+                '<th class="sticky-col-no">NO</th>' +
+                '<th class="sticky-col-nama">NAMA RELAWAN</th>' +
+                '<th>BAGIAN</th>';
+
+            for (var dtIdx = 0; dtIdx < dateList.length; dtIdx++) {
+                headHtml += '<th>' + formatShortDateHeader(dateList[dtIdx]) + '</th>';
+            }
+
+            headHtml += '<th style="background: #c8e6c9; color: #1b5e20;">HADIR</th>';
+            headHtml += '<th style="background: #ffcdd2; color: #b71c1c;">TIDAK HADIR</th>';
+            headHtml += '</tr>';
+            thead.innerHTML = headHtml;
+
+            if (relawanList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="' + (dateList.length + 5) + '" style="text-align: center; color: #888;">Tidak ada relawan yang sesuai filter.</td></tr>';
+                return;
+            }
+
+            // Render Baris per Relawan
+            for (var u = 0; u < relawanList.length; u++) {
+                var person = relawanList[u];
+                var pKey = person.nama.trim().toLowerCase();
+                var userLogs = lookup[pKey] || {};
+                var totalHadir = 0;
+                var totalTidakHadir = 0;
+
+                var rowHtml =
+                    '<td class="sticky-col-no">' + (u + 1) + '</td>' +
+                    '<td class="sticky-col-nama"><strong>' + person.nama + '</strong></td>' +
+                    '<td style="white-space: nowrap;">' + (person.bagian || '-') + '</td>';
+
+                for (var c = 0; c < dateList.length; c++) {
+                    var tgl = dateList[c];
+                    var logEntry = userLogs[tgl];
+
+                    if (logEntry && (logEntry.status === 'Hadir' || logEntry.status === 'Backup')) {
+                        totalHadir++;
+                        var jamTampil = logEntry.jamMasuk ? logEntry.jamMasuk.replace(' WIB', '') : 'Hadir';
+                        var ketBackup = logEntry.status === 'Backup' ? ' (Backup)' : '';
+                        rowHtml +=
+                            '<td class="log-cell" style="background: #f1f8e9;" title="' + tgl + ' - ' + logEntry.status + ' (' + (logEntry.jamMasuk || '-') + ')">' +
+                                '<span class="check-hadir">✔</span>' +
+                                '<span class="jam-masuk-sub">' + jamTampil + ketBackup + '</span>' +
+                            '</td>';
+                    } else if (logEntry) {
+                        // Tercatat Izin / Sakit / Tanpa Keterangan
+                        totalTidakHadir++;
+                        rowHtml +=
+                            '<td class="log-cell" style="background: #ffebee;" title="' + tgl + ' - ' + logEntry.status + (logEntry.catatan ? ': ' + logEntry.catatan : '') + '">' +
+                                '<span class="cross-absen">✖</span>' +
+                                '<span class="status-sub-ket">' + logEntry.status + '</span>' +
+                            '</td>';
+                    } else {
+                        // Tidak ada presensi pada tanggal tersebut
+                        totalTidakHadir++;
+                        rowHtml +=
+                            '<td class="log-cell" title="' + tgl + ' - Tidak Hadir / Belum Presensi">' +
+                                '<span class="cross-absen">✖</span>' +
+                            '</td>';
+                    }
+                }
+
+                rowHtml += '<td style="text-align: center; font-weight: 700; color: #2e7d32; background: #f1f8e9;">' + totalHadir + '</td>';
+                rowHtml += '<td style="text-align: center; font-weight: 700; color: #c62828; background: #ffebee;">' + totalTidakHadir + '</td>';
+
+                var trRow = document.createElement('tr');
+                trRow.innerHTML = rowHtml;
+                tbody.appendChild(trRow);
             }
         });
     }
@@ -1418,8 +1692,8 @@
     function exportExcel() {
         loadScriptOnce("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js").then(function() {
             var table = document.getElementById("tableHistory");
-            var wb = XLSX.utils.table_to_book(table, { sheet: "Riwayat Presensi" });
-            XLSX.writeFile(wb, "Presensi_SPPG_SERANG_2_" + document.getElementById('filterStartDate').value + "_sd_" + document.getElementById('filterEndDate').value + ".xlsx");
+            var wb = XLSX.utils.table_to_book(table, { sheet: "Log Presensi" });
+            XLSX.writeFile(wb, "Log_Presensi_SPPG_SERANG_2_" + document.getElementById('filterStartDate').value + "_sd_" + document.getElementById('filterEndDate').value + ".xlsx");
         }).catch(function() {
             showNotification("Gagal Export", "Tidak dapat memuat modul Excel saat ini.", "error");
         });
@@ -1430,22 +1704,27 @@
             return loadScriptOnce("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js");
         }).then(function() {
             var jsPDF = window.jspdf.jsPDF;
-            var doc = new jsPDF('p', 'pt', 'a4');
+            var isLogMode = document.getElementById('filterFormat').value === 'log';
+            var doc = new jsPDF(isLogMode ? 'l' : 'p', 'pt', 'a4');
 
-            doc.setFontSize(14);
-            doc.text("LAPORAN PRESENSI RELAWAN SPPG KOTA SERANG SERANG SERANG 2", 40, 40);
-            doc.setFontSize(10);
-            doc.text("Periode: " + document.getElementById('filterStartDate').value + " s/d " + document.getElementById('filterEndDate').value, 40, 55);
+            doc.setFontSize(13);
+            doc.text("REKAP LOG PRESENSI RELAWAN SPPG KOTA SERANG SERANG SERANG 2", 30, 35);
+            doc.setFontSize(9);
+            doc.text("Periode: " + document.getElementById('filterStartDate').value + " s/d " + document.getElementById('filterEndDate').value, 30, 50);
 
             doc.autoTable({
                 html: '#tableHistory',
-                startY: 70,
+                startY: 62,
                 theme: 'grid',
-                headStyles: { fillColor: [128, 203, 211], textColor: [0, 77, 64] },
-                styles: { fontSize: 8 }
+                headStyles: { fillColor: [128, 203, 211], textColor: [0, 77, 64], fontSize: 6.5 },
+                styles: { fontSize: 6.5, cellPadding: 3, halign: 'center' },
+                columnStyles: {
+                    1: { halign: 'left', fontStyle: 'bold' },
+                    2: { halign: 'left' }
+                }
             });
 
-            doc.save("Presensi_SPPG_SERANG_2_" + document.getElementById('filterStartDate').value + ".pdf");
+            doc.save("Log_Presensi_SPPG_SERANG_2_" + document.getElementById('filterStartDate').value + "_sd_" + document.getElementById('filterEndDate').value + ".pdf");
         }).catch(function() {
             showNotification("Gagal Export", "Tidak dapat memuat modul PDF saat ini.", "error");
         });
@@ -1454,9 +1733,9 @@
     function exportPNG() {
         loadScriptOnce("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js").then(function() {
             var element = document.getElementById("exportArea");
-            html2canvas(element).then(function(canvas) {
+            html2canvas(element, { scrollX: 0, scrollY: 0, width: element.scrollWidth, height: element.scrollHeight }).then(function(canvas) {
                 var link = document.createElement('a');
-                link.download = "Presensi_SPPG_SERANG_2_" + document.getElementById('filterStartDate').value + ".png";
+                link.download = "Log_Presensi_SPPG_SERANG_2_" + document.getElementById('filterStartDate').value + "_sd_" + document.getElementById('filterEndDate').value + ".png";
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
