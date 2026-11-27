@@ -559,7 +559,7 @@
                 <i class="fa-solid fa-user-shield"></i> Admin
             </button>
             <div class="admin-badge" id="adminBadgeInfo">
-                <span><i class="fa-solid fa-circle-check"></i> ADMIN AKTIF</span>
+                <span><i class="fa-solid fa-circle-check"></i> <span id="adminBadgeText">ADMIN AKTIF</span></span>
                 <button class="btn-delete" style="padding: 2px 6px; font-size: 10px;" onclick="logoutAdmin()">Keluar</button>
             </div>
             <div class="live-clock">
@@ -843,12 +843,19 @@
     var TARGET_LNG = 106.1490035;
     var MAX_RADIUS_METERS = 100;
 
-    var isAdmin = false;
+    var adminRole = null; // null | 'full' | 'viewer'
     try {
-        isAdmin = localStorage.getItem('sppg_admin_logged') === 'true';
+        var savedRole = localStorage.getItem('sppg_admin_role');
+        if (savedRole === 'full' || savedRole === 'viewer') {
+            adminRole = savedRole;
+        } else if (localStorage.getItem('sppg_admin_logged') === 'true') {
+            adminRole = 'full';
+        }
     } catch (e) {
-        isAdmin = false;
+        adminRole = null;
     }
+    var isAdmin = adminRole === 'full';
+    var isViewerAdmin = adminRole === 'viewer';
 
     var daftarAbsenHariIni = [];
     var secretClickCount = 0;
@@ -1031,21 +1038,44 @@
         var p = document.getElementById('passwordInput').value.trim();
 
         if (u === "Serang" && p === "Mandiri02srg") {
+            adminRole = 'full';
             isAdmin = true;
-            try { localStorage.setItem('sppg_admin_logged', 'true'); } catch (err) {}
+            isViewerAdmin = false;
+            try {
+                localStorage.setItem('sppg_admin_role', 'full');
+                localStorage.setItem('sppg_admin_logged', 'true');
+            } catch (err) {}
             applyAdminUIState();
             toggleLoginModal(false);
             document.getElementById('locationLockModal').style.display = 'none';
             showNotification("Autentikasi Berhasil", "Selamat datang, Administrator berhasil masuk.", "success");
             renderArsipTable();
+        } else if (u === "1" && p === "1") {
+            adminRole = 'viewer';
+            isAdmin = false;
+            isViewerAdmin = true;
+            try {
+                localStorage.setItem('sppg_admin_role', 'viewer');
+                localStorage.removeItem('sppg_admin_logged');
+            } catch (err) {}
+            applyAdminUIState();
+            toggleLoginModal(false);
+            document.getElementById('locationLockModal').style.display = 'none';
+            switchTab('history-tab');
+            showNotification("Autentikasi Berhasil", "Selamat datang, Mode Lihat Riwayat Absensi aktif.", "success");
         } else {
             showNotification("Akses Ditolak", "Username atau Password Administrator yang Anda masukkan salah.", "error");
         }
     }
 
     function logoutAdmin() {
+        adminRole = null;
         isAdmin = false;
-        try { localStorage.removeItem('sppg_admin_logged'); } catch (err) {}
+        isViewerAdmin = false;
+        try {
+            localStorage.removeItem('sppg_admin_role');
+            localStorage.removeItem('sppg_admin_logged');
+        } catch (err) {}
         applyAdminUIState();
         switchTab('input-tab');
         renderArsipTable();
@@ -1057,10 +1087,20 @@
         if (isAdmin) {
             document.getElementById('btnLoginToggle').style.display = 'none';
             document.getElementById('adminBadgeInfo').style.display = 'flex';
+            document.getElementById('adminBadgeText').textContent = 'ADMIN AKTIF';
+            document.getElementById('tabInputBtn').style.display = 'flex';
+            document.getElementById('tabHistoryBtn').style.display = 'flex';
+        } else if (isViewerAdmin) {
+            document.getElementById('btnLoginToggle').style.display = 'none';
+            document.getElementById('adminBadgeInfo').style.display = 'flex';
+            document.getElementById('adminBadgeText').textContent = 'ADMIN';
+            document.getElementById('tabInputBtn').style.display = 'none';
             document.getElementById('tabHistoryBtn').style.display = 'flex';
         } else {
             document.getElementById('btnLoginToggle').style.display = 'inline-flex';
             document.getElementById('adminBadgeInfo').style.display = 'none';
+            document.getElementById('adminBadgeText').textContent = 'ADMIN AKTIF';
+            document.getElementById('tabInputBtn').style.display = 'flex';
             document.getElementById('tabHistoryBtn').style.display = 'none';
         }
     }
@@ -1208,7 +1248,11 @@
     }
 
     window.addEventListener('firebase-ready', function() {
-        fetchExistingPresensi();
+        if (isViewerAdmin) {
+            switchTab('history-tab');
+        } else {
+            fetchExistingPresensi();
+        }
     });
 
     function hitungJarakMeter(lat1, lon1, lat2, lon2) {
@@ -1236,7 +1280,7 @@
         lockMessage.textContent = "Harap izinkan akses lokasi (GPS) pada perangkat Anda untuk membuka halaman web ini.";
         btnRetry.style.display = 'none';
 
-        if (isAdmin) {
+        if (isAdmin || isViewerAdmin) {
             lockModal.style.display = 'none';
             return;
         }
@@ -1293,6 +1337,9 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
+        if (isViewerAdmin) {
+            switchTab('history-tab');
+        }
         initLocationCheck();
     });
 
@@ -1324,6 +1371,10 @@
     }
 
     function tambahDanSimpanSatu() {
+        if (isViewerAdmin) {
+            showNotification("Akses Ditolak", "Akun ini hanya memiliki akses untuk melihat riwayat absensi.", "error");
+            return;
+        }
         var dateVal = document.getElementById('presensiDate').value;
         var namaVal = document.getElementById('selectRelawan').value;
         var bagianVal = document.getElementById('inputBagian').value;
@@ -1441,7 +1492,11 @@
     }
 
     function switchTab(tabId) {
-        if (tabId === 'history-tab' && !isAdmin) {
+        if (isViewerAdmin && tabId !== 'history-tab') {
+            showNotification("Akses Terbatas", "Akun ini hanya khusus untuk melihat riwayat absensi.", "error");
+            return;
+        }
+        if (tabId === 'history-tab' && !isAdmin && !isViewerAdmin) {
             showNotification("Akses Terbatas", "Menu Riwayat & Export hanya dapat diakses oleh Administrator.", "error");
             return;
         }
